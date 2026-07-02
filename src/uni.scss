@@ -1,0 +1,135 @@
+/**
+ * uni-app 内置常用样式变量
+ * uni-app 官方扩展组件及插件市场很多三方组件使用了这些变量,保留以便兼容。
+ */
+
+/* 行为相关颜色 */
+$uni-color-primary: #007aff;
+$uni-color-success: #4cd964;
+$uni-color-warning: #f0ad4e;
+$uni-color-error: #dd524d;
+
+/* 文字基本颜色 */
+$uni-text-color: #333; // 基本色
+$uni-text-color-inverse: #fff; // 反色
+$uni-text-color-grey: #999; // 辅助灰色
+$uni-text-color-placeholder: #808080;
+$uni-text-color-disable: #c0c0c0;
+
+/* 背景颜色 */
+$uni-bg-color: #fff;
+$uni-bg-color-grey: #f8f8f8;
+$uni-bg-color-hover: #f1f1f1;
+$uni-bg-color-mask: rgba(0, 0, 0, 0.4);
+
+/* 边框颜色 */
+$uni-border-color: #c8c7cc;
+
+/* 文字尺寸 */
+$uni-font-size-sm: 12px;
+$uni-font-size-base: 14px;
+$uni-font-size-lg: 16px;
+
+/* 图片尺寸 */
+$uni-img-size-sm: 20px;
+$uni-img-size-base: 26px;
+$uni-img-size-lg: 40px;
+
+/* Border Radius */
+$uni-border-radius-sm: 2px;
+$uni-border-radius-base: 3px;
+$uni-border-radius-lg: 6px;
+$uni-border-radius-circle: 50%;
+
+/* 水平间距 */
+$uni-spacing-row-sm: 5px;
+$uni-spacing-row-base: 10px;
+$uni-spacing-row-lg: 15px;
+
+/* 垂直间距 */
+$uni-spacing-col-sm: 4px;
+$uni-spacing-col-base: 8px;
+$uni-spacing-col-lg: 12px;
+
+/* 透明度 */
+$uni-opacity-disabled: 0.3;
+
+/**
+ * ====== 音乐 App 自定义主题变量 ======
+ * 项目内颜色统一使用以下变量,禁止散落硬编码色值(见 CLAUDE.md 第 5 节)。
+ */
+$primary: #ff8c42;          // 主色(暖橙):播放/选中/强调
+$primary-light: #ffb780;    // 主色浅色
+$bg-page: #f5f5f7;          // 页面背景
+$bg-card: #ffffff;          // 卡片/列表项背景
+$text-main: #1a1a1a;        // 主文字
+$text-sub: #999999;         // 次要文字
+$text-disable: #cccccc;     // 禁用文字
+$divider: #ececec;          // 分割线
+$player-bg: #2c2c3a;        // 播放页深色背景
+$shadow-card: 0 4rpx 20rpx rgba(0, 0, 0, 0.12);  // 卡片阴影
+
+/* ====== 古诗·书卷主题(仅 poetry 大类使用) ====== */
+$poetry-cinnabar: #b8332a;        // 朱砂:强调/下划线/方印/朝代
+$poetry-cinnabar-light: #d94a3d;  // 朱砂浅(渐变)
+$poetry-paper: #f5ecd9;           // 宣纸底(渐变起点)
+$poetry-paper-deep: #ecd9b8;      // 宣纸深(渐变终点)
+$poetry-card: #fbf6ea;            // 宣纸卡(子卡背景)
+$poetry-ink: #2b2b2b;             // 墨色(主文字)
+$poetry-ink-sub: #6b5d4f;         // 次墨(描述/数量)
+$poetry-warm: #8a5a2b;            // 暖褐(类型卡封面渐变起点)
+$poetry-warm-light: #b07d3e;      // 暖褐浅(渐变终点)
+$poetry-shadow: 0 4rpx 16rpx rgba(120, 80, 30, 0.15);  // 书卷阴影(暖调)
+
+/* ====== 儿歌·糖果主题(仅 children 大类使用) ====== */
+$children-bg-start: #fff7f2;        // 背景渐变起点
+$children-bg-end: #fff1f7;          // 背景渐变终点
+$children-text: #6a4538;            // 主文字(暖棕)
+$children-text-sub: #a06a58;        // 次文字
+$children-card: #ffffff;            // 子卡背景
+$children-card-border: #ffe9f0;     // 子卡描边(粉)
+$children-accent: #ff6f91;          // 强调粉(标签/圆点)
+$children-rainbow-1: #ff9a9e;       // 彩虹图标色1(粉)
+$children-rainbow-2: #ffd3a5;       // 彩虹图标色2(橙)
+$children-rainbow-3: #fff1a8;       // 彩虹图标色3(黄)
+$children-rainbow-4: #a6e3ff;       // 彩虹图标色4(蓝)
+$children-rainbow-5: #fbc2eb;       // 彩虹图标色5(粉紫)
+$children-cover-start: #ffd0e0;     // 封面渐变起点
+$children-cover-end: #ffe9b3;       // 封面渐变终点
+$children-play-start: #ff8fb1;      // 播放按钮渐变起点
+$children-play-end: #ffb86b;        // 播放按钮渐变终点
+$children-shadow: 0 4rpx 16rpx rgba(255, 170, 200, 0.18);  // 柔粉阴影
+
+/* ====== 三字经·竹简主题(仅 classics 大类使用) ====== */
+$classics-bg-start: #f1f0df;        // 背景渐变起点(米黄)
+$classics-bg-end: #e6e4cc;          // 背景渐变终点
+$classics-text: #2b3326;            // 主文字(墨绿黑)
+$classics-text-sub: #6a7558;        // 次文字
+$classics-card: #f6f3e2;            // 子卡背景(宣纸黄)
+$classics-card-border: #d8d0a8;     // 子卡描边
+$classics-accent: #4a5a36;          // 墨绿(标题线/播放按钮)
+$classics-slip-start: #d8c98a;      // 竹简渐变起点
+$classics-slip-end: #c3b173;        // 竹简渐变终点
+$classics-slip-border: #b09a5e;     // 竹简描边
+$classics-slip-text: #3a3a2a;       // 竹简刻字色
+$classics-cover-start: #8aa067;     // 封面渐变起点(竹青)
+$classics-cover-end: #5f7340;       // 封面渐变终点(墨绿)
+$classics-shadow: 0 4rpx 16rpx rgba(90, 110, 70, 0.12);
+
+/* ====== 故事·梦幻主题(仅 story 大类使用,浅色版) ====== */
+$story-bg-start: #f3f0fb;           // 背景渐变起点(淡紫)
+$story-bg-end: #eef3fb;             // 背景渐变终点(淡蓝)
+$story-text: #4a3a6b;               // 主文字(深紫)
+$story-text-sub: #8a82a8;           // 次文字(灰紫)
+$story-card: #ffffff;               // 子卡背景
+$story-card-border: #ece6ff;        // 子卡描边(淡紫)
+$story-moon: #ffc94e;               // 月亮黄
+$story-moon-light: #fff6d6;         // 月亮高光
+$story-accent: #7a5ea8;             // 梦幻紫(标题星)
+$story-tag-text: #7a5ea8;           // 标签文字
+$story-tag-border: #c9b8e8;         // 标签描边
+$story-cover-start: #ffd97a;        // 封面渐变起点(暖黄月光)
+$story-cover-end: #ff9a5a;          // 封面渐变终点
+$story-play-start: #9b8ad9;         // 播放按钮渐变起点(梦幻紫)
+$story-play-end: #b39de0;           // 播放按钮渐变终点
+$story-shadow: 0 4rpx 16rpx rgba(122, 94, 168, 0.14);

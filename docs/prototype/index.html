@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>儿童启蒙音频 App · 页面原型</title>
+<style>
+  :root {
+    --primary: #ff8c42;
+    --primary-light: #ffb780;
+    --bg-page: #f5f5f7;
+    --bg-card: #ffffff;
+    --text-main: #1a1a1a;
+    --text-sub: #999999;
+    --player-bg: #2c2c3a;
+    --shadow: 0 2px 10px rgba(0,0,0,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #e7e7ee; color: var(--text-main);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 12px 60px;
+  }
+  h1 { font-size: 18px; margin-bottom: 6px; }
+  .tip { font-size: 12px; color: #888; margin-bottom: 18px; }
+
+  .nav { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; justify-content: center; }
+  .nav button {
+    padding: 8px 16px; border: none; border-radius: 20px;
+    background: #fff; color: #666; cursor: pointer; font-size: 13px; box-shadow: var(--shadow);
+  }
+  .nav button.active { background: var(--primary); color: #fff; }
+
+  .phone { width: 375px; height: 760px; background: #1a1a1a; border-radius: 44px; padding: 10px; box-shadow: 0 18px 50px rgba(0,0,0,0.35); }
+  .screen { width: 100%; height: 100%; background: var(--bg-page); border-radius: 36px; overflow: hidden; position: relative; }
+  .statusbar { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font-size: 13px; font-weight: 600; }
+  .statusbar.dark { color: #fff; }
+  .statusbar .right { font-size: 12px; }
+
+  .page { display: none; height: calc(100% - 40px); overflow-y: auto; position: relative; }
+  .page.active { display: block; }
+
+  .section { margin-top: 18px; }
+  .section-title { font-size: 16px; font-weight: 700; padding: 0 16px; margin-bottom: 10px; }
+
+  .cover { border-radius: 10px; overflow: hidden; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 4px; }
+  .app-name { font-size: 20px; font-weight: 700; color: var(--text-main); }
+  .search-ico { font-size: 21px; color: var(--text-main); cursor: pointer; }
+
+  /* 分类 tab(横滑,选中下划线) */
+  .tabs { display: flex; gap: 22px; padding: 6px 16px 10px; overflow-x: auto; }
+  .tab-item { font-size: 15px; color: var(--text-sub); white-space: nowrap; padding: 2px 0; position: relative; cursor: pointer; }
+  .tab-item.active { color: var(--text-main); font-weight: 700; font-size: 16px; }
+  .tab-item.active::after { content: ''; position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%); width: 20px; height: 3px; background: var(--primary); border-radius: 2px; }
+
+  .banner { margin: 4px 16px 0; height: 132px; border-radius: 14px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; padding: 0 22px; color: #fff; box-shadow: var(--shadow); }
+  .banner-text { font-size: 20px; font-weight: 700; line-height: 1.5; }
+  .banner-text span { font-size: 13px; font-weight: 400; opacity: 0.92; }
+
+  .h-scroll { display: flex; gap: 10px; padding: 0 16px; overflow-x: auto; }
+  .pl-card { width: 110px; flex-shrink: 0; cursor: pointer; }
+  .pl-card .cover { width: 110px; height: 110px; font-size: 36px; border-radius: 12px; }
+  .pl-card-name { font-size: 13px; margin-top: 6px; color: var(--text-main); }
+
+  .recent-card { width: 64px; flex-shrink: 0; cursor: pointer; }
+  .recent-card .cover { width: 64px; height: 64px; font-size: 20px; border-radius: 12px; }
+  .recent-name { font-size: 11px; margin-top: 5px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .song-list { margin: 0 16px; background: var(--bg-card); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+  .song-item { display: flex; align-items: center; padding: 10px 14px; cursor: pointer; }
+  .song-item:not(:last-child) { border-bottom: 1px solid #f0f0f0; }
+  .song-item .cover { width: 44px; height: 44px; font-size: 16px; flex-shrink: 0; }
+  .song-info { flex: 1; min-width: 0; margin-left: 12px; }
+  .song-name { font-size: 15px; color: var(--text-main); }
+  .song-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+  .song-idx { width: 24px; text-align: center; color: #ccc; font-size: 14px; flex-shrink: 0; }
+
+  /* 大类内容(首页 tab 切换):cat-hero + 全部播放 + 子分类网格 */
+  .cat-hero { display: flex; align-items: center; padding: 18px 16px 14px; }
+  .cat-hero-icon { width: 76px; height: 76px; border-radius: 18px; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; font-size: 38px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); }
+  .cat-hero-info { margin-left: 16px; flex: 1; }
+  .cat-hero-name { font-size: 22px; font-weight: 700; }
+  .cat-hero-desc { font-size: 13px; color: var(--text-sub); margin-top: 6px; }
+  .play-all { margin: 6px 16px 0; padding: 13px 0; text-align: center; color: #fff; font-size: 14px; background: var(--primary); border-radius: 999px; cursor: pointer; }
+  .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 16px; }
+  .sub-card { background: var(--bg-card); border-radius: 14px; padding: 12px; box-shadow: var(--shadow); cursor: pointer; }
+  .sub-card .cover { width: 100%; height: 88px; font-size: 34px; border-radius: 10px; }
+  .sub-card-name { font-size: 14px; font-weight: 600; margin-top: 8px; }
+  .sub-card-count { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+
+  /* 作者卡片(古诗按作者) */
+  .author-card { width: 72px; flex-shrink: 0; text-align: center; cursor: pointer; }
+  .author-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-light), var(--primary)); color: #fff; font-size: 28px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .author-name { font-size: 12px; margin-top: 6px; color: var(--text-main); }
+  .author-count { font-size: 11px; color: var(--text-sub); }
+
+  .mini { position: absolute; left: 12px; right: 12px; bottom: 56px; display: flex; align-items: center; padding: 8px 12px; background: #fff; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.16); }
+  .mini .cover { width: 38px; height: 38px; font-size: 14px; flex-shrink: 0; }
+  .mini .info { flex: 1; min-width: 0; margin-left: 10px; }
+  .mini .name { font-size: 13px; }
+  .mini .sub { font-size: 11px; color: var(--text-sub); }
+  .mini .btn { margin-left: 10px; padding: 5px 12px; font-size: 12px; color: var(--primary); border: 1px solid var(--primary); border-radius: 999px; }
+
+  .tabbar { position: absolute; left: 0; right: 0; bottom: 0; height: 56px; background: #fff; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: space-around; }
+  .tab { text-align: center; font-size: 11px; color: var(--text-sub); cursor: pointer; }
+  .tab .ic { font-size: 20px; display: block; }
+  .tab.active { color: var(--primary); }
+  .bottom-pad { height: 130px; }
+
+  .pl-header { display: flex; align-items: center; padding: 14px 16px; }
+  .pl-header .cover { width: 110px; height: 110px; font-size: 40px; border-radius: 14px; flex-shrink: 0; }
+  .pl-meta { margin-left: 14px; flex: 1; }
+  .pl-meta .t { font-size: 19px; font-weight: 700; }
+  .pl-meta .d { font-size: 12px; color: var(--text-sub); margin-top: 8px; }
+  .pl-meta .c { font-size: 12px; color: var(--text-sub); margin-top: 6px; }
+
+  .search-input-wrap { padding: 12px 16px; }
+  .search-input { width: 100%; padding: 11px 16px; font-size: 14px; background: var(--bg-card); border: none; border-radius: 999px; box-shadow: var(--shadow); }
+
+  #page-player { background: var(--player-bg); color: #fff; }
+  .player-nav { padding: 4px 18px; font-size: 26px; cursor: pointer; }
+  .disc-wrap { display: flex; justify-content: center; margin: 14px 0 22px; }
+  .disc { width: 220px; height: 220px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 70px; font-weight: 700; box-shadow: 0 10px 40px rgba(0,0,0,0.4); animation: spin 12s linear infinite; }
+  .disc.paused { animation-play-state: paused; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .meta-row { display: flex; align-items: center; padding: 0 26px; }
+  .meta-row .m { flex: 1; }
+  .meta-row .name { font-size: 19px; font-weight: 700; }
+  .meta-row .artist { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 5px; }
+  .like { font-size: 26px; color: rgba(255,255,255,0.5); cursor: pointer; }
+  .like.liked { color: var(--primary); }
+  .lyric { height: 180px; margin: 18px 0; text-align: center; overflow: hidden; }
+  .lyric .line { padding: 8px 26px; font-size: 14px; color: rgba(255,255,255,0.35); }
+  .lyric .line.active { color: #fff; font-size: 16px; font-weight: 700; }
+  .progress { display: flex; align-items: center; padding: 0 18px; }
+  .progress .t { width: 44px; font-size: 11px; color: rgba(255,255,255,0.7); text-align: center; }
+  .bar { flex: 1; height: 3px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 8px; position: relative; }
+  .bar .fill { position: absolute; left: 0; top: 0; height: 100%; width: 38%; background: var(--primary); border-radius: 2px; }
+  .bar .dot { position: absolute; left: 38%; top: 50%; width: 12px; height: 12px; background: #fff; border-radius: 50%; transform: translate(-50%,-50%); }
+  .controls { display: flex; align-items: center; justify-content: space-around; padding: 26px 18px 0; }
+  .controls .c { font-size: 13px; color: rgba(255,255,255,0.85); width: 50px; text-align: center; }
+  .controls .play { width: 64px; height: 64px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
+
+  .mine-header { display: flex; align-items: baseline; padding: 18px 16px 10px; }
+  .mine-header .t { font-size: 19px; font-weight: 700; }
+  .mine-header .c { margin-left: 10px; font-size: 12px; color: var(--text-sub); }
+  .nav-tip { margin: 20px 16px; text-align: center; color: #999; font-size: 12px; }
+
+  /* ===== 古诗页:书卷质感(仅 #home-cat.poetry-theme 下生效,不影响其他分类)===== */
+  #home-cat.poetry-theme {
+    background:
+      radial-gradient(circle at 92% 3%, rgba(184,51,42,0.07), transparent 42%),
+      linear-gradient(180deg, #f6f0e2 0%, #efe5d1 100%);
+    font-family: "STKaiti","KaiTi","楷体","Songti SC","SimSun",serif;
+    color: #2b2b2b;
+  }
+  /* 头部:竖排书签 + 文案 + 朱砂印章 */
+  #home-cat.poetry-theme .poetry-hero {
+    display: flex; align-items: stretch; gap: 14px;
+    padding: 22px 16px 14px; position: relative;
+  }
+  #home-cat.poetry-theme .poetry-title-scroll {
+    writing-mode: vertical-rl;
+    font-size: 30px; font-weight: 700; letter-spacing: 10px;
+    color: #2b2b2b; padding: 16px 12px;
+    background: #fbf7ec; border: 1px solid #ddc9a0; border-radius: 4px;
+    box-shadow: 0 3px 10px rgba(120,90,40,0.14);
+  }
+  #home-cat.poetry-theme .poetry-hero-info { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+  #home-cat.poetry-theme .poetry-hero-name { font-size: 22px; font-weight: 700; color: #2b2b2b; letter-spacing: 2px; }
+  #home-cat.poetry-theme .poetry-hero-desc { font-size: 13px; color: #7a7466; margin-top: 8px; letter-spacing: 1px; }
+  #home-cat.poetry-theme .poetry-dynasty-tags { margin-top: 12px; display: flex; gap: 8px; }
+  #home-cat.poetry-theme .poetry-dynasty-tags span {
+    font-size: 12px; color: #b8332a; border: 1px solid #b8332a;
+    padding: 2px 10px; border-radius: 2px; background: rgba(184,51,42,0.06);
+  }
+  #home-cat.poetry-theme .poetry-seal {
+    position: absolute; top: 18px; right: 18px;
+    width: 40px; height: 40px; border-radius: 4px;
+    background: #b8332a; color: #fbf7ec;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700;
+    box-shadow: 0 2px 6px rgba(184,51,42,0.35);
+    transform: rotate(-6deg);
+  }
+  /* 全部播放:墨底宣纸字 */
+  #home-cat.poetry-theme .play-all { background: #2b2b2b; color: #f6f0e2; border: 1px solid #2b2b2b; }
+  /* section 标题:左侧朱砂短墨线 */
+  #home-cat.poetry-theme .section-title { position: relative; padding-left: 14px; color: #2b2b2b; }
+  #home-cat.poetry-theme .section-title::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 16px; background: #b8332a; border-radius: 2px;
+  }
+  /* 类型卡:宣纸底 + 暖褐封面 + 朱砂细边 */
+  #home-cat.poetry-theme .sub-card {
+    background: #fbf7ec; border: 1px solid #e4d6b3; box-shadow: 0 2px 8px rgba(120,90,40,0.08);
+  }
+  #home-cat.poetry-theme .sub-card .cover { background: linear-gradient(135deg, #e9d9b4, #c9b283); color: #5a4a2a; border-radius: 6px; }
+  #home-cat.poetry-theme .sub-card-name { color: #2b2b2b; letter-spacing: 1px; }
+  #home-cat.poetry-theme .sub-card-count { color: #9a8a6a; }
+  /* 作者卡:复用类型卡三段式布局(2列卡片),仅封面改为朱砂印章以示区分 */
+  #home-cat.poetry-theme .author-grid-card .cover {
+    background: #b8332a; color: #fbf7ec;
+    font-size: 38px; font-weight: 700;
+  }
+  /* 古诗页:类型 / 作者 切换标签 */
+  #home-cat.poetry-theme .poetry-switch { display: flex; gap: 28px; padding: 4px 16px 12px; }
+  #home-cat.poetry-theme .poetry-switch-item { position: relative; font-size: 15px; color: #7a7466; cursor: pointer; padding: 2px 0; letter-spacing: 1px; }
+  #home-cat.poetry-theme .poetry-switch-item.active { color: #2b2b2b; font-weight: 700; }
+  #home-cat.poetry-theme .poetry-switch-item.active::after {
+    content: ''; position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%);
+    width: 20px; height: 3px; background: #b8332a; border-radius: 2px;
+  }
+  #home-cat.poetry-theme .poetry-panel { padding: 4px 0 8px; }
+  #home-cat.poetry-theme .poetry-panel.poetry-panel-hidden { display: none; }
+
+  /* ===== 儿歌页:糖果游乐园(柔和糖果色 + 漂浮音符,仅 .children-theme) ===== */
+  #home-cat.children-theme {
+    background:
+      radial-gradient(circle at 10% 6%, rgba(255,170,200,0.30), transparent 38%),
+      radial-gradient(circle at 92% 10%, rgba(170,210,255,0.30), transparent 40%),
+      radial-gradient(circle at 50% 108%, rgba(255,225,150,0.34), transparent 52%),
+      linear-gradient(180deg, #fff7f2 0%, #fff1f7 100%);
+    color: #6a4538;
+  }
+  #home-cat.children-theme .children-hero {
+    position: relative; display: flex; align-items: center; gap: 16px;
+    padding: 20px 16px 14px;
+  }
+  #home-cat.children-theme .children-hero-icon {
+    width: 76px; height: 76px; border-radius: 26px;
+    background: conic-gradient(from 210deg, #ff9a9e, #ffd3a5, #fff1a8, #a6e3ff, #fbc2eb, #ff9a9e);
+    color: #fff; font-size: 38px;
+    display: flex; align-items: center; justify-content: center;
+    border: 3px solid #fff; box-shadow: 0 8px 18px rgba(255,140,160,0.35);
+  }
+  #home-cat.children-theme .children-hero-info { flex: 1; min-width: 0; }
+  #home-cat.children-theme .children-hero-name { font-size: 22px; font-weight: 800; color: #6a4538; letter-spacing: 1px; }
+  #home-cat.children-theme .children-hero-desc { font-size: 13px; color: #a06a58; margin-top: 6px; }
+  #home-cat.children-theme .children-age-tags { margin-top: 12px; display: flex; gap: 8px; }
+  #home-cat.children-theme .children-age-tags span {
+    font-size: 12px; font-weight: 600; color: #ff6f91;
+    background: rgba(255,111,145,0.12); padding: 3px 12px; border-radius: 999px;
+  }
+  #home-cat.children-theme .children-bubble { position: absolute; font-weight: 700; pointer-events: none; }
+  #home-cat.children-theme .children-bubble.b1 { top: 8px; right: 18px; font-size: 22px; color: rgba(255,140,160,0.6); }
+  #home-cat.children-theme .children-bubble.b2 { top: 42px; right: 54px; font-size: 15px; color: rgba(120,170,255,0.6); }
+  #home-cat.children-theme .play-all {
+    background: linear-gradient(135deg, #ff8fb1 0%, #ffb86b 100%);
+    box-shadow: 0 6px 14px rgba(255,143,177,0.4); font-weight: 700;
+  }
+  #home-cat.children-theme .section-title { position: relative; padding-left: 18px; color: #6a4538; }
+  #home-cat.children-theme .section-title::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 12px; height: 12px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff8fb1, #ffd3a5 60%, #8ec5fc);
+  }
+  #home-cat.children-theme .sub-card {
+    background: #fff; border: 2px solid #ffe9f0; border-radius: 18px;
+    box-shadow: 0 6px 16px rgba(255,170,200,0.18);
+  }
+  #home-cat.children-theme .sub-card .cover {
+    background: linear-gradient(135deg, #ffd0e0, #ffe9b3); color: #ff6f91; border-radius: 14px;
+  }
+  #home-cat.children-theme .sub-card-name { color: #6a4538; font-weight: 700; }
+  #home-cat.children-theme .sub-card-count { color: #b08a78; }
+
+  /* ===== 三字经页:竹简墨韵(竹青底 + 竖竹片刻字 + 墨绿,区别于古诗朱砂宣纸) ===== */
+  #home-cat.classics-theme {
+    background:
+      repeating-linear-gradient(90deg, rgba(106,130,86,0.05) 0 2px, transparent 2px 16px),
+      linear-gradient(180deg, #f1f0df 0%, #e6e4cc 100%);
+    font-family: "STKaiti","KaiTi","楷体","SimSun",serif;
+    color: #2b3326;
+  }
+  #home-cat.classics-theme .classics-hero {
+    display: flex; align-items: stretch; gap: 14px; padding: 20px 16px 14px;
+    background: linear-gradient(180deg, rgba(120,150,90,0.10), rgba(120,150,90,0));
+    border-bottom: 1px dashed rgba(90,110,70,0.30);
+  }
+  #home-cat.classics-theme .bamboo-scroll { display: flex; gap: 5px; }
+  #home-cat.classics-theme .bamboo-slip {
+    width: 30px; border-radius: 4px; padding: 14px 0;
+    background: linear-gradient(180deg, #d8c98a, #c3b173);
+    border: 1px solid #b09a5e; box-shadow: inset 0 0 4px rgba(120,100,50,0.25);
+    writing-mode: vertical-rl; font-size: 18px; font-weight: 700; color: #3a3a2a;
+    display: flex; align-items: center; justify-content: center; letter-spacing: 4px;
+  }
+  #home-cat.classics-theme .classics-hero-info { margin-left: 6px; flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+  #home-cat.classics-theme .classics-hero-name { font-size: 22px; font-weight: 700; color: #2b3326; letter-spacing: 2px; }
+  #home-cat.classics-theme .classics-hero-desc { font-size: 13px; color: #6a7558; margin-top: 8px; letter-spacing: 1px; }
+  #home-cat.classics-theme .classics-tags { margin-top: 12px; display: flex; gap: 8px; }
+  #home-cat.classics-theme .classics-tags span {
+    font-size: 12px; color: #5a6b48; border: 1px solid #7d8c5e;
+    padding: 2px 10px; border-radius: 2px; background: rgba(120,150,90,0.08);
+  }
+  #home-cat.classics-theme .play-all { background: #4a5a36; color: #f1f0df; }
+  #home-cat.classics-theme .section-title { position: relative; padding-left: 14px; color: #2b3326; }
+  #home-cat.classics-theme .section-title::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 16px; background: #4a5a36; border-radius: 2px;
+  }
+  #home-cat.classics-theme .sub-card {
+    background: #f6f3e2; border: 1px solid #d8d0a8; border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(90,110,70,0.10);
+  }
+  #home-cat.classics-theme .sub-card .cover {
+    background: linear-gradient(135deg, #8aa067, #5f7340); color: #f1f0df; border-radius: 4px;
+  }
+  #home-cat.classics-theme .sub-card-name { color: #2b3326; letter-spacing: 1px; }
+  #home-cat.classics-theme .sub-card-count { color: #7d8a5e; }
+
+  /* ===== 故事页:星空童话夜(深蓝夜空 + 月光 + 暖窗卡片,唯一的深色内容区,营造睡前氛围) ===== */
+  #home-cat.story-theme {
+    background:
+      radial-gradient(1.5px 1.5px at 22px 30px, rgba(255,255,255,0.85), transparent),
+      radial-gradient(1.5px 1.5px at 80px 84px, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 132px 42px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.5px 1.5px at 208px 116px, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 286px 60px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px 2px at 334px 30px, rgba(255,255,255,0.6), transparent),
+      radial-gradient(circle at 86% 10%, rgba(255,220,150,0.18), transparent 30%),
+      linear-gradient(180deg, #2b2658 0%, #3a2e6a 45%, #4a3568 100%);
+    color: #ece6ff;
+  }
+  #home-cat.story-theme .story-hero {
+    position: relative; display: flex; align-items: center; gap: 16px; padding: 22px 16px 16px;
+  }
+  #home-cat.story-theme .story-hero-moon {
+    width: 76px; height: 76px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff6d6, #ffd97a);
+    color: #5a4a2a; font-size: 34px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 26px rgba(255,217,122,0.55);
+  }
+  #home-cat.story-theme .story-hero-info { flex: 1; min-width: 0; }
+  #home-cat.story-theme .story-hero-name { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 1px; }
+  #home-cat.story-theme .story-hero-desc { font-size: 13px; color: rgba(236,230,255,0.7); margin-top: 6px; }
+  #home-cat.story-theme .story-tags { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  #home-cat.story-theme .story-tags span {
+    font-size: 12px; color: #ffe6a8; border: 1px solid rgba(255,217,122,0.5);
+    padding: 2px 10px; border-radius: 999px; background: rgba(255,217,122,0.08);
+  }
+  #home-cat.story-theme .story-star { position: absolute; color: rgba(255,255,255,0.85); pointer-events: none; }
+  #home-cat.story-theme .play-all {
+    background: linear-gradient(135deg, #ffd97a, #ffb347); color: #4a3520; font-weight: 700;
+    box-shadow: 0 6px 16px rgba(255,180,80,0.35);
+  }
+  #home-cat.story-theme .section-title { position: relative; padding-left: 18px; color: #fff; }
+  #home-cat.story-theme .section-title::before {
+    content: '✦'; position: absolute; left: 0; top: 50%; transform: translateY(-50%); color: #ffd97a; font-size: 14px;
+  }
+  #home-cat.story-theme .sub-card {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px; box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+  #home-cat.story-theme .sub-card .cover {
+    background: linear-gradient(135deg, #ffd97a, #ff9a5a); color: #4a3520; border-radius: 12px;
+  }
+  #home-cat.story-theme .sub-card-name { color: #fff; }
+  #home-cat.story-theme .sub-card-count { color: rgba(236,230,255,0.6); }
+</style>
+</head>
+<body>
+  <h1>儿童启蒙音频 App · 页面原型</h1>
+  <div class="tip">顶部按钮切换页面 · 分类已合并到首页 tab(点击切换,不跳页)</div>
+
+  <div class="nav">
+    <button onclick="show('home')" class="active">① 首页</button>
+    <button onclick="goPlaylist('poetry-tang')">② 歌单详情</button>
+    <button onclick="show('search')">③ 搜索</button>
+    <button onclick="show('player')">④ 播放页</button>
+    <button onclick="show('mine')">⑤ 我的</button>
+  </div>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="statusbar"><span>9:41</span><span class="right">📶 🔋</span></div>
+
+      <!-- ① 首页(分类 = 顶部 tab,本页切换) -->
+      <div class="page active" id="page-home">
+        <div class="topbar">
+          <span class="app-name">启蒙音频</span>
+          <span class="search-ico" onclick="show('search')">🔍</span>
+        </div>
+        <!-- 分类 tab:点击在本页切换内容 -->
+        <div class="tabs" id="home-tabs"></div>
+
+        <!-- 内容区:全部 -->
+        <div id="home-all">
+          <div class="banner">
+            <div class="banner-text">今日推荐<br><span>经典儿歌合集 · 适合 0-6 岁</span></div>
+          </div>
+          <div class="section">
+            <div class="section-title">最近播放</div>
+            <div class="h-scroll">
+              <div class="recent-card" onclick="show('player')"><div class="cover">两</div><div class="recent-name">两只老虎</div></div>
+              <div class="recent-card" onclick="show('player')"><div class="cover">咏</div><div class="recent-name">咏鹅</div></div>
+              <div class="recent-card" onclick="show('player')"><div class="cover">三</div><div class="recent-name">三字经</div></div>
+              <div class="recent-card" onclick="show('player')"><div class="cover">龟</div><div class="recent-name">龟兔赛跑</div></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">全部音频</div>
+            <div class="song-list">
+              <div class="song-item" onclick="show('player')"><div class="cover">两</div><div class="song-info"><div class="song-name">两只老虎</div><div class="song-sub">经典儿歌</div></div></div>
+              <div class="song-item" onclick="show('player')"><div class="cover">星</div><div class="song-info"><div class="song-name">小星星</div><div class="song-sub">经典儿歌</div></div></div>
+              <div class="song-item" onclick="show('player')"><div class="cover">咏</div><div class="song-info"><div class="song-name">咏鹅</div><div class="song-sub">骆宾王 · 唐诗</div></div></div>
+              <div class="song-item" onclick="show('player')"><div class="cover">静</div><div class="song-info"><div class="song-name">静夜思</div><div class="song-sub">李白 · 唐诗</div></div></div>
+              <div class="song-item" onclick="show('player')"><div class="cover">春</div><div class="song-info"><div class="song-name">春晓</div><div class="song-sub">孟浩然 · 唐诗</div></div></div>
+              <div class="song-item" onclick="show('player')"><div class="cover">三</div><div class="song-info"><div class="song-name">三字经(人之初)</div><div class="song-sub">王应麟 · 国学</div></div></div>
+              <div class="song-item" onclick="show('player')"><div class="cover">龟</div><div class="song-info"><div class="song-name">龟兔赛跑</div><div class="song-sub">伊索寓言</div></div></div>
+              <div class="song-item" onclick="show('player')"><div class="cover">白</div><div class="song-info"><div class="song-name">白雪公主</div><div class="song-sub">格林童话</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 内容区:某大类(子分类网格,由 fillHomeCat 填充) -->
+        <div id="home-cat" style="display:none"></div>
+
+        <div class="bottom-pad"></div>
+        <div class="mini">
+          <div class="cover">星</div>
+          <div class="info"><div class="name">小星星</div><div class="sub">经典儿歌</div></div>
+          <div class="btn">▶ 播放</div><div class="btn">⏭</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab active"><span class="ic">🏠</span>首页</div>
+          <div class="tab" onclick="show('mine')"><span class="ic">♡</span>我的</div>
+        </div>
+      </div>
+
+      <!-- ② 歌单详情(某子分类) -->
+      <div class="page" id="page-playlist">
+        <div class="pl-header">
+          <div class="cover" id="pl-cover">🏯</div>
+          <div class="pl-meta">
+            <div class="t" id="pl-title">唐诗</div>
+            <div class="d" id="pl-desc">李白、杜甫等名家</div>
+            <div class="c" id="pl-count">3 首</div>
+          </div>
+        </div>
+        <div class="play-all" onclick="show('player')">▶ 播放全部</div>
+        <div class="song-list" id="pl-songs"></div>
+        <div class="nav-tip">系统导航栏:← 返回首页</div>
+      </div>
+
+      <!-- ③ 搜索 -->
+      <div class="page" id="page-search">
+        <div class="search-input-wrap"><input class="search-input" value="李白" /></div>
+        <div class="section">
+          <div class="section-title">搜索结果(1)</div>
+          <div class="song-list">
+            <div class="song-item" onclick="show('player')"><div class="cover">静</div><div class="song-info"><div class="song-name">静夜思</div><div class="song-sub">李白 · 唐诗</div></div></div>
+          </div>
+        </div>
+        <div class="nav-tip">(未输入时显示「输入关键词搜索内置曲库」)</div>
+      </div>
+
+      <!-- ④ 播放页 -->
+      <div class="page" id="page-player">
+        <div class="player-nav" onclick="show('home')">↓</div>
+        <div class="disc-wrap"><div class="disc" id="disc">星</div></div>
+        <div class="meta-row">
+          <div class="m"><div class="name">小星星</div><div class="artist">经典儿歌</div></div>
+          <div class="like liked" id="like" onclick="toggleLike()">♥</div>
+        </div>
+        <div class="lyric">
+          <div class="line">小星星</div>
+          <div class="line">一闪一闪亮晶晶</div>
+          <div class="line active">满天都是小星星</div>
+          <div class="line">挂在天上放光明</div>
+          <div class="line">好像许多小眼睛</div>
+        </div>
+        <div class="progress">
+          <div class="t">00:08</div>
+          <div class="bar"><div class="fill"></div><div class="dot"></div></div>
+          <div class="t">00:20</div>
+        </div>
+        <div class="controls">
+          <div class="c">顺序</div>
+          <div class="c">⏮</div>
+          <div class="play" id="playbtn" onclick="togglePlay()">▶</div>
+          <div class="c">⏭</div>
+        </div>
+        <div class="nav-tip" style="color:rgba(255,255,255,0.4);">点击播放按钮可暂停/继续封面旋转</div>
+      </div>
+
+      <!-- ⑤ 我的 -->
+      <div class="page" id="page-mine">
+        <div class="mine-header"><div class="t">我喜欢的</div><div class="c">3 首</div></div>
+        <div class="song-list">
+          <div class="song-item" onclick="show('player')"><div class="cover">咏</div><div class="song-info"><div class="song-name">咏鹅</div><div class="song-sub">骆宾王</div></div></div>
+          <div class="song-item" onclick="show('player')"><div class="cover">静</div><div class="song-info"><div class="song-name">静夜思</div><div class="song-sub">李白</div></div></div>
+          <div class="song-item" onclick="show('player')"><div class="cover">龟</div><div class="song-info"><div class="song-name">龟兔赛跑</div><div class="song-sub">伊索寓言</div></div></div>
+        </div>
+        <div class="bottom-pad"></div>
+        <div class="mini">
+          <div class="cover">星</div>
+          <div class="info"><div class="name">小星星</div><div class="sub">经典儿歌</div></div>
+          <div class="btn">▶ 播放</div><div class="btn">⏭</div>
+        </div>
+        <div class="tabbar">
+          <div class="tab" onclick="show('home')"><span class="ic">🏠</span>首页</div>
+          <div class="tab active"><span class="ic">♡</span>我的</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function show(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + name).classList.add('active');
+      document.querySelectorAll('.nav button').forEach(b => {
+        const oc = b.getAttribute('onclick');
+        b.classList.toggle('active', oc === "show('" + name + "')" || (name === 'playlist' && oc.includes('goPlaylist')));
+      });
+      document.querySelector('.statusbar').classList.toggle('dark', name === 'player');
+    }
+
+    // ===== 数据:四大类 → 子分类 → 音频 =====
+    const categories = {
+      children: { icon: '🎵', name: '儿歌', desc: '欢快活泼,朗朗上口',
+        subs: [
+          { id: 'children-classic', icon: '🎶', name: '经典儿歌', songs: [['两','两只老虎','经典儿歌'],['星','小星星','经典儿歌']] },
+          { id: 'children-cartoon', icon: '📺', name: '动画儿歌', songs: [['黑','黑猫警长','动画儿歌'],['葫','葫芦娃','动画儿歌']] },
+          { id: 'children-lullaby', icon: '🌙', name: '摇篮曲', songs: [['睡','睡吧宝贝','摇篮曲'],['摇','摇啊摇','摇篮曲']] },
+          { id: 'children-english', icon: '🔤', name: '英文儿歌', songs: [['A','ABC Song','英文儿歌'],['B','Baby Shark','英文儿歌']] },
+        ] },
+      poetry: { icon: '📜', name: '古诗', desc: '唐诗宋词,启蒙经典',
+        subs: [
+          { id: 'poetry-tang', icon: '🏯', name: '唐诗', songs: [['咏','咏鹅','骆宾王'],['静','静夜思','李白'],['春','春晓','孟浩然'],['望','春望','杜甫'],['草','赋得古原草送别','白居易'],['鹿','鹿柴','王维']] },
+          { id: 'poetry-song', icon: '🎑', name: '宋词', songs: [['水','水调歌头','苏轼'],['如','如梦令','李清照']] },
+          { id: 'poetry-five', icon: '✋', name: '五言绝句', songs: [['咏','咏鹅','骆宾王'],['静','静夜思','李白']] },
+          { id: 'poetry-seven', icon: '7️⃣', name: '七言绝句', songs: [['望','望庐山瀑布','李白'],['枫','枫桥夜泊','张继']] },
+        ] },
+      classics: { icon: '📖', name: '三字经', desc: '国学启蒙经典',
+        subs: [
+          { id: 'classics-sanzijing', icon: '📖', name: '三字经', songs: [['三','三字经(人之初)','王应麟']] },
+          { id: 'classics-dizigui', icon: '📚', name: '弟子规', songs: [['弟','弟子规(总叙)','李毓秀']] },
+          { id: 'classics-baijia', icon: '📝', name: '百家姓', songs: [['百','百家姓','佚名']] },
+          { id: 'classics-qianzi', icon: '📜', name: '千字文', songs: [['千','千字文','周兴嗣']] },
+        ] },
+      story: { icon: '📚', name: '故事', desc: '睡前童话与寓言',
+        subs: [
+          { id: 'story-fable', icon: '🦊', name: '寓言故事', songs: [['龟','龟兔赛跑','伊索寓言'],['狼','狼来了','伊索寓言']] },
+          { id: 'story-fairy', icon: '🏰', name: '童话故事', songs: [['白','白雪公主','格林童话'],['灰','灰姑娘','格林童话']] },
+          { id: 'story-idiom', icon: '💡', name: '成语故事', songs: [['守','守株待兔','成语故事'],['亡','亡羊补牢','成语故事']] },
+          { id: 'story-myth', icon: '🐉', name: '神话故事', songs: [['盘','盘古开天','神话故事'],['嫦','嫦娥奔月','神话故事']] },
+        ] },
+    };
+
+    // ===== 首页分类 tab(本页切换内容)=====
+    const HOME_TABS = [
+      { id: 'all', name: '全部' },
+      { id: 'children', name: '儿歌' },
+      { id: 'poetry', name: '古诗' },
+      { id: 'classics', name: '三字经' },
+      { id: 'story', name: '故事' },
+    ];
+    let currentHomeTab = 'all';
+
+    function renderHomeTabs() {
+      document.getElementById('home-tabs').innerHTML = HOME_TABS.map(t =>
+        '<div class="tab-item' + (t.id === currentHomeTab ? ' active' : '') + '" onclick="pickHomeTab(\'' + t.id + '\')">' + t.name + '</div>'
+      ).join('');
+    }
+    /** 点击分类 tab:本页切换内容 */
+    function pickHomeTab(id) {
+      currentHomeTab = id;
+      renderHomeTabs();
+      const allBox = document.getElementById('home-all');
+      const catBox = document.getElementById('home-cat');
+      // 各大类启用各自皮肤(儿歌糖果 / 古诗书卷 / 三字经竹简 / 故事星空);切换时先清理全部主题再按需添加
+      const THEME_MAP = { poetry: 'poetry-theme', children: 'children-theme', classics: 'classics-theme', story: 'story-theme' };
+      catBox.classList.remove('poetry-theme', 'children-theme', 'classics-theme', 'story-theme');
+      if (THEME_MAP[id]) catBox.classList.add(THEME_MAP[id]);
+      if (id === 'all') {
+        allBox.style.display = '';
+        catBox.style.display = 'none';
+      } else {
+        fillHomeCat(id);
+        allBox.style.display = 'none';
+        catBox.style.display = '';
+      }
+    }
+    /** 各大类专属头部(儿歌糖果 / 古诗书卷 / 三字经竹简 / 故事星空,详见对应 theme 样式) */
+    function buildCatHero(catId, c) {
+      if (catId === 'poetry') {
+        return '<div class="poetry-hero">'
+            + '<div class="poetry-title-scroll">古诗</div>'
+            + '<div class="poetry-hero-info">'
+              + '<div class="poetry-hero-name">唐诗宋词</div>'
+              + '<div class="poetry-hero-desc">启蒙经典 · 朗朗上口</div>'
+              + '<div class="poetry-dynasty-tags"><span>唐</span><span>宋</span></div>'
+            + '</div>'
+            + '<div class="poetry-seal">诗</div>'
+          + '</div>';
+      }
+      if (catId === 'children') {
+        return '<div class="children-hero">'
+            + '<span class="children-bubble b1">♪</span><span class="children-bubble b2">♫</span>'
+            + '<div class="children-hero-icon">🎵</div>'
+            + '<div class="children-hero-info">'
+              + '<div class="children-hero-name">' + c.name + '</div>'
+              + '<div class="children-hero-desc">' + c.desc + '</div>'
+              + '<div class="children-age-tags"><span>0-3 岁</span><span>3-6 岁</span></div>'
+            + '</div>'
+          + '</div>';
+      }
+      if (catId === 'classics') {
+        return '<div class="classics-hero">'
+            + '<div class="bamboo-scroll">'
+              + '<div class="bamboo-slip">人</div><div class="bamboo-slip">之</div><div class="bamboo-slip">初</div>'
+            + '</div>'
+            + '<div class="classics-hero-info">'
+              + '<div class="classics-hero-name">' + c.name + '</div>'
+              + '<div class="classics-hero-desc">' + c.desc + '</div>'
+              + '<div class="classics-tags"><span>蒙学</span><span>国学</span></div>'
+            + '</div>'
+          + '</div>';
+      }
+      if (catId === 'story') {
+        return '<div class="story-hero">'
+            + '<span class="story-star" style="top:12px;right:24px;">✦</span>'
+            + '<span class="story-star" style="top:42px;right:62px;font-size:10px;">✦</span>'
+            + '<div class="story-hero-moon">🌙</div>'
+            + '<div class="story-hero-info">'
+              + '<div class="story-hero-name">' + c.name + '</div>'
+              + '<div class="story-hero-desc">' + c.desc + '</div>'
+              + '<div class="story-tags"><span>寓言</span><span>童话</span><span>成语</span><span>神话</span></div>'
+            + '</div>'
+          + '</div>';
+      }
+      // 兜底:通用头部
+      return '<div class="cat-hero"><div class="cat-hero-icon">' + c.icon + '</div><div class="cat-hero-info"><div class="cat-hero-name">' + c.name + '</div><div class="cat-hero-desc">' + c.desc + '</div></div></div>';
+    }
+
+    /** 填充某大类的子分类内容(在首页内) */
+    function fillHomeCat(catId) {
+      const c = categories[catId];
+      if (!c) return;
+      const total = c.subs.reduce((n, s) => n + s.songs.length, 0);
+      const isPoetry = catId === 'poetry';
+      const hero = buildCatHero(catId, c);
+      // 类型网格(各分类通用)
+      const typeGrid =
+        '<div class="sub-grid">' +
+        c.subs.map(s => '<div class="sub-card" onclick="goPlaylist(\'' + s.id + '\')"><div class="cover">' + (s.icon || s.name.charAt(0)) + '</div><div class="sub-card-name">' + s.name + '</div><div class="sub-card-count">' + s.songs.length + ' 首</div></div>').join('') +
+        '</div>';
+      // 内容区:古诗用「类型 / 作者」切换标签;其余分类沿用单个 section
+      let content;
+      if (isPoetry) {
+        const authors = poetryAuthors();
+        // 作者面板与类型面板同样用 sub-grid(2 列卡片),保持布局格式一致
+        const authorGrid =
+          '<div class="sub-grid">' +
+          Object.keys(authors).map(a => '<div class="sub-card author-grid-card" onclick="goAuthor(\'' + a + '\')"><div class="cover">' + a.charAt(0) + '</div><div class="sub-card-name">' + a + '</div><div class="sub-card-count">' + authors[a].length + ' 首</div></div>').join('') +
+          '</div>';
+        content =
+          '<div class="poetry-switch">' +
+            '<div class="poetry-switch-item active" onclick="switchPoetryView(\'type\', this)">按朝代 · 类型</div>' +
+            '<div class="poetry-switch-item" onclick="switchPoetryView(\'author\', this)">按作者</div>' +
+          '</div>' +
+          '<div class="poetry-panel" data-view="type">' + typeGrid + '</div>' +
+          '<div class="poetry-panel poetry-panel-hidden" data-view="author">' + authorGrid + '</div>';
+      } else {
+        content = '<div class="section"><div class="section-title">按类型浏览</div>' + typeGrid + '</div>';
+      }
+      document.getElementById('home-cat').innerHTML =
+        hero +
+        '<div class="play-all" onclick="show(\'player\')">▶ 全部播放(' + total + ' 首)</div>' +
+        content;
+    }
+
+    /** 古诗页:类型 / 作者 切换标签 */
+    function switchPoetryView(view, el) {
+      const box = document.getElementById('home-cat');
+      box.querySelectorAll('.poetry-switch-item').forEach(t => t.classList.toggle('active', t === el));
+      box.querySelectorAll('.poetry-panel').forEach(p => p.classList.toggle('poetry-panel-hidden', p.getAttribute('data-view') !== view));
+    }
+
+    /** 聚合古诗作者(作者 -> 作品列表,去重) */
+    function poetryAuthors() {
+      const map = {};
+      for (const sub of categories.poetry.subs) {
+        for (const s of sub.songs) {
+          const author = s[2];
+          if (!map[author]) map[author] = [];
+          if (!map[author].find(x => x[1] === s[1])) map[author].push(s);
+        }
+      }
+      return map;
+    }
+    /** 进入某作者的古诗作品列表 */
+    function goAuthor(author) {
+      const list = poetryAuthors()[author] || [];
+      document.getElementById('pl-cover').textContent = author.charAt(0);
+      document.getElementById('pl-title').textContent = author;
+      document.getElementById('pl-desc').textContent = '古诗作品';
+      document.getElementById('pl-count').textContent = list.length + ' 首';
+      document.getElementById('pl-songs').innerHTML = list.map((it, i) =>
+        '<div class="song-item" onclick="show(\'player\')"><div class="song-idx">' + (i + 1) + '</div><div class="cover">' + it[0] + '</div><div class="song-info"><div class="song-name">' + it[1] + '</div><div class="song-sub">' + it[2] + '</div></div></div>'
+      ).join('');
+      show('playlist');
+    }
+
+    // ===== 歌单详情(按子分类)=====
+    function findSub(subId) {
+      for (const c of Object.values(categories)) {
+        const s = c.subs.find(x => x.id === subId);
+        if (s) return s;
+      }
+      return null;
+    }
+    function fillPlaylist(subId) {
+      const s = findSub(subId);
+      if (!s) return;
+      document.getElementById('pl-cover').textContent = s.icon || s.name.charAt(0);
+      document.getElementById('pl-title').textContent = s.name;
+      document.getElementById('pl-desc').textContent = c2desc(s.id);
+      document.getElementById('pl-count').textContent = s.songs.length + ' 首';
+      document.getElementById('pl-songs').innerHTML = s.songs.map((it, i) =>
+        '<div class="song-item" onclick="show(\'player\')"><div class="song-idx">' + (i + 1) + '</div><div class="cover">' + it[0] + '</div><div class="song-info"><div class="song-name">' + it[1] + '</div><div class="song-sub">' + it[2] + '</div></div></div>'
+      ).join('');
+    }
+    function c2desc(subId) {
+      const map = { 'poetry-tang':'李白、杜甫等名家', 'story-fable':'小故事大道理' };
+      return map[subId] || '';
+    }
+    function goPlaylist(subId) { fillPlaylist(subId); show('playlist'); }
+
+    // 初始化
+    renderHomeTabs();
+    fillPlaylist('poetry-tang');
+
+    let playing = true;
+    function togglePlay() {
+      playing = !playing;
+      document.getElementById('disc').classList.toggle('paused', !playing);
+      document.getElementById('playbtn').textContent = playing ? '▶' : '❚❚';
+    }
+    let liked = true;
+    function toggleLike() {
+      liked = !liked;
+      const el = document.getElementById('like');
+      el.textContent = liked ? '♥' : '♡';
+      el.classList.toggle('liked', liked);
+    }
+  </script>
+</body>
+</html>
