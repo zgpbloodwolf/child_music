@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { categoryMap, songsOfCategory } from '@/data/categories';
+import { ref, computed, watch } from 'vue';
+import { categoryMap } from '@/data/categories';
 import { listPoetryAuthors, poetryDynasties } from '@/data/poetry';
+import { getRepository } from '@/repository';
 import { usePlayerStore } from '@/store/player';
 import { PoetryViewMode } from '@/types/poetry';
+import type { PoetryAuthor } from '@/types/poetry';
+import type { SongMeta } from '@/types/song';
 import PoetryHero from '@/components/PoetryHero/PoetryHero.vue';
 import ChildrenHero from '@/components/ChildrenHero/ChildrenHero.vue';
 import ClassicsHero from '@/components/ClassicsHero/ClassicsHero.vue';
@@ -17,18 +20,49 @@ import type { CoverVariant } from '@/components/CoverImage/CoverImage.vue';
  * - children / classics / story:各自独立皮肤 + 专属 Hero(糖果 / 竹简 / 梦幻)
  * - poetry:书卷质感 + 「类型/作者」分段切换 + 双面板(布局一致)
  * 皮肤 class 一律用字面量对象(非字符串拼接),避免 scoped + 小程序端丢哈希失效。
+ *
+ * 各子类的歌曲列表 / 数量走 Repository 异步加载(分类结构静态、歌曲数据不进 bundle)。
  */
 const props = defineProps<{ catId: string }>();
 const player = usePlayerStore();
+const repo = getRepository();
 
 /** 古诗内容视图(仅 poetry 生效);catId 变化时由父级 :key 重建自动重置 */
 const viewMode = ref<PoetryViewMode>(PoetryViewMode.BY_TYPE);
 
 const cat = computed(() => categoryMap[props.catId]);
 const isPoetry = computed(() => props.catId === 'poetry');
-const totalCount = computed(() => songsOfCategory(props.catId).length);
-const authors = computed(() => listPoetryAuthors());
-const dynasties = computed(() => poetryDynasties());
+
+/** 各子类歌曲列表(subId → 列表),异步加载 */
+const subList = ref<Record<string, SongMeta[]>>({});
+/** 该大类歌曲总数 */
+const totalCount = ref(0);
+/** poetry 作者列表(异步) */
+const authors = ref<PoetryAuthor[]>([]);
+/** poetry 朝代标签(异步) */
+const dynasties = ref<string[]>([]);
+
+/** 加载某大类的各子类歌曲列表 + 总数;poetry 额外加载作者 / 朝代 */
+async function loadCat(catId: string): Promise<void> {
+  const c = categoryMap[catId];
+  if (!c) return;
+  const lists = await Promise.all(c.subs.map((s) => repo.listBySub(s.id)));
+  const map: Record<string, SongMeta[]> = {};
+  let total = 0;
+  c.subs.forEach((s, i) => {
+    map[s.id] = lists[i];
+    total += lists[i].length;
+  });
+  subList.value = map;
+  totalCount.value = total;
+  if (catId === 'poetry') {
+    authors.value = await listPoetryAuthors();
+    dynasties.value = await poetryDynasties();
+  }
+}
+
+watch(() => props.catId, (id) => { void loadCat(id); }, { immediate: true });
+
 const poetryTabs = [
   { value: PoetryViewMode.BY_TYPE, label: '按朝代 · 类型' },
   { value: PoetryViewMode.BY_AUTHOR, label: '按作者' },
@@ -47,6 +81,11 @@ const coverVariant = computed<CoverVariant>(() => {
   return map[props.catId] ?? 'primary';
 });
 
+/** 某子类的歌曲数(template 用) */
+function subCount(subId: string): number {
+  return subList.value[subId]?.length ?? 0;
+}
+
 /** 点子分类 → 歌单详情 */
 function goSub(subId: string) {
   uni.navigateTo({ url: `/pages/playlist/index?sub=${subId}` });
@@ -57,7 +96,8 @@ function goAuthor(author: string) {
 }
 /** 全部播放:以该大类所有音频为队列 */
 function playAll() {
-  player.playList(songsOfCategory(props.catId), 0);
+  const allIds = Object.values(subList.value).flat().map((s) => s.id);
+  if (allIds.length) player.playList(allIds, 0);
 }
 </script>
 
@@ -119,7 +159,7 @@ function playAll() {
             <CoverImage variant="warm" :placeholder="sub.icon || sub.name.charAt(0)" />
           </view>
           <text class="sub-name sub-name--ink">{{ sub.name }}</text>
-          <text class="sub-count sub-count--ink">{{ sub.songIds.length }} 首</text>
+          <text class="sub-count sub-count--ink">{{ subCount(sub.id) }} 首</text>
         </view>
       </view>
 
@@ -154,7 +194,7 @@ function playAll() {
             <CoverImage :variant="coverVariant" :placeholder="sub.icon || sub.name.charAt(0)" />
           </view>
           <text class="sub-name">{{ sub.name }}</text>
-          <text class="sub-count">{{ sub.songIds.length }} 首</text>
+          <text class="sub-count">{{ subCount(sub.id) }} 首</text>
         </view>
       </view>
     </view>

@@ -5,9 +5,8 @@ import type { Song, SongMeta } from '@/types/song';
  *
  * 设计目标:把「歌曲数据从哪来、怎么查」从业务代码中剥离,让数据源可平滑演进,
  * 而消费方(player / store / 页面)只依赖本接口,切换实现时业务代码无需改动:
- * - StaticRepository     打包进 bundle 的静态数组(当前,数百首)
- * - JsonCatalogRepository 按分类 fetch 本地 JSON(数千首,规划中)
- * - SqliteRepository      查询本地预置数据库(上万首,规划中)
+ * - JsonCatalogRepository 当前实现:运行时 fetch 本地 songs.json 到内存(几百~十万首)
+ * - SqliteRepository      规划中:查询本地预置数据库(十万+)
  *
  * 契约说明:方法均为异步(Promise)。当前静态实现内部为内存数组、几乎立即完成;
  * 未来 JSON / SQLite 实现是真正的异步 IO。消费方一律按异步使用,避免日后返工。
@@ -55,6 +54,10 @@ export interface SongRepository {
   listByIds(ids: string[]): Promise<SongMeta[]>;
   /** 全部歌曲的轻量元数据(首页「全部音频」用)。未来大数据量将改为分页。 */
   listAll(): Promise<SongMeta[]>;
+  /** 按子分类取轻量元数据(CategoryPanel / playlist 用)。 */
+  listBySub(subCategory: string): Promise<SongMeta[]>;
+  /** 启动预热(仅需 fetch 的实现如 JsonCatalog;静态实现可空操作)。 */
+  warmup?(): Promise<void>;
 }
 
 // 重新导出基础类型,便于消费方统一从本入口引用(可选)

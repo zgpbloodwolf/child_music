@@ -1,11 +1,14 @@
 import type { PoetryAuthor } from '@/types/poetry';
-import { songMap } from './songs';
-import { songsOfCategory } from './categories';
+import type { SongMeta } from '@/types/song';
+import { getRepository } from '@/repository';
 
 /**
- * 古诗(poetry)大类的派生数据查询:作者聚合、按作者取作品、朝代推断。
- * 与 songsOfCategory / findSub 同属 data 层派生查询,纯函数、不涉及 UI。
+ * 古诗(poetry)大类的派生查询:作者聚合、按作者取作品、朝代推断。
+ * 与 findSub / categoryIdOfSub 同属 data 层派生查询;数据走 Repository(异步),
+ * 不直接依赖 songs 模块,便于歌曲数据从 songs.json 加载。
  */
+
+const repo = getRepository();
 
 /** 作者 → 朝代 映射(覆盖仅靠 subCategory 难以推断的作者,如张继仅有「七言绝句」分类) */
 const POET_DYNASTY_MAP: Record<string, string> = {
@@ -26,51 +29,51 @@ const SUBCAT_DYNASTY_MAP: Record<string, string> = {
   'poetry-song': '宋',
 };
 
-/** poetry 大类所有作品(汇总各子分类,去重);模块内部使用 */
-function poetrySongIds(): string[] {
-  return songsOfCategory('poetry');
+/** poetry 大类所有作品(异步,从 repo 取) */
+async function poetrySongs(): Promise<SongMeta[]> {
+  const all = await repo.listAll();
+  return all.filter((s) => s.category === 'poetry');
 }
 
 /**
  * 取某作者在 poetry 大类下的作品 id 列表(保持录入顺序,去重)。
  * @param author 作者名,需与 Song.artist 完全一致
  */
-export function songsOfAuthor(author: string): string[] {
+export async function songsOfAuthor(author: string): Promise<string[]> {
+  const songs = await poetrySongs();
   const ids: string[] = [];
-  for (const id of poetrySongIds()) {
-    const song = songMap[id];
-    if (song && song.artist === author && !ids.includes(id)) ids.push(id);
+  for (const s of songs) {
+    if (s.artist === author && !ids.includes(s.id)) ids.push(s.id);
   }
   return ids;
 }
 
 /**
- * 推断某作者的朝代(模块内部使用):先查「作者→朝代」映射表,未命中再按其作品的 subCategory 兜底。
+ * 推断某作者的朝代:先查「作者→朝代」映射表,未命中再按其作品的 subCategory 兜底。
  * @returns 如「唐」「宋」;无法判断返回 ''
  */
-function dynastyOfAuthor(author: string): string {
+async function dynastyOfAuthor(author: string): Promise<string> {
   const mapped = POET_DYNASTY_MAP[author];
   if (mapped) return mapped;
-  for (const id of songsOfAuthor(author)) {
-    const song = songMap[id];
-    if (!song || !song.subCategory) continue;
-    const dynasty = SUBCAT_DYNASTY_MAP[song.subCategory];
+  const songs = await poetrySongs();
+  for (const s of songs) {
+    if (s.artist !== author || !s.subCategory) continue;
+    const dynasty = SUBCAT_DYNASTY_MAP[s.subCategory];
     if (dynasty) return dynasty;
   }
   return '';
 }
 
 /** 列出 poetry 大类下所有作者(按作品数倒序,同名聚合) */
-export function listPoetryAuthors(): PoetryAuthor[] {
+export async function listPoetryAuthors(): Promise<PoetryAuthor[]> {
+  const songs = await poetrySongs();
   const map = new Map<string, string[]>();
-  for (const id of poetrySongIds()) {
-    const song = songMap[id];
-    if (!song) continue;
-    const list = map.get(song.artist);
+  for (const s of songs) {
+    const list = map.get(s.artist);
     if (list) {
-      if (!list.includes(id)) list.push(id);
+      if (!list.includes(s.id)) list.push(s.id);
     } else {
-      map.set(song.artist, [id]);
+      map.set(s.artist, [s.id]);
     }
   }
   const authors: PoetryAuthor[] = [];
@@ -79,16 +82,17 @@ export function listPoetryAuthors(): PoetryAuthor[] {
       name,
       songIds,
       count: songIds.length,
-      dynasty: dynastyOfAuthor(name),
+      dynasty: await dynastyOfAuthor(name),
     });
   }
   return authors.sort((a, b) => b.count - a.count);
 }
 
 /** poetry 下出现过的朝代(去重,用于头部朝代标签) */
-export function poetryDynasties(): string[] {
+export async function poetryDynasties(): Promise<string[]> {
+  const authors = await listPoetryAuthors();
   const set: string[] = [];
-  for (const author of listPoetryAuthors()) {
+  for (const author of authors) {
     if (author.dynasty && !set.includes(author.dynasty)) set.push(author.dynasty);
   }
   return set;

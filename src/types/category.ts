@@ -13,8 +13,7 @@ export interface SubCategory {
   icon?: string;
   /** 描述(可选) */
   desc?: string;
-  /** 包含的歌曲 id 列表 */
-  songIds: string[];
+  // 注:歌曲列表不再挂在子分类上,改由 Repository.listBySub(subId) 运行时异步取
 }
 
 /** 大类(如「古诗」「故事」) */

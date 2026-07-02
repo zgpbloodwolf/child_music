@@ -27,17 +27,27 @@ const authorName = ref('');
 /** 子分类(仅 sub 模式有值) */
 const sub = computed(() => (mode.value === 'sub' ? findSub(subId.value) : null));
 
-/** 当前列表的歌曲 id(来源随 mode 变化) */
-const songIds = computed<string[]>(() => {
-  if (mode.value === 'author') return songsOfAuthor(authorName.value);
-  return sub.value ? sub.value.songIds : [];
-});
+/** 当前列表的歌曲 id(来源随 mode 变化,异步加载) */
+const songIds = ref<string[]>([]);
 
-/** 歌曲对象列表(异步加载,过滤掉不存在的 id) */
+async function loadIds(): Promise<void> {
+  if (mode.value === 'author') {
+    songIds.value = await songsOfAuthor(authorName.value);
+  } else if (sub.value) {
+    songIds.value = (await repo.listBySub(sub.value.id)).map((s) => s.id);
+  } else {
+    songIds.value = [];
+  }
+}
+
+/** mode / subId / authorName 变化时重新加载 id(onLoad 改值即触发) */
+watch([mode, subId, authorName], () => { void loadIds(); });
+
+/** 歌曲对象列表(按 id 异步取元数据) */
 const listSongs = ref<SongMeta[]>([]);
 watch(songIds, async (newIds) => {
   listSongs.value = await repo.listByIds(newIds);
-}, { immediate: true });
+});
 
 /** 头部标题:sub 模式取子分类名,作者模式取作者名 */
 const headerTitle = computed(() =>
