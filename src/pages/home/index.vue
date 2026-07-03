@@ -43,9 +43,12 @@ function play(song: SongMeta) {
   player.playSong(song.id, allIds.value);
 }
 
-/** 全部播放:以全部音频为队列,从第一首开始 */
-function playAll() {
-  if (allIds.value.length) player.playList(allIds.value, 0);
+/** 全部音频预览(首页只展示前 3 首,其余在歌单页查看) */
+const previewSongs = computed(() => allSongs.value.slice(0, 3));
+
+/** 跳转到全部音频歌单页(展示完整列表) */
+function goAllSongs() {
+  uni.navigateTo({ url: '/pages/playlist/index?all=1' });
 }
 
 /** 跳转搜索页 */
@@ -101,15 +104,15 @@ function goSearch() {
         </scroll-view>
       </view>
 
-      <!-- 全部音频(无序号,按原型) -->
+      <!-- 全部音频(首页仅预览前 3 首,点「全部歌曲」跳转歌单页看全部) -->
       <view class="section">
         <view class="all-head">
           <text class="section-title">全部音频</text>
-          <text class="play-all" @click="playAll">▶ 播放全部({{ allSongs.length }} 首)</text>
+          <text class="play-all" @click="goAllSongs">全部歌曲({{ allSongs.length }} 首)</text>
         </view>
         <view class="song-list">
           <SongItem
-            v-for="song in allSongs"
+            v-for="song in previewSongs"
             :key="song.id"
             :song="song"
             @play="play(song)"

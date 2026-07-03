@@ -16,7 +16,7 @@ import type { SongMeta } from '@/types/song';
  * - ?author=xx 按作者(如「李白」)渲染该作者在 poetry 大类下的作品
  * 页面背景/标题/按钮按来源大类沿用分类皮肤,与首页分类区连贯(不断皮)。
  */
-type ListMode = 'sub' | 'author' | 'cat';
+type ListMode = 'sub' | 'author' | 'cat' | 'all';
 
 const player = usePlayerStore();
 const repo = getRepository();
@@ -46,6 +46,10 @@ async function loadMeta(): Promise<void> {
     const cats = await repo.getCategories();
     catMeta.value = cats.find((c) => c.id === catId.value) ?? null;
     theme.value = catId.value;
+  } else if (mode.value === 'all') {
+    sub.value = null;
+    catMeta.value = null;
+    theme.value = '';
   } else {
     sub.value = null;
     theme.value = 'poetry';
@@ -57,6 +61,8 @@ async function loadIds(): Promise<void> {
     songIds.value = await songsOfAuthor(authorName.value);
   } else if (mode.value === 'cat') {
     songIds.value = (await repo.listByCategory(catId.value)).map((s) => s.id);
+  } else if (mode.value === 'all') {
+    songIds.value = (await repo.listAll()).map((s) => s.id);
   } else if (sub.value) {
     songIds.value = (await repo.listBySub(sub.value.id)).map((s) => s.id);
   } else {
@@ -80,12 +86,14 @@ watch(songIds, async (newIds) => {
 const headerTitle = computed(() => {
   if (mode.value === 'author') return authorName.value;
   if (mode.value === 'cat') return catMeta.value?.name ?? '';
+  if (mode.value === 'all') return '全部音频';
   return sub.value?.name ?? '';
 });
 /** 头部描述 */
 const headerDesc = computed(() => {
   if (mode.value === 'author') return `${authorName.value} 的古诗作品`;
   if (mode.value === 'cat') return catMeta.value?.desc ?? '';
+  if (mode.value === 'all') return '所有歌曲';
   return sub.value?.desc ?? '';
 });
 /** 作者模式:头部封面用朱砂方印 */
@@ -109,12 +117,15 @@ onLoad((options) => {
   const author = options?.author;
   const subOpt = options?.sub;
   const catOpt = options?.cat;
+  const allOpt = options?.all;
   if (typeof author === 'string' && author) {
     mode.value = 'author';
     authorName.value = author;
   } else if (typeof catOpt === 'string' && catOpt) {
     mode.value = 'cat';
     catId.value = catOpt;
+  } else if (typeof allOpt === 'string' && allOpt) {
+    mode.value = 'all';
   } else if (typeof subOpt === 'string' && subOpt) {
     mode.value = 'sub';
     subId.value = subOpt;
