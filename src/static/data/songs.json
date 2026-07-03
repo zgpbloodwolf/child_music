@@ -1964,72 +1964,25 @@
       "name": "古诗",
       "icon": "📜",
       "desc": "唐诗宋词,启蒙经典",
-      "count": 7
+      "count": 0
     },
     "poetry-tang": {
       "_info": {
         "name": "唐诗",
         "icon": "🏯",
         "desc": "李白、杜甫等名家",
-        "count": 3
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "gs001",
-          "name": "咏鹅",
-          "artist": "骆宾王",
-          "cover": "/static/covers/gs001.jpg",
-          "src": "/static/audio/gs001.mp3",
-          "album": "唐诗",
-          "lyric": "[00:00.00]咏鹅 · 骆宾王\n[00:03.00]鹅,鹅,鹅,\n[00:06.00]曲项向天歌。\n[00:09.00]白毛浮绿水,\n[00:12.00]红掌拨清波。"
-        },
-        {
-          "id": "gs002",
-          "name": "静夜思",
-          "artist": "李白",
-          "cover": "/static/covers/gs002.jpg",
-          "src": "/static/audio/gs002.mp3",
-          "album": "唐诗",
-          "lyric": "[00:00.00]静夜思 · 李白\n[00:04.00]床前明月光,\n[00:08.00]疑是地上霜。\n[00:12.00]举头望明月,\n[00:16.00]低头思故乡。"
-        },
-        {
-          "id": "gs003",
-          "name": "春晓",
-          "artist": "孟浩然",
-          "cover": "/static/covers/gs003.jpg",
-          "src": "/static/audio/gs003.mp3",
-          "album": "唐诗",
-          "lyric": "[00:00.00]春晓 · 孟浩然\n[00:04.00]春眠不觉晓,\n[00:08.00]处处闻啼鸟。\n[00:12.00]夜来风雨声,\n[00:16.00]花落知多少。"
-        }
-      ]
+      "songs": []
     },
     "poetry-song": {
       "_info": {
         "name": "宋词",
         "icon": "🎑",
         "desc": "苏轼、李清照",
-        "count": 2
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "gs004",
-          "name": "水调歌头",
-          "artist": "苏轼",
-          "cover": "/static/covers/gs004.jpg",
-          "src": "/static/audio/gs004.mp3",
-          "album": "宋词",
-          "lyric": "[00:00.00]水调歌头 · 苏轼\n[00:05.00]明月几时有,把酒问青天。(示例歌词)"
-        },
-        {
-          "id": "gs005",
-          "name": "如梦令",
-          "artist": "李清照",
-          "cover": "/static/covers/gs005.jpg",
-          "src": "/static/audio/gs005.mp3",
-          "album": "宋词",
-          "lyric": "[00:00.00]如梦令 · 李清照\n[00:05.00]常记溪亭日暮,沉醉不知归路。(示例歌词)"
-        }
-      ]
+      "songs": []
     },
     "poetry-five": {
       "_info": {
@@ -2045,28 +1998,9 @@
         "name": "七言绝句",
         "icon": "7️⃣",
         "desc": "二十八字的小诗",
-        "count": 2
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "gs006",
-          "name": "望庐山瀑布",
-          "artist": "李白",
-          "cover": "/static/covers/gs006.jpg",
-          "src": "/static/audio/gs006.mp3",
-          "album": "七言绝句",
-          "lyric": "[00:00.00]望庐山瀑布 · 李白\n[00:05.00]日照香炉生紫烟,遥看瀑布挂前川。(示例歌词)"
-        },
-        {
-          "id": "gs007",
-          "name": "枫桥夜泊",
-          "artist": "张继",
-          "cover": "/static/covers/gs007.jpg",
-          "src": "/static/audio/gs007.mp3",
-          "album": "七言绝句",
-          "lyric": "[00:00.00]枫桥夜泊 · 张继\n[00:05.00]月落乌啼霜满天,江枫渔火对愁眠。(示例歌词)"
-        }
-      ]
+      "songs": []
     }
   },
   "classics": {
@@ -2074,83 +2008,43 @@
       "name": "三字经",
       "icon": "📖",
       "desc": "国学启蒙经典",
-      "count": 4
+      "count": 0
     },
     "classics-sanzijing": {
       "_info": {
         "name": "三字经",
         "icon": "📖",
         "desc": "人之初,性本善",
-        "count": 1
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "szj001",
-          "name": "三字经(人之初)",
-          "artist": "王应麟",
-          "cover": "/static/covers/szj001.jpg",
-          "src": "/static/audio/szj001.mp3",
-          "album": "国学经典",
-          "lyric": "[00:00.00]三字经 · 王应麟\n[00:04.00]人之初,性本善。\n[00:08.00]性相近,习相远。\n[00:12.00]苟不教,性乃迁。\n[00:16.00]教之道,贵以专。"
-        }
-      ]
+      "songs": []
     },
     "classics-dizigui": {
       "_info": {
         "name": "弟子规",
         "icon": "📚",
         "desc": "弟子规,圣人训",
-        "count": 1
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "dzg001",
-          "name": "弟子规(总叙)",
-          "artist": "李毓秀",
-          "cover": "/static/covers/dzg001.jpg",
-          "src": "/static/audio/dzg001.mp3",
-          "album": "国学经典",
-          "lyric": "[00:00.00]弟子规 · 李毓秀\n[00:04.00]弟子规,圣人训。\n[00:08.00]首孝悌,次谨信。(示例歌词)"
-        }
-      ]
+      "songs": []
     },
     "classics-baijia": {
       "_info": {
         "name": "百家姓",
         "icon": "📝",
         "desc": "赵钱孙李",
-        "count": 1
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "bjx001",
-          "name": "百家姓",
-          "artist": "佚名",
-          "cover": "/static/covers/bjx001.jpg",
-          "src": "/static/audio/bjx001.mp3",
-          "album": "国学经典",
-          "lyric": "[00:00.00]百家姓\n[00:04.00]赵钱孙李,周吴郑王。(示例歌词)"
-        }
-      ]
+      "songs": []
     },
     "classics-qianzi": {
       "_info": {
         "name": "千字文",
         "icon": "📜",
         "desc": "天地玄黄",
-        "count": 1
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "qzw001",
-          "name": "千字文",
-          "artist": "周兴嗣",
-          "cover": "/static/covers/qzw001.jpg",
-          "src": "/static/audio/qzw001.mp3",
-          "album": "国学经典",
-          "lyric": "[00:00.00]千字文 · 周兴嗣\n[00:04.00]天地玄黄,宇宙洪荒。(示例歌词)"
-        }
-      ]
+      "songs": []
     }
   },
   "story": {
@@ -2158,111 +2052,43 @@
       "name": "故事",
       "icon": "📚",
       "desc": "睡前童话与寓言",
-      "count": 8
+      "count": 0
     },
     "story-fable": {
       "_info": {
         "name": "寓言故事",
         "icon": "🦊",
         "desc": "小故事大道理",
-        "count": 2
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "story001",
-          "name": "龟兔赛跑",
-          "artist": "伊索寓言",
-          "cover": "/static/covers/story001.jpg",
-          "src": "/static/audio/story001.mp3",
-          "album": "寓言故事"
-        },
-        {
-          "id": "story002",
-          "name": "狼来了",
-          "artist": "伊索寓言",
-          "cover": "/static/covers/story002.jpg",
-          "src": "/static/audio/story002.mp3",
-          "album": "寓言故事"
-        }
-      ]
+      "songs": []
     },
     "story-fairy": {
       "_info": {
         "name": "童话故事",
         "icon": "🏰",
         "desc": "奇幻的童话世界",
-        "count": 2
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "story003",
-          "name": "白雪公主",
-          "artist": "格林童话",
-          "cover": "/static/covers/story003.jpg",
-          "src": "/static/audio/story003.mp3",
-          "album": "童话故事"
-        },
-        {
-          "id": "story004",
-          "name": "灰姑娘",
-          "artist": "格林童话",
-          "cover": "/static/covers/story004.jpg",
-          "src": "/static/audio/story004.mp3",
-          "album": "童话故事"
-        }
-      ]
+      "songs": []
     },
     "story-idiom": {
       "_info": {
         "name": "成语故事",
         "icon": "💡",
         "desc": "学成语懂历史",
-        "count": 2
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "story005",
-          "name": "守株待兔",
-          "artist": "成语故事",
-          "cover": "/static/covers/story005.jpg",
-          "src": "/static/audio/story005.mp3",
-          "album": "成语故事"
-        },
-        {
-          "id": "story006",
-          "name": "亡羊补牢",
-          "artist": "成语故事",
-          "cover": "/static/covers/story006.jpg",
-          "src": "/static/audio/story006.mp3",
-          "album": "成语故事"
-        }
-      ]
+      "songs": []
     },
     "story-myth": {
       "_info": {
         "name": "神话故事",
         "icon": "🐉",
         "desc": "古老的神话传说",
-        "count": 2
+        "count": 0
       },
-      "songs": [
-        {
-          "id": "story007",
-          "name": "盘古开天",
-          "artist": "神话故事",
-          "cover": "/static/covers/story007.jpg",
-          "src": "/static/audio/story007.mp3",
-          "album": "神话故事"
-        },
-        {
-          "id": "story008",
-          "name": "嫦娥奔月",
-          "artist": "神话故事",
-          "cover": "/static/covers/story008.jpg",
-          "src": "/static/audio/story008.mp3",
-          "album": "神话故事"
-        }
-      ]
+      "songs": []
     }
   }
 }
