@@ -4,13 +4,16 @@ import type { Song } from '@/types/song';
 import { PlayMode } from '@/types/song';
 import { getRepository } from '@/repository';
 import { useHistoryStore } from '@/store/history';
+import { createAudioManager } from '@/utils/audio';
+import type { AudioManager } from '@/utils/audio';
 
 /**
  * 播放器 store —— 全应用播放逻辑的单一数据源。
  *
  * 约定(见 CLAUDE.md 第 4 节):
- * - 统一使用 uni.getBackgroundAudioManager()(支持后台播放、锁屏控制、系统通知栏);
- * - 修改 title / singer / coverImgUrl / src 通过 loadSong 集中处理;
+ * - 通过 AudioManager(@/utils/audio)收敛底层播放器:App/小程序用 backgroundAudioManager
+ *   (支持后台播放、锁屏控制、系统通知栏),H5 无该 API,降级为 innerAudioContext;
+ * - 修改 title / singer / coverImgUrl / src 通过 loadSong 集中处理(setMeta + src);
  * - 监听器只绑定一次,避免重复回调;
  * - 进度跳转用 seek,UI 进度条拖动需自行节流(≥250ms)。
  *
@@ -20,8 +23,8 @@ import { useHistoryStore } from '@/store/history';
  * 增强功能:播放错误提示、倍速播放、定时关闭(哄睡)、记录播放历史。
  */
 
-/** 背景音频管理器(模块级单例) */
-let bgAudioManager: UniApp.BackgroundAudioManager | null = null;
+/** 音频控制器(模块级单例;H5 为 innerAudioContext,App/小程序为背景音频管理器) */
+let manager: AudioManager | null = null;
 /** 监听器是否已绑定,避免重复绑定导致多次回调 */
 let listenersBound = false;
 /** 定时器句柄(模块级,避免重复绑定丢失) */
@@ -31,12 +34,10 @@ const repo = getRepository();
 /** 加载序号:每次发起切歌自增,用于丢弃被取代的异步 getDetail 结果(防竞态) */
 let loadSeq = 0;
 
-/** 获取/创建背景音频管理器单例 */
-function getManager(): UniApp.BackgroundAudioManager {
-  if (!bgAudioManager) {
-    bgAudioManager = uni.getBackgroundAudioManager();
-  }
-  return bgAudioManager;
+/** 获取/创建音频控制器单例(平台差异收敛在 createAudioManager 内) */
+function getManager(): AudioManager {
+  if (!manager) manager = createAudioManager();
+  return manager;
 }
 
 /** 可选倍速档位 */
@@ -101,12 +102,10 @@ export const usePlayerStore = defineStore('player', () => {
     listenersBound = true;
   }
 
-  /** 装载某首歌到管理器(设置 src 即触发播放) */
+  /** 装载某首歌到控制器(设置元数据 + src 并触发播放) */
   function loadSong(song: Song) {
     const m = getManager();
-    m.title = song.name;
-    m.singer = song.artist;
-    m.coverImgUrl = song.cover;
+    m.setMeta({ title: song.name, singer: song.artist, cover: song.cover });
     m.src = song.src;
     m.playbackRate = playbackRate.value; // 切歌后保持当前倍速
     currentSong.value = song;
@@ -115,6 +114,8 @@ export const usePlayerStore = defineStore('player', () => {
     error.value = null;
     // 记录播放历史(最近播放 / 继续听)
     useHistory.add(song.id);
+    // 显式触发播放:innerAudioContext / H5 端设 src 不会自动起播,需手动 play
+    m.play();
   }
 
   /** 播放结束:依据播放模式决定下一步 */
