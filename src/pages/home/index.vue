@@ -43,6 +43,11 @@ function play(song: SongMeta) {
   player.playSong(song.id, allIds.value);
 }
 
+/** 全部播放:以全部音频为队列,从第一首开始 */
+function playAll() {
+  if (allIds.value.length) player.playList(allIds.value, 0);
+}
+
 /** 跳转搜索页 */
 function goSearch() {
   uni.navigateTo({ url: '/pages/search/index' });
@@ -98,7 +103,10 @@ function goSearch() {
 
       <!-- 全部音频(无序号,按原型) -->
       <view class="section">
-        <text class="section-title">全部音频</text>
+        <view class="all-head">
+          <text class="section-title">全部音频</text>
+          <text class="play-all" @click="playAll">▶ 播放全部({{ allSongs.length }} 首)</text>
+        </view>
         <view class="song-list">
           <SongItem
             v-for="song in allSongs"
@@ -198,6 +206,22 @@ function goSearch() {
   font-size: 32rpx;
   font-weight: bold;
   color: $text-main;
+}
+/* 「全部音频」标题行:标题在左、播放全部在右(裸 .section-title 不受影响) */
+.all-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 24rpx;
+  margin-bottom: 20rpx;
+}
+.all-head .section-title {
+  padding: 0;
+  margin: 0;
+}
+.play-all {
+  font-size: 26rpx;
+  color: $primary;
 }
 .h-scroll {
   white-space: nowrap;

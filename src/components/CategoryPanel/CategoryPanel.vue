@@ -143,7 +143,7 @@ function playAll() {
         'play-all--moon': theme === 'story',
       }"
       @click="playAll"
-    >▶ 全部播放({{ totalCount }} 首)</view>
+    >▶ 播放全部({{ totalCount }} 首)</view>
 
     <!-- ===== 古诗:类型/作者双面板 ===== -->
     <template v-if="isPoetry">

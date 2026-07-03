@@ -135,7 +135,7 @@ function playAll() {
       </view>
     </view>
 
-    <view class="play-all" @click="playAll">▶ 播放全部</view>
+    <view class="play-all" @click="playAll">▶ 播放全部({{ listSongs.length }} 首)</view>
 
     <view class="song-list">
       <SongItem
