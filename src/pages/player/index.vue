@@ -103,7 +103,6 @@ function playQueueAt(i: number) {
   <view class="player-page" :style="{ paddingTop: statusBarHeight + 'px' }">
     <view class="nav">
       <text class="nav-back" @click="goBack">↓</text>
-      <text class="nav-queue" @click="showQueue = true">≡</text>
     </view>
 
     <!-- 圆形旋转封面 + 加载指示 -->
@@ -175,6 +174,7 @@ function playQueueAt(i: number) {
       <text class="ctrl" @click="player.playPrev()">⏮</text>
       <view class="play" @click="player.togglePlay()">{{ isPlaying ? '❚❚' : '▶' }}</view>
       <text class="ctrl" @click="player.playNext()">⏭</text>
+      <text class="ctrl ctrl-queue" @click="showQueue = true">☰</text>
     </view>
 
     <!-- 播放列表弹层:点击遮罩关闭,点项切歌(不关闭,便于连续切歌) -->
@@ -219,17 +219,11 @@ function playQueueAt(i: number) {
   height: 80rpx;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 24rpx;
 }
 .nav-back {
   font-size: 44rpx;
   color: #ffffff;
-}
-.nav-queue {
-  font-size: 40rpx;
-  color: #ffffff;
-  line-height: 1;
 }
 .disc-wrap {
   position: relative;
@@ -364,6 +358,10 @@ function playQueueAt(i: number) {
 .ctrl {
   color: #ffffff;
   font-size: 26rpx;
+}
+/* 列表入口图标:与 ⏮⏭ 同行,字号略大以平衡 hamburger 笔画 */
+.ctrl-queue {
+  font-size: 40rpx;
 }
 .play {
   width: 120rpx;
