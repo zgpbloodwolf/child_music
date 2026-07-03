@@ -94,7 +94,7 @@ export const usePlayerStore = defineStore('player', () => {
     m.onWaiting(() => { isLoading.value = true; });
     m.onError((err: unknown) => {
       console.error('音频播放出错:', err);
-      error.value = '音频加载失败,请检查音频资源是否已放入 static/audio/';
+      error.value = '当前音频加载失败,请尝试播放其他歌曲';
       isLoading.value = false;
       isPlaying.value = false;
     });

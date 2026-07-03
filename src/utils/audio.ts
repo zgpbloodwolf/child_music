@@ -69,9 +69,33 @@ export function createAudioManager(): AudioManager {
 
   // #ifdef APP-PLUS || MP-WEIXIN
   const m = uni.getBackgroundAudioManager();
+
+  /**
+   * 原生资源路径归一化:backgroundAudioManager 是原生播放器,不会自动解析项目相对路径
+   * /static/...(那是 webview 的约定)。App 端需转成 _www 下绝对路径,否则触发 onError
+   * (errCode -5,无法打开数据源)。网络地址 / 协议路径 / 小程序端原样返回。
+   */
+  const norm = (u: string): string => {
+    if (!u) return u;
+    // #ifdef APP-PLUS
+    if (/^(https?:|file:|wtfile:|_www)/.test(u)) return u;
+    if (u.startsWith('/static/') || u.startsWith('static/')) {
+      const rel = u.replace(/^\/+/, '');
+      const conv = (globalThis as {
+        plus?: { io?: { convertLocalFileSystemURL?: (p: string) => string } };
+      }).plus?.io?.convertLocalFileSystemURL;
+      if (conv) {
+        try { return conv(`_www/${rel}`); } catch { /* 转换失败降级为 _www 相对路径 */ }
+      }
+      return `_www/${rel}`;
+    }
+    // #endif
+    return u;
+  };
+
   return {
     get src() { return m.src; },
-    set src(v: string) { m.src = v; },
+    set src(v: string) { m.src = norm(v); },
     get playbackRate() { return m.playbackRate ?? 1; },
     set playbackRate(v: number) { m.playbackRate = v; },
     get duration() { return m.duration ?? 0; },
@@ -90,7 +114,7 @@ export function createAudioManager(): AudioManager {
     setMeta: ({ title, singer, cover }) => {
       m.title = title;
       m.singer = singer;
-      m.coverImgUrl = cover;
+      m.coverImgUrl = norm(cover);
     },
   };
   // #endif

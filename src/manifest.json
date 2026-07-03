@@ -1,6 +1,6 @@
 {
-    "name" : "音乐",
-    "appid" : "",
+    "name" : "幼儿音乐",
+    "appid" : "__UNI__9D4728C",
     "description" : "手机端音乐播放应用(内置曲库离线播放)",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -31,7 +31,7 @@
             },
             /* ios打包配置 */
             "ios" : {
-                "UIBackgroundModes" : ["audio"]
+                "UIBackgroundModes" : [ "audio" ]
             },
             /* SDK配置 */
             "sdkConfigs" : {}
@@ -56,8 +56,9 @@
     "mp-toutiao" : {
         "usingComponents" : true
     },
-    "uniStatistics": {
-        "enable": false
+    "uniStatistics" : {
+        "enable" : false
     },
-    "vueVersion" : "3"
+    "vueVersion" : "3",
+    "fallbackLocale" : "zh-Hans"
 }

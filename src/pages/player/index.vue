@@ -168,13 +168,17 @@ function playQueueAt(i: number) {
       <text class="sub-btn" @click="openTimer">{{ timerText }}</text>
     </view>
 
-    <!-- 主控制:模式 / 上一首 / 播放暂停 / 下一首(按原型:顺序 ⏮ ▶ ⏭) -->
+    <!-- 主控制:左组(模式/上一首) · 中央播放暂停 · 右组(下一首/列表),播放键左右对称居中 -->
     <view class="main-controls">
-      <text class="ctrl" @click="player.togglePlayMode()">{{ playModeText }}</text>
-      <text class="ctrl" @click="player.playPrev()">⏮</text>
+      <view class="ctrl-side ctrl-side--left">
+        <text class="ctrl" @click="player.togglePlayMode()">{{ playModeText }}</text>
+        <text class="ctrl" @click="player.playPrev()">⏮</text>
+      </view>
       <view class="play" @click="player.togglePlay()">{{ isPlaying ? '❚❚' : '▶' }}</view>
-      <text class="ctrl" @click="player.playNext()">⏭</text>
-      <text class="ctrl ctrl-queue" @click="showQueue = true">☰</text>
+      <view class="ctrl-side ctrl-side--right">
+        <text class="ctrl" @click="player.playNext()">⏭</text>
+        <text class="ctrl ctrl-queue" @click="showQueue = true">☰</text>
+      </view>
     </view>
 
     <!-- 播放列表弹层:点击遮罩关闭,点项切歌(不关闭,便于连续切歌) -->
@@ -211,7 +215,8 @@ function playQueueAt(i: number) {
 .player-page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden; /* 固定一屏,禁止整页滚动;歌词区靠内部 scroll-view 自行滚动 */
   background: $player-bg;
   padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 }
@@ -352,8 +357,21 @@ function playQueueAt(i: number) {
 .main-controls {
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  padding: 30rpx 24rpx 0;
+  justify-content: space-between;
+  padding: 30rpx 40rpx 0;
+}
+/* 左右两组各 flex:1 等宽,使中央播放键严格水平居中 */
+.ctrl-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 56rpx;
+}
+.ctrl-side--left {
+  justify-content: flex-start;
+}
+.ctrl-side--right {
+  justify-content: flex-end;
 }
 .ctrl {
   color: #ffffff;

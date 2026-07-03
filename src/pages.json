@@ -28,7 +28,8 @@
 			"path": "pages/player/index",
 			"style": {
 				"navigationStyle": "custom",
-				"navigationBarTitleText": "播放"
+				"navigationBarTitleText": "播放",
+				"disableScroll": true
 			}
 		}
 	],
