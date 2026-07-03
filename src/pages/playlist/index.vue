@@ -136,9 +136,11 @@ onLoad((options) => {
 function playFrom(index: number) {
   if (songIds.value.length) player.playList(songIds.value, index);
 }
-/** 播放全部 */
+/** 播放全部:以当前列表为队列从头播放,并跳转播放页(进入沉浸控制) */
 function playAll() {
-  if (songIds.value.length) player.playList(songIds.value, 0);
+  if (!songIds.value.length) return;
+  player.playList(songIds.value, 0);
+  uni.navigateTo({ url: '/pages/player/index' });
 }
 </script>
 

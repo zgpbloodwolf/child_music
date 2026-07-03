@@ -1,22 +1,26 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePlayerStore } from '@/store/player';
 import { useLibraryStore } from '@/store/library';
+import { getRepository } from '@/repository';
 import { parseLyric, type LyricLine } from '@/utils/lyric';
 import { formatTime } from '@/utils/format';
 import { PlayMode } from '@/types/song';
+import type { SongMeta } from '@/types/song';
 import CoverImage from '@/components/CoverImage/CoverImage.vue';
 
 /**
  * 播放页:圆形旋转封面、歌词同步、进度、控制、收藏、倍速、定时关闭、加载/错误提示。
- * 自定义导航栏(navigationStyle: custom),深色沉浸式背景。
+ * 右上角「播放列表」入口可弹出当前队列,点选切歌。自定义导航栏(navigationStyle: custom),深色沉浸式背景。
  */
 const player = usePlayerStore();
 const library = useLibraryStore();
+const repo = getRepository();
 const {
   currentSong, isPlaying, isLoading, currentTime, duration, playMode,
   error, playbackRate, timerRemaining, timerActive,
+  playlist, currentIndex,
 } = storeToRefs(player);
 
 const statusBarHeight = ref<number>(uni.getSystemInfoSync().statusBarHeight || 20);
@@ -76,12 +80,30 @@ function openTimer() {
     },
   });
 }
+
+// ===== 播放列表弹层 =====
+/** 弹层是否展开 */
+const showQueue = ref(false);
+/** 当前队列对应的歌曲元数据(仅展示用);playlist 整体更换时才重新拉取,切歌不触发 */
+const queueSongs = ref<SongMeta[]>([]);
+watch(playlist, async (ids) => {
+  queueSongs.value = ids.length ? await repo.listByIds(ids) : [];
+}, { immediate: true });
+/** 弹层展开时自动滚到当前播放项 */
+const queueScrollInto = computed(() =>
+  showQueue.value && currentIndex.value >= 0 ? `queue-${currentIndex.value}` : '',
+);
+/** 点选队列项切歌(不关闭弹层,便于连续切歌;当前项随之高亮) */
+function playQueueAt(i: number) {
+  player.playQueueIndex(i);
+}
 </script>
 
 <template>
   <view class="player-page" :style="{ paddingTop: statusBarHeight + 'px' }">
     <view class="nav">
       <text class="nav-back" @click="goBack">↓</text>
+      <text class="nav-queue" @click="showQueue = true">≡</text>
     </view>
 
     <!-- 圆形旋转封面 + 加载指示 -->
@@ -154,6 +176,34 @@ function openTimer() {
       <view class="play" @click="player.togglePlay()">{{ isPlaying ? '❚❚' : '▶' }}</view>
       <text class="ctrl" @click="player.playNext()">⏭</text>
     </view>
+
+    <!-- 播放列表弹层:点击遮罩关闭,点项切歌(不关闭,便于连续切歌) -->
+    <view v-if="showQueue" class="queue-mask" @click="showQueue = false">
+      <view class="queue-sheet" @click.stop>
+        <view class="queue-header">
+          <text class="queue-title">播放列表</text>
+          <text class="queue-count">{{ queueSongs.length }} 首</text>
+          <text class="queue-close" @click="showQueue = false">✕</text>
+        </view>
+        <scroll-view scroll-y class="queue-scroll" :scroll-into-view="queueScrollInto" scroll-with-animation>
+          <view
+            v-for="(s, i) in queueSongs"
+            :id="`queue-${i}`"
+            :key="s.id"
+            class="queue-item"
+            :class="{ active: i === currentIndex }"
+            @click="playQueueAt(i)"
+          >
+            <text class="queue-idx">{{ i === currentIndex ? '▶' : i + 1 }}</text>
+            <view class="queue-info">
+              <text class="queue-name">{{ s.name }}</text>
+              <text class="queue-sub">{{ s.artist }}</text>
+            </view>
+          </view>
+          <view v-if="!queueSongs.length" class="queue-empty"><text>播放列表为空</text></view>
+        </scroll-view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -169,11 +219,17 @@ function openTimer() {
   height: 80rpx;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 24rpx;
 }
 .nav-back {
   font-size: 44rpx;
   color: #ffffff;
+}
+.nav-queue {
+  font-size: 40rpx;
+  color: #ffffff;
+  line-height: 1;
 }
 .disc-wrap {
   position: relative;
@@ -318,5 +374,98 @@ function openTimer() {
   background: $primary;
   color: #ffffff;
   font-size: 28rpx;
+}
+
+/* ===== 播放列表弹层(自绘,跨端安全:不用 inset,scroll-view 固定高度) ===== */
+.queue-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}
+.queue-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(28, 28, 32, 0.97);
+  border-radius: 24rpx 24rpx 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.queue-header {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx 20rpx;
+}
+.queue-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #ffffff;
+}
+.queue-count {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+.queue-close {
+  margin-left: auto;
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+.queue-scroll {
+  height: 56vh;
+}
+.queue-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 32rpx;
+}
+.queue-item.active {
+  background: rgba(255, 140, 66, 0.12);
+}
+.queue-idx {
+  width: 56rpx;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+.queue-item.active .queue-idx {
+  color: $primary;
+}
+.queue-info {
+  flex: 1;
+  min-width: 0;
+  margin-left: 16rpx;
+  display: flex;
+  flex-direction: column;
+}
+.queue-name {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.queue-item.active .queue-name {
+  color: $primary;
+  font-weight: bold;
+}
+.queue-sub {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.queue-empty {
+  padding: 80rpx 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 26rpx;
 }
 </style>

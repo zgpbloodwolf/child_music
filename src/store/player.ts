@@ -175,6 +175,17 @@ export const usePlayerStore = defineStore('player', () => {
     void playAtIndex(index);
   }
 
+  /**
+   * 切到「当前队列」的指定索引并播放(供播放页「播放列表」弹层点选用)。
+   * 与 playList 的区别:不重设队列(引用不变),仅切歌;
+   * 因此不会触发对 playlist 的 watch,避免播放页重复拉取队列元数据。
+   */
+  function playQueueIndex(index: number) {
+    if (playlist.value.length === 0) return;
+    bindListeners();
+    void playAtIndex(index);
+  }
+
   function play() {
     const m = getManager();
     if (currentSong.value && !m.src) {
@@ -270,7 +281,7 @@ export const usePlayerStore = defineStore('player', () => {
     duration, currentTime, playMode, error, playbackRate,
     timerMinutes, timerRemaining, timerActive, hasCurrent,
     // actions
-    init, playSong, playList, play, pause, togglePlay,
+    init, playSong, playList, playQueueIndex, play, pause, togglePlay,
     playPrev, playNext, togglePlayMode, seek,
     setPlaybackRate, cyclePlaybackRate, startTimer, cancelTimer,
   };
