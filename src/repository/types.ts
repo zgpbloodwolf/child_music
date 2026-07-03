@@ -1,4 +1,5 @@
 import type { Song, SongMeta } from '@/types/song';
+import type { Category, SubCategory } from '@/types/category';
 
 /**
  * Repository(曲库数据源)层的类型与接口契约定义。
@@ -56,6 +57,12 @@ export interface SongRepository {
   listAll(): Promise<SongMeta[]>;
   /** 按子分类取轻量元数据(CategoryPanel / playlist 用)。 */
   listBySub(subCategory: string): Promise<SongMeta[]>;
+  /** 取完整分类树(大类 + 子类,含 name/desc/icon;来自 songs.json,单一源)。 */
+  getCategories(): Promise<Category[]>;
+  /** 按 id 查找子分类。 */
+  findSub(subId: string): Promise<SubCategory | null>;
+  /** 子分类所属的大类 id(供歌单详情页沿用分类皮肤;无匹配返回 null)。 */
+  categoryIdOfSub(subId: string): Promise<string | null>;
   /** 启动预热(仅需 fetch 的实现如 JsonCatalog;静态实现可空操作)。 */
   warmup?(): Promise<void>;
 }

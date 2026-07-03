@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { categoryMap } from '@/data/categories';
 import { listPoetryAuthors, poetryDynasties } from '@/data/poetry';
+import type { Category } from '@/types/category';
 import { getRepository } from '@/repository';
 import { usePlayerStore } from '@/store/player';
 import { PoetryViewMode } from '@/types/poetry';
@@ -30,7 +30,7 @@ const repo = getRepository();
 /** 古诗内容视图(仅 poetry 生效);catId 变化时由父级 :key 重建自动重置 */
 const viewMode = ref<PoetryViewMode>(PoetryViewMode.BY_TYPE);
 
-const cat = computed(() => categoryMap[props.catId]);
+const cat = ref<Category | null>(null);
 const isPoetry = computed(() => props.catId === 'poetry');
 
 /** 各子类歌曲列表(subId → 列表),异步加载 */
@@ -44,7 +44,9 @@ const dynasties = ref<string[]>([]);
 
 /** 加载某大类的各子类歌曲列表 + 总数;poetry 额外加载作者 / 朝代 */
 async function loadCat(catId: string): Promise<void> {
-  const c = categoryMap[catId];
+  const cats = await repo.getCategories();
+  const c = cats.find((x) => x.id === catId) ?? null;
+  cat.value = c;
   if (!c) return;
   const lists = await Promise.all(c.subs.map((s) => repo.listBySub(s.id)));
   const map: Record<string, SongMeta[]> = {};

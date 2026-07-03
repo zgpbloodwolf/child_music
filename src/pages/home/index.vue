@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { categories } from '@/data/categories';
 import { getRepository } from '@/repository';
 import { usePlayerStore } from '@/store/player';
 import { useHistoryStore } from '@/store/history';
@@ -21,8 +20,8 @@ const history = useHistoryStore();
 const { recent } = storeToRefs(history);
 const repo = getRepository();
 
-/** 分类 tab:全部 + 四大类,点击本页切换内容(不跳转) */
-const tabs = [{ id: 'all', name: '全部' }, ...categories.map((c) => ({ id: c.id, name: c.name }))];
+/** 分类 tab:全部 + 四大类(异步加载),点击本页切换内容(不跳转) */
+const tabs = ref<Array<{ id: string; name: string }>>([{ id: 'all', name: '全部' }]);
 const currentTab = ref('all');
 
 /** 全部音频(异步加载) */
@@ -33,7 +32,9 @@ const loadingAll = ref(false);
 
 onMounted(async () => {
   loadingAll.value = true;
-  allSongs.value = await repo.listAll();
+  const [cats, all] = await Promise.all([repo.getCategories(), repo.listAll()]);
+  tabs.value = [{ id: 'all', name: '全部' }, ...cats.map((c) => ({ id: c.id, name: c.name }))];
+  allSongs.value = all;
   loadingAll.value = false;
 });
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { findSub, categoryIdOfSub } from '@/data/categories';
 import { songsOfAuthor } from '@/data/poetry';
+import type { SubCategory } from '@/types/category';
 import { getRepository } from '@/repository';
 import { usePlayerStore } from '@/store/player';
 import SongItem from '@/components/SongItem/SongItem.vue';
@@ -24,11 +24,24 @@ const mode = ref<ListMode>('sub');
 const subId = ref('');
 const authorName = ref('');
 
-/** 子分类(仅 sub 模式有值) */
-const sub = computed(() => (mode.value === 'sub' ? findSub(subId.value) : null));
+/** 子分类(仅 sub 模式有值,异步加载) */
+const sub = ref<SubCategory | null>(null);
+/** 当前皮肤主题(异步:作者模式恒 poetry,子分类模式取所属大类) */
+const theme = ref<string>('');
 
 /** 当前列表的歌曲 id(来源随 mode 变化,异步加载) */
 const songIds = ref<string[]>([]);
+
+/** 加载分类元数据(sub + theme);loadIds 依赖 sub,需先完成 */
+async function loadMeta(): Promise<void> {
+  if (mode.value === 'sub') {
+    sub.value = await repo.findSub(subId.value);
+    theme.value = (await repo.categoryIdOfSub(subId.value)) ?? '';
+  } else {
+    sub.value = null;
+    theme.value = 'poetry';
+  }
+}
 
 async function loadIds(): Promise<void> {
   if (mode.value === 'author') {
@@ -40,8 +53,11 @@ async function loadIds(): Promise<void> {
   }
 }
 
-/** mode / subId / authorName 变化时重新加载 id(onLoad 改值即触发) */
-watch([mode, subId, authorName], () => { void loadIds(); });
+/** mode / subId / authorName 变化时先加载分类元数据,再加载歌曲 id(onLoad 改值即触发) */
+watch([mode, subId, authorName], async () => {
+  await loadMeta();
+  void loadIds();
+});
 
 /** 歌曲对象列表(按 id 异步取元数据) */
 const listSongs = ref<SongMeta[]>([]);
@@ -63,11 +79,7 @@ const isAuthor = computed(() => mode.value === 'author');
 /** sub 模式:取第一首作品封面 */
 const cover = computed(() => listSongs.value[0]?.cover);
 
-/** 当前皮肤主题:作者模式恒为古诗(作者卡仅古诗大类);子分类模式取其所属大类 */
-const theme = computed(() =>
-  mode.value === 'author' ? 'poetry' : categoryIdOfSub(subId.value) ?? '',
-);
-/** 头部封面兜底色:作者用朱砂方印;子分类按所属大类映射 */
+/** 头部封面兜底色:作者用朱砂方印;子分类按所属大类映射(theme 为上方 ref) */
 const coverVariant = computed<CoverVariant>(() => {
   if (mode.value === 'author') return 'seal';
   const map: Record<string, CoverVariant> = {
