@@ -157,6 +157,11 @@ export class JsonCatalogRepository implements SongRepository {
     return this.songs.filter((s) => s.subCategory === subCategory);
   }
 
+  async listByCategory(category: string): Promise<SongMeta[]> {
+    await this.ensure();
+    return this.songs.filter((s) => s.category === category);
+  }
+
   async getCategories(): Promise<Category[]> {
     await this.ensure();
     return this.categories;

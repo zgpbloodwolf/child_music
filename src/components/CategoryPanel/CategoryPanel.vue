@@ -3,7 +3,6 @@ import { ref, computed, watch } from 'vue';
 import { listPoetryAuthors, poetryDynasties } from '@/data/poetry';
 import type { Category } from '@/types/category';
 import { getRepository } from '@/repository';
-import { usePlayerStore } from '@/store/player';
 import { PoetryViewMode } from '@/types/poetry';
 import type { PoetryAuthor } from '@/types/poetry';
 import type { SongMeta } from '@/types/song';
@@ -24,7 +23,6 @@ import type { CoverVariant } from '@/components/CoverImage/CoverImage.vue';
  * 各子类的歌曲列表 / 数量走 Repository 异步加载(分类结构静态、歌曲数据不进 bundle)。
  */
 const props = defineProps<{ catId: string }>();
-const player = usePlayerStore();
 const repo = getRepository();
 
 /** 古诗内容视图(仅 poetry 生效);catId 变化时由父级 :key 重建自动重置 */
@@ -96,10 +94,9 @@ function goSub(subId: string) {
 function goAuthor(author: string) {
   uni.navigateTo({ url: `/pages/playlist/index?author=${encodeURIComponent(author)}` });
 }
-/** 全部播放:以该大类所有音频为队列 */
-function playAll() {
-  const allIds = Object.values(subList.value).flat().map((s) => s.id);
-  if (allIds.length) player.playList(allIds, 0);
+/** 跳转到该大类的歌单页(展示全部歌曲列表,在歌单页内再播放) */
+function goCat() {
+  uni.navigateTo({ url: `/pages/playlist/index?cat=${props.catId}` });
 }
 </script>
 
@@ -142,8 +139,8 @@ function playAll() {
         'play-all--bamboo': theme === 'classics',
         'play-all--moon': theme === 'story',
       }"
-      @click="playAll"
-    >▶ 播放全部({{ totalCount }} 首)</view>
+      @click="goCat"
+    >全部歌曲({{ totalCount }} 首)</view>
 
     <!-- ===== 古诗:类型/作者双面板 ===== -->
     <template v-if="isPoetry">

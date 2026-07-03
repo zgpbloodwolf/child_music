@@ -57,6 +57,8 @@ export interface SongRepository {
   listAll(): Promise<SongMeta[]>;
   /** 按子分类取轻量元数据(CategoryPanel / playlist 用)。 */
   listBySub(subCategory: string): Promise<SongMeta[]>;
+  /** 按大类取轻量元数据(playlist 的 ?cat= 模式用)。 */
+  listByCategory(category: string): Promise<SongMeta[]>;
   /** 取完整分类树(大类 + 子类,含 name/desc/icon;来自 songs.json,单一源)。 */
   getCategories(): Promise<Category[]>;
   /** 按 id 查找子分类。 */
