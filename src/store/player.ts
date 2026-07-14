@@ -102,16 +102,29 @@ export const usePlayerStore = defineStore('player', () => {
     listenersBound = true;
   }
 
-  /** 装载某首歌到控制器(设置元数据 + src 并触发播放) */
-  function loadSong(song: Song) {
+  /**
+   * 装载某首歌到控制器(设置元数据 + src 并触发播放)。
+   * 异步:App 端需先把 _www 下音频复制到 _doc(见 utils/audio resolvePlayableSrc)。
+   * 用 loadSeq 防竞态:复制期间若已切歌,丢弃本次结果,避免覆盖最新装载。
+   */
+  async function loadSong(song: Song) {
     const m = getManager();
+    const seq = loadSeq;
+    isLoading.value = true;
+    error.value = null;
+    // App 端解析可播放路径(_www → _doc 复制);失败回退原路径,由 set src 的 norm 兜底转换
+    let playableSrc = song.src;
+    try {
+      playableSrc = await m.resolvePlayableSrc(song.src);
+    } catch (err) {
+      console.warn('解析可播放路径失败,回退原路径:', err);
+    }
+    if (seq !== loadSeq) return; // 复制期间已切歌,丢弃本次装载
     m.setMeta({ title: song.name, singer: song.artist, cover: song.cover });
-    m.src = song.src;
+    m.src = playableSrc;
     m.playbackRate = playbackRate.value; // 切歌后保持当前倍速
     currentSong.value = song;
     currentTime.value = 0;
-    isLoading.value = true;
-    error.value = null;
     // 记录播放历史(最近播放 / 继续听)
     useHistory.add(song.id);
     // 显式触发播放:innerAudioContext / H5 端设 src 不会自动起播,需手动 play
@@ -123,7 +136,7 @@ export const usePlayerStore = defineStore('player', () => {
     switch (playMode.value) {
       case PlayMode.LOOP_ONE:
         // 单曲循环重播:已有 detail,直接装载;递增 loadSeq 使任何 pending 的旧请求失效
-        if (currentSong.value) { loadSeq++; loadSong(currentSong.value); }
+        if (currentSong.value) { loadSeq++; void loadSong(currentSong.value); }
         break;
       case PlayMode.RANDOM:
         playRandom();
@@ -147,7 +160,7 @@ export const usePlayerStore = defineStore('player', () => {
     const seq = ++loadSeq;
     const song = await repo.getDetail(playlist.value[index]);
     if (seq !== loadSeq) return; // 已被更新的切歌取代,丢弃本次结果
-    if (song) loadSong(song);
+    if (song) void loadSong(song);
   }
 
   /**
@@ -189,7 +202,7 @@ export const usePlayerStore = defineStore('player', () => {
   function play() {
     const m = getManager();
     if (currentSong.value && !m.src) {
-      loadSong(currentSong.value);
+      void loadSong(currentSong.value);
       return;
     }
     m.play();

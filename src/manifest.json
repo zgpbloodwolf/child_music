@@ -31,7 +31,8 @@
             },
             /* ios打包配置 */
             "ios" : {
-                "UIBackgroundModes" : [ "audio" ]
+                "UIBackgroundModes" : [ "audio" ],
+                "dSYMs" : false
             },
             /* SDK配置 */
             "sdkConfigs" : {}
