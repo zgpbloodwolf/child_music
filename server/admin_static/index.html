@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>儿童音乐 · 后台管理</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; background: #f5f5f7; color: #222; }
+    header { background: #ff8c42; color: #fff; padding: 14px 20px; font-size: 18px; font-weight: 600; }
+    .wrap { max-width: 960px; margin: 16px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    h2 { font-size: 16px; margin: 0 0 12px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    label { display: block; font-size: 13px; color: #666; margin: 8px 0 4px; }
+    input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    textarea { min-height: 60px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    button { background: #ff8c42; color: #fff; border: none; border-radius: 6px; padding: 9px 16px; font-size: 14px; cursor: pointer; }
+    button:hover { background: #f07a2d; }
+    button.ghost { background: #eee; color: #333; }
+    button.danger { background: #e0533d; }
+    .muted { color: #999; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #f0f0f0; }
+    .msg { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-top: 10px; display: none; }
+    .msg.ok { background: #e7f7ec; color: #1f8a4c; display: block; }
+    .msg.err { background: #fdecea; color: #c0392b; display: block; }
+    audio { width: 100%; height: 30px; }
+  </style>
+</head>
+<body>
+  <header>儿童音乐 · 后台管理</header>
+  <div class="wrap">
+    <div class="card">
+      <h2>鉴权</h2>
+      <label>管理 Token(对应 .env 的 ADMIN_TOKEN)</label>
+      <input id="token" type="password" placeholder="粘贴管理 token" />
+      <p class="muted">token 仅存在本浏览器 localStorage,所有写操作会带 Authorization 头。</p>
+    </div>
+
+    <div class="card">
+      <h2>上传新歌曲</h2>
+      <div class="row">
+        <div>
+          <label>音频文件(必填,mp3/m4a 等)</label>
+          <input id="audio" type="file" accept="audio/*" />
+        </div>
+        <div>
+          <label>封面图(可选)</label>
+          <input id="cover" type="file" accept="image/*" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>歌曲 id(字母数字下划线短横,必填)</label>
+          <input id="id" placeholder="如 gs999" />
+        </div>
+        <div>
+          <label>歌名(必填)</label>
+          <input id="name" placeholder="如 小星星" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>作者/来源(必填)</label>
+          <input id="artist" placeholder="如 经典儿歌" />
+        </div>
+        <div>
+          <label>专辑(可选)</label>
+          <input id="album" placeholder="可选" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>大类</label>
+          <select id="category"></select>
+        </div>
+        <div>
+          <label>子类</label>
+          <select id="sub"></select>
+        </div>
+      </div>
+      <label>歌词(lrc,可选)</label>
+      <textarea id="lyric" placeholder="[00:00.00] 歌词..."></textarea>
+      <div style="margin-top:12px"><button id="uploadBtn">上传</button></div>
+      <div id="uploadMsg" class="msg"></div>
+    </div>
+
+    <div class="card">
+      <h2>歌曲列表<button class="ghost" id="refreshBtn" style="float:right">刷新</button></h2>
+      <table>
+        <thead><tr><th>id</th><th>歌名</th><th>作者</th><th>子类</th><th>试听</th><th>操作</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+  // 应用前缀(自动识别 /childmusic 或根),适配反代子路径部署
+  const BASE = location.pathname.replace(/\/admin\/?$/, "") || "";
+  const tokenEl = document.getElementById("token");
+  tokenEl.value = localStorage.getItem("admin_token") || "";
+  tokenEl.addEventListener("change", () => localStorage.setItem("admin_token", tokenEl.value.trim()));
+  const token = () => tokenEl.value.trim();
+  const api = (path, opts = {}) => fetch(BASE + path, { ...opts, headers: { ...(opts.headers || {}), Authorization: "Bearer " + token() } });
+
+  function showMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = "msg " + (ok ? "ok" : "err");
+  }
+
+  let categories = [];
+  async function loadCategories() {
+    const res = await fetch(BASE + "/api/categories");
+    categories = await res.json();
+    const catSel = document.getElementById("category");
+    catSel.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    catSel.onchange = renderSubs;
+    renderSubs();
+  }
+  function renderSubs() {
+    const catId = document.getElementById("category").value;
+    const cat = categories.find(c => c.id === catId) || { subs: [] };
+    document.getElementById("sub").innerHTML = (cat.subs || []).map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  }
+
+  document.getElementById("uploadBtn").onclick = async () => {
+    const msg = document.getElementById("uploadMsg");
+    const fd = new FormData();
+    const audio = document.getElementById("audio").files[0];
+    if (!audio) return showMsg(msg, "请选择音频文件", false);
+    fd.append("audio", audio);
+    const cover = document.getElementById("cover").files[0];
+    if (cover) fd.append("cover", cover);
+    fd.append("id", document.getElementById("id").value.trim());
+    fd.append("name", document.getElementById("name").value.trim());
+    fd.append("artist", document.getElementById("artist").value.trim());
+    fd.append("album", document.getElementById("album").value.trim());
+    fd.append("category_id", document.getElementById("category").value);
+    fd.append("sub_category_id", document.getElementById("sub").value);
+    fd.append("lyric", document.getElementById("lyric").value);
+    try {
+      const res = await api("/api/admin/songs", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) return showMsg(msg, data.detail || "上传失败", false);
+      showMsg(msg, "上传成功:" + data.name + "  时长 " + (data.duration ? Math.round(data.duration) + "s" : "未知"), true);
+      loadSongs();
+    } catch (e) { showMsg(msg, "请求出错:" + e.message, false); }
+  };
+
+  async function loadSongs() {
+    const res = await fetch(BASE + "/api/songs");
+    const list = await res.json();
+    const tb = document.getElementById("tbody");
+    tb.innerHTML = (list.items || list).map(s => `
+      <tr>
+        <td>${s.id}</td><td>${s.name}</td><td>${s.artist}</td><td>${s.subCategory || "-"}</td>
+        <td>${s.src ? `<audio src="${s.src}" controls preload="none"></audio>` : "-"}</td>
+        <td><button class="danger" data-id="${s.id}">删除</button></td>
+      </tr>`).join("");
+    tb.querySelectorAll("button.danger").forEach(b => b.onclick = async () => {
+      if (!confirm("确认删除 " + b.dataset.id + "?")) return;
+      const res = await api("/api/admin/songs/" + b.dataset.id, { method: "DELETE" });
+      if (res.ok) loadSongs(); else alert("删除失败");
+    });
+  }
+
+  document.getElementById("refreshBtn").onclick = loadSongs;
+  loadCategories();
+  loadSongs();
+</script>
+</body>
+</html>

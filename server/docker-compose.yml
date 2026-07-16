@@ -1,0 +1,39 @@
+# 儿童音乐后端 —— Docker Compose(CasaOS 可直接导入管理)
+#
+# 使用步骤:
+#   1. 准备源数据(首次导入用):把 src/static/library/ 与 src/static/data/songs.json
+#      放到 ./volumes/source/ ,结构为:
+#        volumes/source/songs.json
+#        volumes/source/library/children/classic/cn002.mp3 ...
+#   2. 编辑下方 ADMIN_TOKEN 改为强随机串(默认值会被服务拒绝)
+#   3. docker compose up -d --build
+#   4. 首次导入曲库(只需一次):
+#        docker compose exec childmusic python scripts/migrate_from_json.py
+#   5. CasaOS「应用」列表会自动出现 childmusic 容器,可启停/查看日志。
+#      Nginx Proxy Manager 把 /childmusic 转发到 宿主机IP:8823。
+
+services:
+  childmusic:
+    build: .
+    image: childmusic-backend:1.0.0
+    container_name: childmusic
+    restart: unless-stopped
+    ports:
+      - "8823:8823"
+    volumes:
+      # 持久化(容器重建不丢):音频/封面、SQLite 数据库
+      - ./volumes/storage:/app/storage
+      - ./volumes/db:/app/data
+      # 源数据(只读,仅首次迁移导入用;导入后可移除)
+      - ./volumes/source:/source:ro
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8823"
+      ROOT_PATH: "/childmusic"
+      # 公网基础 URL(拼接音频/封面完整地址),按实际反代地址改
+      PUBLIC_BASE_URL: "http://zgp.vip.cpolar.cn/childmusic"
+      ADMIN_TOKEN: "change-me-to-a-strong-random-string"   # 务必改为强随机串
+      CORS_ORIGINS: "*"
+      # 迁移脚本源数据路径(指向只读挂载)
+      SOURCE_SONGS_JSON: "/source/songs.json"
+      SOURCE_LIBRARY_ROOT: "/source"

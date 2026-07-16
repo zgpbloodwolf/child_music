@@ -21,3 +21,12 @@ dist
 *.sw?
 resource/
 src/static/library/
+.hbuilderx/launch.json
+
+# 后端服务(server/)
+server/.env
+server/.venv/
+server/storage/
+server/data/
+server/**/__pycache__/
+server/**/*.pyc
