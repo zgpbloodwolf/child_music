@@ -10,8 +10,9 @@ ENV LANG=C.UTF-8 \
     PYTHONUNBUFFERED=1
 
 # 先装依赖(利用 Docker 层缓存:代码变更不触发重装)
+# 用清华 PyPI 镜像加速国内下载(ARM 构建明显提速)
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 # 拷贝应用代码
 COPY app/ ./app/
