@@ -215,6 +215,7 @@ function playQueueAt(i: number) {
 .player-page {
   display: flex;
   flex-direction: column;
+  box-sizing: border-box; /* padding 计入 100vh,避免叠加状态栏/安全区后整页溢出可拉动 */
   height: 100vh;
   overflow: hidden; /* 固定一屏,禁止整页滚动;歌词区靠内部 scroll-view 自行滚动 */
   background: $player-bg;
