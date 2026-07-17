@@ -37,7 +37,11 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "音乐",
 		"navigationBarBackgroundColor": "#ffffff",
-		"backgroundColor": "#f5f5f7"
+		"backgroundColor": "#f5f5f7",
+		// App 端 WebView 关闭页面边界回弹(橡皮筋),避免滑动到顶/底时整个页面跟着晃动
+		"app-plus": {
+			"bounce": "none"
+		}
 	},
 	"tabBar": {
 		"color": "#999999",

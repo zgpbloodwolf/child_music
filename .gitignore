@@ -12,6 +12,9 @@ node_modules
 dist
 *.local
 
+# 环境变量(本地/线上后端地址各自填写,不入库;模板见 .env.example)
+.env
+
 # Editor directories and files
 .idea
 *.suo

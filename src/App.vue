@@ -17,5 +17,7 @@ page {
   background-color: $bg-page;
   color: $text-main;
   font-size: 28rpx;
+  /* 关闭页面滚到边界时的橡皮筋回弹,避免手机滑动时整个页面跟着晃动(H5 / 小程序端生效) */
+  overscroll-behavior: none;
 }
 </style>
