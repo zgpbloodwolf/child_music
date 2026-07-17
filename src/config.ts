@@ -9,12 +9,13 @@
  *  - local:本机联调(连接本机后端 127.0.0.1:8823)
  *  - online:线上公网地址(经 Nginx Proxy Manager 暴露) */
 export type AppEnv = 'local' | 'online';
-export const APP_ENV: AppEnv = 'online';
+export const APP_ENV: AppEnv = 'local';
 
 /** 各环境的后端基础地址(含反向代理子路径前缀 /childmusic) */
 const API_BASE_URLS: Record<AppEnv, string> = {
   local: 'http://127.0.0.1:8823/childmusic',
-  online: 'http://zgp.vip.cpolar.cn/childmusic',
+  // 上线前替换为真实公网地址(经 Nginx Proxy Manager 暴露的 HTTPS 入口)
+  online: 'https://your-domain.example.com/childmusic',
 };
 
 /** 后端服务基础地址:元数据请求与音频/封面文件 URL 均基于此拼接 */

@@ -26,7 +26,8 @@ class Settings(BaseSettings):
     root_path: str = "/childmusic"
 
     # 公网基础 URL(拼接 cover/src 的完整 URL)
-    public_base_url: str = "http://zgp.vip.cpolar.cn/childmusic"
+    # 默认指向本机回环(仅本机联调用);生产务必在 .env 用 PUBLIC_BASE_URL 覆盖为真实公网地址
+    public_base_url: str = "http://127.0.0.1:8823/childmusic"
 
     # 文件存储根目录(相对 BASE_DIR)
     storage_root: Path = Path("storage")

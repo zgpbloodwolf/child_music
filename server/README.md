@@ -9,7 +9,7 @@
 App / H5 / 小程序
    │  uni.request(元数据) + backgroundAudioManager(网络流) + uni.downloadFile(缓存)
    ▼
-Nginx Proxy Manager:  zgp.vip.cpolar.cn/childmusic/*  ──►  192.168.50.88:8823/*
+Nginx Proxy Manager:  your-domain.example.com/childmusic/*  ──►  192.168.x.x:8823/*
    ▼
 FastAPI 后端(本服务,监听 0.0.0.0:8823)
    ├── /api/*        元数据查询 + /api/admin/* 管理(需 token)
@@ -67,7 +67,7 @@ python run.py
 | --- | --- | --- |
 | HOST / PORT | 0.0.0.0 / 8823 | 监听地址端口 |
 | ROOT_PATH | /childmusic | 反向代理子路径前缀 |
-| PUBLIC_BASE_URL | http://zgp.vip.cpolar.cn/childmusic | 拼接 cover/src 完整 URL 的公网基础地址 |
+| PUBLIC_BASE_URL | http://your-domain.example.com/childmusic | 拼接 cover/src 完整 URL 的公网基础地址 |
 | STORAGE_ROOT | storage | 音频存储根(相对 server/) |
 | DB_PATH | data/music.db | SQLite 路径(相对 server/) |
 | ADMIN_TOKEN | change-me-… | 管理接口 token(**上线务必改为强随机串**) |
@@ -121,14 +121,14 @@ sqlite3 data/music.db "SELECT sub_category_id, COUNT(*) FROM songs GROUP BY sub_
 后端内置 `StripPrefixMiddleware`,**兼容 Nginx 去前缀与保留前缀两种转发**。NPM 推荐用 Custom Location:
 
 1. Proxy Hosts → 新建 Proxy Host:
-   - Domain Names:`zgp.vip.cpolar.cn`
-   - Forward Hostname / IP:`192.168.50.88`,Forward Port:`8823`
+   - Domain Names:`your-domain.example.com`
+   - Forward Hostname / IP:`192.168.x.x`,Forward Port:`8823`
 2. Custom Locations 添加:
    - Define location:`/childmusic`
-   - Forward Hostname / IP:`192.168.50.88`,Forward Port:`8823`
+   - Forward Hostname / IP:`192.168.x.x`,Forward Port:`8823`
 
 NPM 默认保留 `/childmusic` 前缀转发到后端,后端中间件自动剥除,路由正常命中,无需手动 rewrite。
-公网访问即 `http://zgp.vip.cpolar.cn/childmusic/api/categories`、`.../library/children/classic/cn002.mp3`。
+公网访问即 `http://your-domain.example.com/childmusic/api/categories`、`.../library/children/classic/cn002.mp3`。
 
 > 缓存:建议在 NPM 对 `/library/` 路径加响应头 `Cache-Control: public, max-age=604800`(音频文件不可变)。
 
@@ -190,14 +190,14 @@ docker compose exec childmusic python scripts/migrate_from_json.py
 ### 5. CasaOS 管理
 - 启动后 CasaOS「应用」列表会自动出现 `childmusic` 容器,可启停、查看日志。
 - 也可在 CasaOS「自定义应用」中用本目录的 `docker-compose.yml` 导入。
-- Nginx Proxy Manager 把 `/childmusic` 转发到 `192.168.50.88:8823`(宿主机端口,见 compose 的 `ports` 映射)。
+- Nginx Proxy Manager 把 `/childmusic` 转发到 `192.168.x.x:8823`(宿主机端口,见 compose 的 `ports` 映射)。
 
 > 备份:只需备份 `volumes/storage` 与 `volumes/db` 两个目录;`volumes/source` 导入后可删。
 > 升级代码:`docker compose up -d --build`(数据卷不受影响)。
 
 ## 跨端注意事项
 
-- **微信小程序(阻塞)**:小程序生产强制 HTTPS。`http://zgp.vip.cpolar.cn` 需有 HTTPS 入口才能用于小程序;并在公众平台配置 `request`、`downloadFile` 合法域名。App / H5 无此限制。
+- **微信小程序(阻塞)**:小程序生产强制 HTTPS。`http://your-domain.example.com` 需有 HTTPS 入口才能用于小程序;并在公众平台配置 `request`、`downloadFile` 合法域名。App / H5 无此限制。
 - **H5**:依赖后端 CORS(已配置);开发期 `CORS_ORIGINS=*`,生产收敛到具体域名。
 - **App 端**:`INTERNET` 权限默认有;backgroundAudioManager 原生支持网络流播放(后台/锁屏/Range)。
 - **封面**:现有数据无封面图,`cover` 返回的 URL 会 404,前端用色块兜底;可通过管理页或 `/api/admin/songs/{id}/cover` 补传。

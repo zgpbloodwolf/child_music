@@ -31,7 +31,7 @@ services:
       PORT: "8823"
       ROOT_PATH: "/childmusic"
       # 公网基础 URL(拼接音频/封面完整地址),按实际反代地址改
-      PUBLIC_BASE_URL: "http://zgp.vip.cpolar.cn/childmusic"
+      PUBLIC_BASE_URL: "https://your-domain.example.com/childmusic"
       ADMIN_TOKEN: "change-me-to-a-strong-random-string"   # 务必改为强随机串
       CORS_ORIGINS: "*"
       # 迁移脚本源数据路径(指向只读挂载)
