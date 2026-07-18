@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import { usePlayerStore } from '@/store/player';
+import { isTabBarPage } from '@/utils/page';
 import CoverImage from '@/components/CoverImage/CoverImage.vue';
 
 /**
  * 底部迷你播放条:仅当有歌曲装载时显示。
- * 点击整体跳转播放页;播放/下一首按钮单独 stop 冒泡。
+ * 点击整体跳转播放页;上一首/播放/下一首按钮单独 stop 冒泡。
+ * bottom 按当前页类型动态偏移:tabBar 页避让 tabBar,普通页贴底 + 安全区呼吸边距。
  */
 const player = usePlayerStore();
+
+/**
+ * 一次性求值(组件实例与页面绑定,同页内路由不变,无需响应式):
+ * tabBar 页避让 tabBar(100rpx,三端已验证);普通页贴底,16rpx 与左右 margin 一致。
+ */
+const bottomOffset = isTabBarPage() ? '100rpx' : 'calc(16rpx + env(safe-area-inset-bottom))';
 
 function goPlayer() {
   uni.navigateTo({ url: '/pages/player/index' });
@@ -14,7 +22,7 @@ function goPlayer() {
 </script>
 
 <template>
-  <view v-if="player.hasCurrent" class="mini-player" @click="goPlayer">
+  <view v-if="player.hasCurrent" class="mini-player" :style="{ bottom: bottomOffset }" @click="goPlayer">
     <view class="cover-wrap">
       <CoverImage :src="player.currentSong?.cover" :name="player.currentSong?.name" />
     </view>
@@ -23,6 +31,7 @@ function goPlayer() {
       <text class="sub">{{ player.currentSong?.artist }}</text>
     </view>
     <view class="ctrl">
+      <view class="btn" @click.stop="player.playPrev()">⏮</view>
       <view class="btn" @click.stop="player.togglePlay()">
         {{ player.isPlaying ? '❚❚ 暂停' : '▶ 播放' }}
       </view>
@@ -36,7 +45,6 @@ function goPlayer() {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 100rpx; /* 避让 tabBar 高度 */
   display: flex;
   align-items: center;
   margin: 0 16rpx;

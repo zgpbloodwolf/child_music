@@ -7,6 +7,7 @@ import { getRepository } from '@/repository';
 import { usePlayerStore } from '@/store/player';
 import SongItem from '@/components/SongItem/SongItem.vue';
 import CoverImage from '@/components/CoverImage/CoverImage.vue';
+import MiniPlayer from '@/components/MiniPlayer/MiniPlayer.vue';
 import type { CoverVariant } from '@/components/CoverImage/CoverImage.vue';
 import type { SongMeta } from '@/types/song';
 
@@ -181,6 +182,10 @@ function playAll() {
     <view v-if="listSongs.length === 0" class="empty">
       <text>该分类暂无音频</text>
     </view>
+
+    <!-- 给底部悬浮播放栏预留滚动空间 -->
+    <view class="bottom-pad" />
+    <MiniPlayer />
   </view>
 </template>
 
@@ -321,5 +326,8 @@ function playAll() {
 }
 .page--story .empty {
   color: $story-text-sub;
+}
+.bottom-pad {
+  height: 160rpx;
 }
 </style>

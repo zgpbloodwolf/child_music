@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 import { getRepository } from '@/repository';
 import { usePlayerStore } from '@/store/player';
 import SongItem from '@/components/SongItem/SongItem.vue';
+import MiniPlayer from '@/components/MiniPlayer/MiniPlayer.vue';
 import type { SongMeta } from '@/types/song';
 
 /**
@@ -61,6 +62,10 @@ function play(song: SongMeta) {
     <view v-else class="empty">
       <text>输入关键词搜索内置曲库</text>
     </view>
+
+    <!-- 给底部悬浮播放栏预留滚动空间 -->
+    <view class="bottom-pad" />
+    <MiniPlayer />
   </view>
 </template>
 
@@ -100,5 +105,8 @@ function play(song: SongMeta) {
   text-align: center;
   color: $text-sub;
   font-size: 26rpx;
+}
+.bottom-pad {
+  height: 160rpx;
 }
 </style>
