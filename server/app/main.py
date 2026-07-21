@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import BASE_DIR, settings
 from .database import init_db
-from .routers import admin, catalog
+from .routers import admin, catalog, version
 
 
 class StripPrefixMiddleware:
@@ -77,6 +77,7 @@ def create_app() -> FastAPI:
 
     app.include_router(catalog.router)
     app.include_router(admin.router)
+    app.include_router(version.router)
 
     # 音频/封面静态分发(StaticFiles 原生支持 Range,返回 206)
     app.mount("/library", StaticFiles(directory=settings.library_dir), name="library")

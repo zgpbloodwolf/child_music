@@ -29,6 +29,19 @@ class CamelModel(BaseModel):
 # ===== 响应模型(对齐前端契约)=====
 
 
+class VersionOut(CamelModel):
+    """App 版本信息(对齐前端 VersionInfo 契约)。
+
+    供客户端比对版本并下载整包 APK;字段经 CamelModel 自动转 camelCase 输出。
+    """
+
+    version: str  # 展示版本(versionName,如 1.0.1)
+    version_code: int  # 数值版本(派生,用于比对) → versionCode
+    download_url: str = ""  # APK 完整 URL → downloadUrl
+    release_notes: str = ""  # 更新说明 → releaseNotes
+    force_update: bool = False  # 强制更新 → forceUpdate
+
+
 class SongMetaOut(CamelModel):
     """列表/搜索用的轻量元数据(不含 src/lyric)。"""
 

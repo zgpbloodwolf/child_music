@@ -37,6 +37,16 @@ class Settings(BaseSettings):
     # 管理接口 token
     admin_token: str = "change-me-to-a-strong-random-string"
 
+    # App 整包更新配置(运维在 .env 维护,不入库;每次发版同步更新)
+    # 展示版本号(versionName,如 1.0.1),versionCode 由其派生(见 routers/version.py)
+    app_version: str = "1.0.0"
+    # APK 下载完整 URL:可填后端 /library/apk/xxx.apk(经 StaticFiles 分发)或外链(GitHub Release)
+    app_download_url: str = ""
+    # 更新说明(展示在更新弹窗内容区,\n 换行)
+    app_release_notes: str = ""
+    # 是否强制更新(为 true 时客户端弹窗不可关闭)
+    app_force_update: bool = False
+
     # CORS 白名单(逗号分隔字符串,见 cors_list 解析)
     cors_origins: str = "*"
 
