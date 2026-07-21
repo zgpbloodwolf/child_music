@@ -5,6 +5,7 @@ import { usePlayerStore } from '@/store/player';
 import SongItem from '@/components/SongItem/SongItem.vue';
 import MiniPlayer from '@/components/MiniPlayer/MiniPlayer.vue';
 import type { SongMeta } from '@/types/song';
+import { checkAppUpdateManual } from '@/utils/appUpdate';
 
 /** 我的页:展示「我喜欢的音乐」(本地持久化收藏) */
 const library = useLibraryStore();
@@ -36,6 +37,11 @@ function play(song: SongMeta) {
     <view v-else class="empty">
       <text>还没有收藏的歌曲</text>
       <text class="empty-sub">播放页点击 ♥ 即可收藏</text>
+    </view>
+
+    <view class="update-entry" @click="checkAppUpdateManual">
+      <text class="update-label">检查更新</text>
+      <text class="update-arrow">›</text>
     </view>
 
     <view class="bottom-pad" />
@@ -80,6 +86,24 @@ function play(song: SongMeta) {
   margin-top: 16rpx;
   font-size: 24rpx;
   color: $text-disable;
+}
+.update-entry {
+  margin: 16rpx 16rpx 0;
+  padding: 28rpx 24rpx;
+  background: $bg-card;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: $shadow-card;
+}
+.update-label {
+  font-size: 28rpx;
+  color: $text-main;
+}
+.update-arrow {
+  font-size: 32rpx;
+  color: $text-sub;
 }
 .bottom-pad {
   height: 160rpx;

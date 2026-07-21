@@ -2,12 +2,15 @@
 import { onLaunch } from '@dcloudio/uni-app';
 import { usePlayerStore } from '@/store/player';
 import { warmupRepository } from '@/repository';
+import { checkAppUpdate } from '@/utils/appUpdate';
 
 onLaunch(() => {
   // 应用启动时绑定播放器全局监听器(仅绑定一次,见 CLAUDE.md 第 4 节)
   usePlayerStore().init();
   // 预热曲库到内存(JsonCatalogRepository fetch songs.json);查询会自动等待预热完成
   void warmupRepository();
+  // 启动后异步检查整包更新(失败静默,不阻断启动;H5/小程序为 no-op,App 端 24h 节流)
+  void checkAppUpdate();
 });
 </script>
 
