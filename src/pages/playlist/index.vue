@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { songsOfAuthor } from '@/data/poetry';
 import type { SubCategory, Category } from '@/types/category';
 import { getRepository } from '@/repository';
@@ -37,6 +37,16 @@ const theme = ref<string>('');
 /** 当前列表的歌曲 id(来源随 mode 变化,异步加载) */
 const songIds = ref<string[]>([]);
 
+// ===== 分页加载 =====
+/** 每页加载数量 */
+const PAGE_SIZE = 30;
+/** 当前已加载页数 */
+const loadedPage = ref(0);
+/** 是否正在加载更多 */
+const loadingMore = ref(false);
+/** 是否还有更多数据 */
+const hasMore = ref(true);
+
 /** 加载分类元数据(sub + theme);loadIds 依赖 sub,需先完成 */
 async function loadMeta(): Promise<void> {
   if (mode.value === 'sub') {
@@ -71,16 +81,68 @@ async function loadIds(): Promise<void> {
   }
 }
 
+/** 加载第一页数据 */
+async function loadFirstPage(): Promise<void> {
+  loadedPage.value = 0;
+  hasMore.value = true;
+  listSongs.value = [];
+
+  const pageIds = songIds.value.slice(0, PAGE_SIZE);
+  if (pageIds.length === 0) {
+    hasMore.value = false;
+    return;
+  }
+
+  listSongs.value = await repo.listByIds(pageIds);
+  loadedPage.value = 1;
+
+  // 如果总数据不足一页,标记没有更多
+  if (songIds.value.length <= PAGE_SIZE) {
+    hasMore.value = false;
+  }
+}
+
+/** 加载更多数据(下一页) */
+async function loadMore(): Promise<void> {
+  if (loadingMore.value || !hasMore.value) return;
+
+  const start = loadedPage.value * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const pageIds = songIds.value.slice(start, end);
+
+  if (pageIds.length === 0) {
+    hasMore.value = false;
+    return;
+  }
+
+  loadingMore.value = true;
+  try {
+    const newSongs = await repo.listByIds(pageIds);
+    listSongs.value = [...listSongs.value, ...newSongs];
+    loadedPage.value++;
+
+    // 检查是否还有更多
+    if (end >= songIds.value.length) {
+      hasMore.value = false;
+    }
+  } finally {
+    loadingMore.value = false;
+  }
+}
+
 /** mode / subId / authorName 变化时先加载分类元数据,再加载歌曲 id(onLoad 改值即触发) */
 watch([mode, subId, authorName, catId], async () => {
   await loadMeta();
-  void loadIds();
+  await loadIds();
+  await loadFirstPage();
 });
 
-/** 歌曲对象列表(按 id 异步取元数据) */
+/** 歌曲对象列表(按 id 异步取元数据,分页加载) */
 const listSongs = ref<SongMeta[]>([]);
-watch(songIds, async (newIds) => {
-  listSongs.value = await repo.listByIds(newIds);
+
+/** 触底加载更多 */
+onReachBottom(() => {
+  void loadMore();
 });
 
 /** 头部标题:sub 取子分类名,author 取作者名,cat 取大类名 */
@@ -163,11 +225,11 @@ function playAll() {
       <view class="header-info">
         <text class="title">{{ headerTitle }}</text>
         <text class="desc">{{ headerDesc }}</text>
-        <text class="count">{{ listSongs.length }} 首</text>
+        <text class="count">{{ songIds.length }} 首</text>
       </view>
     </view>
 
-    <view class="play-all" @click="playAll">▶ 播放全部({{ listSongs.length }} 首)</view>
+    <view class="play-all" @click="playAll">▶ 播放全部({{ songIds.length }} 首)</view>
 
     <view class="song-list">
       <SongItem
@@ -179,7 +241,15 @@ function playAll() {
       />
     </view>
 
-    <view v-if="listSongs.length === 0" class="empty">
+    <!-- 加载状态 -->
+    <view v-if="loadingMore" class="loading-more">
+      <text>加载中...</text>
+    </view>
+    <view v-else-if="!hasMore && listSongs.length > 0" class="no-more">
+      <text>已加载全部 {{ listSongs.length }} 首</text>
+    </view>
+
+    <view v-if="listSongs.length === 0 && !loadingMore" class="empty">
       <text>该分类暂无音频</text>
     </view>
 
@@ -246,6 +316,13 @@ function playAll() {
   color: $text-sub;
   font-size: 26rpx;
 }
+.loading-more,
+.no-more {
+  padding: 32rpx 0;
+  text-align: center;
+  color: $text-sub;
+  font-size: 24rpx;
+}
 
 /* ===== 分类皮肤:按来源大类沿用首页风格(字面量 class,避免 scoped + 小程序丢哈希) ===== */
 .page--children {
@@ -263,7 +340,9 @@ function playAll() {
   box-shadow: 0 8rpx 20rpx rgba($children-accent, 0.35);
   font-weight: bold;
 }
-.page--children .empty {
+.page--children .empty,
+.page--children .loading-more,
+.page--children .no-more {
   color: $children-text-sub;
 }
 
@@ -282,7 +361,9 @@ function playAll() {
   background: $poetry-ink;
   color: $poetry-paper;
 }
-.page--poetry .empty {
+.page--poetry .empty,
+.page--poetry .loading-more,
+.page--poetry .no-more {
   color: $poetry-ink-sub;
 }
 
@@ -303,7 +384,9 @@ function playAll() {
   background: $classics-accent;
   color: $classics-bg-start;
 }
-.page--classics .empty {
+.page--classics .empty,
+.page--classics .loading-more,
+.page--classics .no-more {
   color: $classics-text-sub;
 }
 
@@ -324,7 +407,9 @@ function playAll() {
   box-shadow: 0 8rpx 20rpx rgba($story-accent, 0.3);
   font-weight: bold;
 }
-.page--story .empty {
+.page--story .empty,
+.page--story .loading-more,
+.page--story .no-more {
   color: $story-text-sub;
 }
 .bottom-pad {
