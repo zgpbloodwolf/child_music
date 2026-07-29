@@ -22,12 +22,12 @@ class Settings(BaseSettings):
     # 监听
     host: str = "0.0.0.0"
     port: int = 8823
-    # 反向代理子路径前缀(公网 .../childmusic)
-    root_path: str = "/childmusic"
+    # 反向代理子路径前缀(公网 .../cmusic)
+    root_path: str = "/cmusic"
 
     # 公网基础 URL(拼接 cover/src 的完整 URL)
     # 默认指向本机回环(仅本机联调用);生产务必在 .env 用 PUBLIC_BASE_URL 覆盖为真实公网地址
-    public_base_url: str = "http://127.0.0.1:8823/childmusic"
+    public_base_url: str = "http://127.0.0.1:8823/cmusic"
 
     # 文件存储根目录(相对 BASE_DIR)
     storage_root: Path = Path("storage")

@@ -1,0 +1,16 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "手机端音乐应用(`src/`)的音频/封面文件分发 + 曲库元数据 + 管理后端。 把原本打包进 App 的 729MB 音频剥离到本服务,App 改为在线播放(默认)+ 下载缓存离线。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "form-data": "^4.0.6",
+    "node-fetch": "^2.7.0"
+  }
+}
