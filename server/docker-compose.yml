@@ -5,12 +5,14 @@
 #      放到 ./volumes/source/ ,结构为:
 #        volumes/source/songs.json
 #        volumes/source/library/children/classic/cn002.mp3 ...
-#   2. 编辑下方 ADMIN_TOKEN 改为强随机串(默认值会被服务拒绝)
+#   2. 在本目录创建 .env 文件,填写敏感配置(不会提交到 git):
+#        PUBLIC_BASE_URL=http://your-domain.com/cmusic
+#        ADMIN_TOKEN=your-strong-random-token
 #   3. docker compose up -d --build
 #   4. 首次导入曲库(只需一次):
 #        docker compose exec childmusic python scripts/migrate_from_json.py
 #   5. CasaOS「应用」列表会自动出现 childmusic 容器,可启停/查看日志。
-#      Nginx Proxy Manager 把 /childmusic 转发到 宿主机IP:8823。
+#      Nginx Proxy Manager 把 /cmusic 转发到 宿主机IP:8823。
 
 services:
   childmusic:
@@ -29,10 +31,10 @@ services:
     environment:
       HOST: "0.0.0.0"
       PORT: "8823"
-      ROOT_PATH: "/childmusic"
-      # 公网基础 URL(拼接音频/封面完整地址),按实际反代地址改
-      PUBLIC_BASE_URL: "https://your-domain.example.com/childmusic"
-      ADMIN_TOKEN: "change-me-to-a-strong-random-string"   # 务必改为强随机串
+      ROOT_PATH: "/cmusic"
+      # 公网基础 URL(拼接音频/封面完整地址),从 .env 读取
+      PUBLIC_BASE_URL: "${PUBLIC_BASE_URL}"
+      ADMIN_TOKEN: "${ADMIN_TOKEN}"
       CORS_ORIGINS: "*"
       # 迁移脚本源数据路径(指向只读挂载)
       SOURCE_SONGS_JSON: "/source/songs.json"

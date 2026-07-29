@@ -1,0 +1,14 @@
+# 敏感配置(各环境不同,不入库)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 运行时数据(持久化在 volumes/ 下)
+volumes/
+*.db
+
+# Node.js(导入脚本用)
+node_modules/
