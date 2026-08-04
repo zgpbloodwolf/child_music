@@ -12,8 +12,10 @@ import type { SongMeta } from '@/types/song';
 
 /**
  * 首页(按原型交互):顶栏 + 分类 tab(本页切换内容) + 内容区 + 迷你播放条。
- * - 「全部」:banner + 最近播放 + 全部音频
+ * - 「全部」:banner + 最近播放 + 推荐歌曲(按分类懒加载)
  * - 某大类:交给 CategoryPanel 组件渲染(代码功能拆分)
+ *
+ * 优化:启动时只加载分类树,不一次性加载全部歌曲,避免网络慢时超时。
  */
 const player = usePlayerStore();
 const history = useHistoryStore();
@@ -24,27 +26,38 @@ const repo = getRepository();
 const tabs = ref<Array<{ id: string; name: string }>>([{ id: 'all', name: '全部' }]);
 const currentTab = ref('all');
 
-/** 全部音频(异步加载) */
-const allSongs = ref<SongMeta[]>([]);
-/** 全部音频 id 列表(作为点击播放时的默认队列) */
-const allIds = computed(() => allSongs.value.map((s) => s.id));
-const loadingAll = ref(false);
+/** 推荐歌曲(按分类懒加载,首页只展示前几首) */
+const recommendSongs = ref<SongMeta[]>([]);
+const loadingRecommend = ref(false);
 
 onMounted(async () => {
-  loadingAll.value = true;
-  const [cats, all] = await Promise.all([repo.getCategories(), repo.listAll()]);
+  // 只加载分类树,不加载全部歌曲
+  const cats = await repo.getCategories();
   tabs.value = [{ id: 'all', name: '全部' }, ...cats.map((c) => ({ id: c.id, name: c.name }))];
-  allSongs.value = all;
-  loadingAll.value = false;
+  // 加载第一个分类的歌曲作为推荐
+  if (cats.length > 0) {
+    loadRecommend(cats[0].id);
+  }
 });
 
-/** 点击歌曲:以全部音频为队列播放 */
-function play(song: SongMeta) {
-  player.playSong(song.id, allIds.value);
+/** 懒加载推荐歌曲(只加载当前分类前6首) */
+async function loadRecommend(catId: string) {
+  loadingRecommend.value = true;
+  try {
+    const songs = await repo.listByCategory(catId);
+    recommendSongs.value = songs.slice(0, 6);
+  } catch (err) {
+    console.warn('加载推荐歌曲失败:', err);
+  } finally {
+    loadingRecommend.value = false;
+  }
 }
 
-/** 全部音频预览(首页只展示前 3 首,其余在歌单页查看) */
-const previewSongs = computed(() => allSongs.value.slice(0, 3));
+/** 点击歌曲:以推荐歌曲为队列播放 */
+function play(song: SongMeta) {
+  const ids = recommendSongs.value.map((s) => s.id);
+  player.playSong(song.id, ids);
+}
 
 /** 跳转到全部音频歌单页(展示完整列表) */
 function goAllSongs() {
@@ -104,15 +117,18 @@ function goSearch() {
         </scroll-view>
       </view>
 
-      <!-- 全部音频(首页仅预览前 3 首,点「全部歌曲」跳转歌单页看全部) -->
+      <!-- 推荐歌曲(首页仅展示前6首,点击「全部歌曲」跳转歌单页看全部) -->
       <view class="section">
         <view class="all-head">
-          <text class="section-title">全部音频</text>
-          <text class="play-all" @click="goAllSongs">全部歌曲({{ allSongs.length }} 首)</text>
+          <text class="section-title">推荐歌曲</text>
+          <text class="play-all" @click="goAllSongs">全部歌曲</text>
         </view>
-        <view class="song-list">
+        <view v-if="loadingRecommend" class="loading">
+          <text>加载中...</text>
+        </view>
+        <view v-else class="song-list">
           <SongItem
-            v-for="song in previewSongs"
+            v-for="song in recommendSongs"
             :key="song.id"
             :song="song"
             @play="play(song)"
@@ -254,6 +270,11 @@ function goSearch() {
   background: $bg-card;
   border-radius: 24rpx;
   overflow: hidden;
+}
+.loading {
+  text-align: center;
+  padding: 40rpx;
+  color: $text-sub;
 }
 .bottom-pad {
   height: 160rpx;
