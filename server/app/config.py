@@ -38,8 +38,11 @@ class Settings(BaseSettings):
     admin_token: str = "change-me-to-a-strong-random-string"
 
     # App 整包更新配置(运维在 .env 维护,不入库;每次发版同步更新)
-    # 展示版本号(versionName,如 1.0.1),versionCode 由其派生(见 routers/version.py)
+    # 展示版本号(versionName,如 1.0.1)
     app_version: str = "1.0.0"
+    # 数值版本(versionCode):优先用此值(须与 manifest.json 的 versionCode 一致);
+    # 未配置(None)时由 routers/version.py 从 app_version 派生(主×100+次×10+修订,仅次/修订<10 内可靠)
+    app_version_code: int | None = None
     # APK 下载完整 URL:可填后端 /library/apk/xxx.apk(经 StaticFiles 分发)或外链(GitHub Release)
     app_download_url: str = ""
     # 更新说明(展示在更新弹窗内容区,\n 换行)

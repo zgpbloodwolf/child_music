@@ -16,16 +16,21 @@ router = APIRouter(prefix="/api", tags=["版本"])
 def get_latest_version() -> VersionOut:
     """返回 .env 配置的最新版本信息。
 
-    versionCode 从 app_version 派生("主.次.修订" → 主×100+次×10+修订),
+    versionCode 优先取 APP_VERSION_CODE(须与 manifest.json versionCode 一致);
+    未配置时从 app_version 派生("主.次.修订" → 主×100+次×10+修订,仅次/修订<10 内可靠),
     派生失败回退 0,避免阻断启动期检查。downloadUrl 为空时客户端会跳过下载仅提示。
     """
-    parts = (settings.app_version or "").split(".")
-    while len(parts) < 3:
-        parts.append("0")
-    try:
-        code = int(parts[0]) * 100 + int(parts[1]) * 10 + int(parts[2])
-    except ValueError:
-        code = 0
+    # 优先用显式配置的 versionCode(推荐,避免派生公式在大版本号碰撞)
+    if settings.app_version_code is not None:
+        code = settings.app_version_code
+    else:
+        parts = (settings.app_version or "").split(".")
+        while len(parts) < 3:
+            parts.append("0")
+        try:
+            code = int(parts[0]) * 100 + int(parts[1]) * 10 + int(parts[2])
+        except ValueError:
+            code = 0
 
     return VersionOut(
         version=settings.app_version,
