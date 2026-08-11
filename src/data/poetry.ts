@@ -50,12 +50,12 @@ export async function songsOfAuthor(author: string): Promise<string[]> {
 
 /**
  * 推断某作者的朝代:先查「作者→朝代」映射表,未命中再按其作品的 subCategory 兜底。
+ * 纯函数(接受已取的作品列表),避免在聚合时对每个作者重复 listAll(N+1)。
  * @returns 如「唐」「宋」;无法判断返回 ''
  */
-async function dynastyOfAuthor(author: string): Promise<string> {
+function dynastyOf(author: string, songs: SongMeta[]): string {
   const mapped = POET_DYNASTY_MAP[author];
   if (mapped) return mapped;
-  const songs = await poetrySongs();
   for (const s of songs) {
     if (s.artist !== author || !s.subCategory) continue;
     const dynasty = SUBCAT_DYNASTY_MAP[s.subCategory];
@@ -64,7 +64,8 @@ async function dynastyOfAuthor(author: string): Promise<string> {
   return '';
 }
 
-/** 列出 poetry 大类下所有作者(按作品数倒序,同名聚合) */
+/** 列出 poetry 大类下所有作者(按作品数倒序,同名聚合)。
+ * 一次 listAll 取 poetry 作品后在内存聚合 + 推断朝代,不再对每个作者单独请求。 */
 export async function listPoetryAuthors(): Promise<PoetryAuthor[]> {
   const songs = await poetrySongs();
   const map = new Map<string, string[]>();
@@ -82,7 +83,7 @@ export async function listPoetryAuthors(): Promise<PoetryAuthor[]> {
       name,
       songIds,
       count: songIds.length,
-      dynasty: await dynastyOfAuthor(name),
+      dynasty: dynastyOf(name, songs),
     });
   }
   return authors.sort((a, b) => b.count - a.count);

@@ -15,6 +15,8 @@ const MAX_HISTORY = 20;
 
 /** 曲库数据源(模块级单例) */
 const repo = getRepository();
+/** id → 元数据 缓存:增量补全,避免每次 add 都全量 listByIds */
+const metaCache = new Map<string, SongMeta>();
 
 /** 从本地存储读取历史 id 列表 */
 function loadHistory(): string[] {
@@ -37,20 +39,35 @@ export const useHistoryStore = defineStore('history', () => {
   /** 历史歌曲元数据列表(最新在前,与 ids 同步) */
   const recent = ref<SongMeta[]>([]);
 
-  // ids 变化时通过 Repository 异步映射为元数据;immediate 保证初始化即加载
-  watch(ids, async (newIds) => {
-    recent.value = await repo.listByIds(newIds);
-  }, { immediate: true, deep: true });
+  /**
+   * 按 ids 顺序组装 recent;仅对缓存缺失的 id 发请求(增量)。
+   * 首次加载建缓存,之后播放一首新歌只补取那一条,不再全量重拉。
+   */
+  async function refresh() {
+    const missing = ids.value.filter((id) => !metaCache.has(id));
+    if (missing.length > 0) {
+      const got = await repo.listByIds(missing);
+      got.forEach((s) => metaCache.set(s.id, s));
+    }
+    recent.value = ids.value
+      .map((id) => metaCache.get(id))
+      .filter((s): s is SongMeta => Boolean(s));
+  }
 
-  /** 新增一条播放记录(去重并置顶,超过上限截断) */
+  // ids 变化时按需补全缓存并重组 recent;immediate 保证初始化即加载
+  watch(ids, () => { void refresh(); }, { immediate: true, deep: true });
+
+  /** 新增一条播放记录(去重并置顶,超过上限截断);增量补全该首元数据 */
   function add(songId: string) {
     ids.value = [songId, ...ids.value.filter((id) => id !== songId)].slice(0, MAX_HISTORY);
     uni.setStorageSync(HISTORY_KEY, ids.value);
+    void refresh();
   }
 
-  /** 清空历史 */
+  /** 清空历史(同时清空元数据缓存) */
   function clear() {
     ids.value = [];
+    metaCache.clear();
     uni.setStorageSync(HISTORY_KEY, ids.value);
   }
 
