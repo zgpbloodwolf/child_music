@@ -1,4 +1,4 @@
-# 儿童音乐后端服务镜像
+# 启蒙音频后端服务镜像
 # 构建:docker compose build  或  docker build -t childmusic-backend .
 FROM python:3.11-slim
 

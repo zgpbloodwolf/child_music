@@ -1,7 +1,7 @@
 {
   "name": "music",
   "version": "1.0.0",
-  "description": "手机端音乐播放应用(内置曲库离线播放)",
+  "description": "手机端音乐播放应用(在线曲库)",
   "scripts": {
     "dev:custom": "uni -p",
     "dev:h5": "uni",

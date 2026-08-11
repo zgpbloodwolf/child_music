@@ -1,7 +1,7 @@
 """FastAPI 应用入口:装配路由、CORS、静态分发、反向代理前缀兼容。
 
-前缀兼容(StripPrefixMiddleware):Nginx Proxy Manager 转发 /childmusic/* 时
-默认保留前缀,本中间件把请求路径里的 /childmusic 剥掉,使后端路由(/api、
+前缀兼容(StripPrefixMiddleware):Nginx Proxy Manager 转发 /cmusic/* 时
+默认保留前缀,本中间件把请求路径里的 /cmusic 剥掉,使后端路由(/api、
 /library)在「Nginx 去前缀」与「Nginx 保留前缀」两种配置下都能命中。
 """
 import mimetypes
@@ -18,11 +18,11 @@ from .routers import admin, catalog, version
 
 
 class StripPrefixMiddleware:
-    """剥掉反向代理保留的子路径前缀(如 /childmusic)。
+    """剥掉反向代理保留的子路径前缀(如 /cmusic)。
 
     两种 Nginx 转发都兼容:
     - 去前缀:请求 /api/songs 直达 → 不剥
-    - 保留前缀:请求 /childmusic/api/songs → 剥成 /api/songs
+    - 保留前缀:请求 /cmusic/api/songs → 剥成 /api/songs
     """
 
     def __init__(self, app: Callable[..., Awaitable[None]], prefix: str) -> None:
@@ -58,7 +58,7 @@ def create_app() -> FastAPI:
     init_db()
 
     app = FastAPI(
-        title="儿童音乐后端",
+        title="启蒙音频后端",
         description="音频/封面文件分发 + 曲库元数据 + 管理接口",
         version="1.0.0",
         # 不设 root_path:它会与 StaticFiles mount 交互,导致不带前缀的 /library 命中失败。
@@ -95,7 +95,7 @@ def create_app() -> FastAPI:
 
     @app.get("/", include_in_schema=False)
     def root() -> dict[str, str]:
-        return {"name": "儿童音乐后端", "docs": "/docs", "admin": "/admin"}
+        return {"name": "启蒙音频后端", "docs": "/docs", "admin": "/admin"}
 
     return app
 

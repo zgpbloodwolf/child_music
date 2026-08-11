@@ -3,7 +3,7 @@
 		{
 			"path": "pages/home/index",
 			"style": {
-				"navigationBarTitleText": "音乐"
+				"navigationBarTitleText": "启蒙音频"
 			}
 		},
 		{
@@ -35,7 +35,7 @@
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "音乐",
+		"navigationBarTitleText": "启蒙音频",
 		"navigationBarBackgroundColor": "#ffffff",
 		"backgroundColor": "#f5f5f7",
 		// App 端 WebView 关闭页面边界回弹(橡皮筋),避免滑动到顶/底时整个页面跟着晃动

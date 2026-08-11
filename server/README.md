@@ -1,4 +1,4 @@
-# 儿童音乐后端服务
+# 启蒙音频后端服务
 
 手机端音乐应用(`src/`)的音频/封面文件分发 + 曲库元数据 + 管理后端。
 把原本打包进 App 的 729MB 音频剥离到本服务,App 改为在线播放(默认)+ 下载缓存离线。
@@ -9,7 +9,7 @@
 App / H5 / 小程序
    │  uni.request(元数据) + backgroundAudioManager(网络流) + uni.downloadFile(缓存)
    ▼
-Nginx Proxy Manager:  your-domain.example.com/childmusic/*  ──►  192.168.x.x:8823/*
+Nginx Proxy Manager:  your-domain.example.com/cmusic/*  ──►  192.168.x.x:8823/*
    ▼
 FastAPI 后端(本服务,监听 0.0.0.0:8823)
    ├── /api/*        元数据查询 + /api/admin/* 管理(需 token)
@@ -66,8 +66,8 @@ python run.py
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | HOST / PORT | 0.0.0.0 / 8823 | 监听地址端口 |
-| ROOT_PATH | /childmusic | 反向代理子路径前缀 |
-| PUBLIC_BASE_URL | http://your-domain.example.com/childmusic | 拼接 cover/src 完整 URL 的公网基础地址 |
+| ROOT_PATH | /cmusic | 反向代理子路径前缀 |
+| PUBLIC_BASE_URL | http://your-domain.example.com/cmusic | 拼接 cover/src 完整 URL 的公网基础地址 |
 | STORAGE_ROOT | storage | 音频存储根(相对 server/) |
 | DB_PATH | data/music.db | SQLite 路径(相对 server/) |
 | ADMIN_TOKEN | change-me-… | 管理接口 token(**上线务必改为强随机串**) |
@@ -92,7 +92,7 @@ python run.py
 - `POST /api/admin/categories`、`PUT /api/admin/categories/{id}`、`DELETE /api/admin/categories/{id}`
 - `POST /api/admin/subs`、`DELETE /api/admin/subs/{id}`
 
-管理页:浏览器打开 `http://<host>:8823/admin`(或经反代 `.../childmusic/admin`)。
+管理页:浏览器打开 `http://<host>:8823/admin`(或经反代 `.../cmusic/admin`)。
 
 ## 验证
 
@@ -124,11 +124,11 @@ sqlite3 data/music.db "SELECT sub_category_id, COUNT(*) FROM songs GROUP BY sub_
    - Domain Names:`your-domain.example.com`
    - Forward Hostname / IP:`192.168.x.x`,Forward Port:`8823`
 2. Custom Locations 添加:
-   - Define location:`/childmusic`
+   - Define location:`/cmusic`
    - Forward Hostname / IP:`192.168.x.x`,Forward Port:`8823`
 
-NPM 默认保留 `/childmusic` 前缀转发到后端,后端中间件自动剥除,路由正常命中,无需手动 rewrite。
-公网访问即 `http://your-domain.example.com/childmusic/api/categories`、`.../library/children/classic/cn002.mp3`。
+NPM 默认保留 `/cmusic` 前缀转发到后端,后端中间件自动剥除,路由正常命中,无需手动 rewrite。
+公网访问即 `http://your-domain.example.com/cmusic/api/categories`、`.../library/children/classic/cn002.mp3`。
 
 > 缓存:建议在 NPM 对 `/library/` 路径加响应头 `Cache-Control: public, max-age=604800`(音频文件不可变)。
 
@@ -142,10 +142,10 @@ nssm set childmusic-backend AppEnvironmentExtra "PYTHONUNBUFFERED=1"
 nssm start childmusic-backend
 ```
 
-**Linux(systemd)**:见下方模板,`/etc/systemd/system/childmusic-backend.service`
+**Linux(systemd)**:见下方模板,`/etc/systemd/system/cmusic-backend.service`
 ```ini
 [Unit]
-Description=儿童音乐后端服务
+Description=启蒙音频后端服务
 After=network.target
 [Service]
 Type=simple
@@ -184,13 +184,13 @@ docker compose up -d --build
 ### 4. 首次导入曲库(只需一次)
 ```bash
 docker compose exec childmusic python scripts/migrate_from_json.py
-# 预期:分类 4、子类 16、歌曲 239、缺失音频文件 0
+# 预期:分类 4、子类 17、歌曲 239、缺失音频文件 0
 ```
 
 ### 5. CasaOS 管理
 - 启动后 CasaOS「应用」列表会自动出现 `childmusic` 容器,可启停、查看日志。
 - 也可在 CasaOS「自定义应用」中用本目录的 `docker-compose.yml` 导入。
-- Nginx Proxy Manager 把 `/childmusic` 转发到 `192.168.x.x:8823`(宿主机端口,见 compose 的 `ports` 映射)。
+- Nginx Proxy Manager 把 `/cmusic` 转发到 `192.168.x.x:8823`(宿主机端口,见 compose 的 `ports` 映射)。
 
 > 备份:只需备份 `volumes/storage` 与 `volumes/db` 两个目录;`volumes/source` 导入后可删。
 > 升级代码:`docker compose up -d --build`(数据卷不受影响)。

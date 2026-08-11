@@ -1,7 +1,7 @@
 {
-    "name" : "幼儿音乐",
+    "name" : "启蒙音频",
     "appid" : "__UNI__9D4728C",
-    "description" : "手机端音乐播放应用(内置曲库离线播放)",
+    "description" : "启蒙音频 · 手机端音乐播放应用",
     "versionName" : "1.0.1",
     "versionCode" : 101,
     "transformPx" : false,

@@ -1,4 +1,4 @@
-# 儿童音乐后端 —— Docker Compose(CasaOS 可直接导入管理)
+# 启蒙音频后端 —— Docker Compose(CasaOS 可直接导入管理)
 #
 # 使用步骤:
 #   1. 准备源数据(首次导入用):把 src/static/library/ 与 src/static/data/songs.json
