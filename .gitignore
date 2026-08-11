@@ -40,3 +40,4 @@ src/static.zip
 
 # CodeGraph 本地代码知识图谱索引(codegraph init 生成,每个机器各自一份)
 .codegraph/
+.claude/settings.json
