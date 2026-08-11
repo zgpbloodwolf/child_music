@@ -33,6 +33,10 @@ let timerId: ReturnType<typeof setInterval> | null = null;
 const repo = getRepository();
 /** 加载序号:每次发起切歌自增,用于丢弃被取代的异步 getDetail 结果(防竞态) */
 let loadSeq = 0;
+/** 连续自动跳过计数:音频失败时自动切下一首,超过上限停止,防整库失效死循环 */
+let autoSkipCount = 0;
+/** 自动跳过上限:连续失败超过此次数后不再自动切,保留错误提示 */
+const MAX_AUTO_SKIP = 3;
 
 /** 获取/创建音频控制器单例(平台差异收敛在 createAudioManager 内) */
 function getManager(): AudioManager {
@@ -78,12 +82,14 @@ export const usePlayerStore = defineStore('player', () => {
       isPlaying.value = true;
       isLoading.value = false;
       error.value = null;
+      autoSkipCount = 0; // 起播成功,重置连续失败计数
       if (m.duration) duration.value = m.duration;
     });
     m.onPause(() => { isPlaying.value = false; });
     m.onStop(() => { isPlaying.value = false; });
     m.onCanplay(() => {
       isLoading.value = false;
+      autoSkipCount = 0; // 可播放即视作成功,重置连续失败计数
       if (m.duration) duration.value = m.duration;
     });
     m.onTimeUpdate(() => {
@@ -94,9 +100,16 @@ export const usePlayerStore = defineStore('player', () => {
     m.onWaiting(() => { isLoading.value = true; });
     m.onError((err: unknown) => {
       console.error('音频播放出错:', err);
-      error.value = '当前音频加载失败,请尝试播放其他歌曲';
       isLoading.value = false;
       isPlaying.value = false;
+      // 自动跳过该首继续播放;连续失败超过上限则停止,避免整库失效时无限切歌
+      if (autoSkipCount < MAX_AUTO_SKIP) {
+        autoSkipCount += 1;
+        error.value = '当前音频加载失败,自动切换下一首';
+        setTimeout(() => { void playNext(true); }, 800);
+      } else {
+        error.value = '连续多首音频加载失败,已停止播放';
+      }
     });
 
     listenersBound = true;

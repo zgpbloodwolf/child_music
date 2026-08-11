@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePlayerStore } from '@/store/player';
 import { useLibraryStore } from '@/store/library';
@@ -25,9 +25,6 @@ const {
 
 const statusBarHeight = ref<number>(uni.getSystemInfoSync().statusBarHeight || 20);
 
-// 歌词滚动容器引用
-const lyricScrollRef = ref<any>(null);
-
 const lyricLines = computed<LyricLine[]>(() =>
   currentSong.value?.lyric ? parseLyric(currentSong.value.lyric) : [],
 );
@@ -42,31 +39,13 @@ const activeLine = computed(() => {
   return idx;
 });
 
-// 监听 activeLine 变化，手动滚动到对应歌词行
-watch(activeLine, async (newVal) => {
-  if (newVal < 0) return;
-  await nextTick();
-  // #ifdef H5
-  const container = document.querySelector('.lyric-scroll');
-  const targetLine = document.getElementById(`line-${newVal}`);
-  if (container && targetLine) {
-    // 获取目标行相对于容器的位置
-    const containerRect = container.getBoundingClientRect();
-    const targetRect = targetLine.getBoundingClientRect();
-    const currentScroll = container.scrollTop;
-    // 计算目标行在容器内的实际位置
-    const targetRelativeTop = targetRect.top - containerRect.top + currentScroll;
-    const containerHeight = container.clientHeight;
-    const targetHeight = targetLine.offsetHeight;
-    // 计算滚动位置，让目标行居中显示
-    const scrollTo = targetRelativeTop - (containerHeight / 2) + (targetHeight / 2);
-    container.scrollTo({
-      top: Math.max(0, scrollTo),
-      behavior: 'smooth'
-    });
-  }
-  // #endif
-});
+/**
+ * 歌词自动滚动:激活行变化时驱动 scroll-view 的 scroll-into-view,跨端生效。
+ * (原 H5-only 的 document 滚动已废弃:App/小程序端无 document,歌词不跟随高亮行。)
+ */
+const lyricScrollInto = computed(() =>
+  activeLine.value >= 0 ? `line-${activeLine.value}` : '',
+);
 const liked = computed(() => (currentSong.value ? library.isLiked(currentSong.value.id) : false));
 
 const playModeText = computed(() => {
@@ -157,7 +136,7 @@ function playQueueAt(i: number) {
 
     <!-- 歌词区 -->
     <view class="lyric-wrap">
-      <view v-if="hasLyric" class="lyric-scroll" ref="lyricScrollRef">
+      <scroll-view v-if="hasLyric" scroll-y class="lyric-scroll" :scroll-into-view="lyricScrollInto" scroll-with-animation>
         <view class="lyric-pad" />
         <view
           v-for="(line, i) in lyricLines"
@@ -167,7 +146,7 @@ function playQueueAt(i: number) {
           :class="{ active: i === activeLine }"
         >{{ line.text }}</view>
         <view class="lyric-pad" />
-      </view>
+      </scroll-view>
       <view v-else class="no-lyric"><text>暂无歌词</text></view>
     </view>
 
