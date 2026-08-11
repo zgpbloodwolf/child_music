@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onUnmounted } from 'vue';
 import { getRepository } from '@/repository';
 import { usePlayerStore } from '@/store/player';
 import SongItem from '@/components/SongItem/SongItem.vue';
@@ -16,14 +16,28 @@ const keyword = ref('');
 const results = ref<SongMeta[]>([]);
 const searching = ref(false);
 
-/** 关键词变化时异步搜索(空关键词清空结果) */
-watch(keyword, async (kw) => {
+/** 防抖句柄:输入停顿 350ms 后才发请求,避免在线数据源下每键一字都打一次接口 */
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+/** 关键词变化时异步搜索(防抖;空关键词立即清空结果) */
+watch(keyword, (kw) => {
+  if (searchTimer) clearTimeout(searchTimer);
   const trimmed = (kw ?? '').trim();
-  if (!trimmed) { results.value = []; return; }
-  searching.value = true;
-  results.value = await repo.search(trimmed);
-  searching.value = false;
+  if (!trimmed) { results.value = []; searching.value = false; return; }
+  searchTimer = setTimeout(async () => {
+    searching.value = true;
+    try {
+      results.value = await repo.search(trimmed);
+    } catch (err) {
+      console.warn('搜索失败:', err);
+      results.value = [];
+    } finally {
+      searching.value = false;
+    }
+  }, 350);
 });
+
+onUnmounted(() => { if (searchTimer) clearTimeout(searchTimer); });
 
 /** 点击搜索结果:以当前结果列表为队列播放 */
 function play(song: SongMeta) {
