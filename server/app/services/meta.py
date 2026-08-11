@@ -56,22 +56,24 @@ def sub_to_out(sub: SubCategory) -> SubCategoryOut:
 
 
 def build_category_tree(db: Session) -> list[CategoryOut]:
-    """组装完整分类树:大类 + 其下子类(含空大类)。"""
+    """组装完整分类树:大类 + 其下子类(含空大类)。
+
+    两次查询(大类、全部子类)后内存分组,避免对每个大类单独查子类(N+1)。
+    """
     cats = db.scalars(select(Category).order_by(Category.sort_order, Category.id)).all()
-    result: list[CategoryOut] = []
-    for c in cats:
-        subs = db.scalars(
-            select(SubCategory)
-            .where(SubCategory.category_id == c.id)
-            .order_by(SubCategory.sort_order, SubCategory.id)
-        ).all()
-        result.append(
-            CategoryOut(
-                id=c.id,
-                name=c.name,
-                icon=c.icon,
-                desc=c.desc,
-                subs=[sub_to_out(s) for s in subs],
-            )
+    all_subs = db.scalars(
+        select(SubCategory).order_by(SubCategory.sort_order, SubCategory.id)
+    ).all()
+    subs_by_cat: dict[str, list[SubCategory]] = {}
+    for s in all_subs:
+        subs_by_cat.setdefault(s.category_id, []).append(s)
+    return [
+        CategoryOut(
+            id=c.id,
+            name=c.name,
+            icon=c.icon,
+            desc=c.desc,
+            subs=[sub_to_out(s) for s in subs_by_cat.get(c.id, [])],
         )
-    return result
+        for c in cats
+    ]
