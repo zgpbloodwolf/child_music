@@ -62,6 +62,9 @@ docker-compose up -d --build
 # 或新版 Docker
 docker compose down
 docker compose up -d --build
+
+# 或用纯 docker 脚本(server/docker-run.sh,等价上面,未装 compose 时用)
+bash docker-run.sh all
 ```
 
 ### 4. 验证

@@ -161,6 +161,8 @@ WantedBy=multi-user.target
 
 后端已提供 `Dockerfile` 与 `docker-compose.yml`。音频/封面与 SQLite 通过 volume 持久化,容器重建不丢数据。CasaOS 可直接以 Compose 导入并管理(启停/日志/备份)。
 
+> 也可用本目录的 `docker-run.sh`(纯 `docker` 命令,与 compose 等价,适合未安装 `docker compose` 的环境),用法见本节末尾。
+
 ### 1. 准备源数据(首次导入用)
 把前端的音频目录与 `songs.json` 放到 compose 同级的 `volumes/source/`:
 
@@ -192,8 +194,28 @@ docker compose exec childmusic python scripts/migrate_from_json.py
 - 也可在 CasaOS「自定义应用」中用本目录的 `docker-compose.yml` 导入。
 - Nginx Proxy Manager 把 `/cmusic` 转发到 `192.168.x.x:8823`(宿主机端口,见 compose 的 `ports` 映射)。
 
+### 用 docker-run.sh(纯 docker 命令,可选)
+
+未安装 `docker compose` 或偏好裸 `docker` 时,用本目录的 `docker-run.sh`(与上面的 compose 流程等价):
+
+```bash
+./docker-run.sh all      # 打包镜像并运行(首次 / 代码更新后)
+./docker-run.sh build    # 仅打包镜像
+./docker-run.sh run      # 仅运行(镜像已存在,日常重启用)
+./docker-run.sh stop     # 停止并删除容器
+./docker-run.sh logs     # 跟踪日志
+./docker-run.sh status   # 查看状态
+```
+
+首次导入曲库:
+```bash
+docker exec -it childmusic python scripts/migrate_from_json.py
+```
+
+> 国内拉基础镜像 `python:3.11-slim` 常超时(daemon.json 的 mirror 多已失效,且 dockerd 不继承 shell 代理)。先 `docker pull docker.m.daocloud.io/library/python:3.11-slim` 拉到本地,`build` 的 FROM 即命中缓存、绕过联网拉取。
+
 > 备份:只需备份 `volumes/storage` 与 `volumes/db` 两个目录;`volumes/source` 导入后可删。
-> 升级代码:`docker compose up -d --build`(数据卷不受影响)。
+> 升级代码:`docker compose up -d --build` 或 `./docker-run.sh all`(数据卷不受影响)。
 
 ## 跨端注意事项
 
