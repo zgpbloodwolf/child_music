@@ -1,8 +1,15 @@
 /**
  * 唐诗三百首重新导入脚本
  * 1. 删除旧的 tang300 歌曲数据
- * 2. 从 F:\work\project\gusi\output\audio\诗\ 目录读取新文件
+ * 2. 从诗音频目录读取新文件
  * 3. 重新导入（使用 manifest.jsonl 的 id）
+ *
+ * 配置通过环境变量注入（避免把真实 token / 本机路径硬编码入库）:
+ *   IMPORT_BASE_URL     后端 API 地址
+ *   IMPORT_ADMIN_TOKEN  管理接口鉴权 token
+ *   IMPORT_MANIFEST     manifest.jsonl 路径
+ *   IMPORT_POETRY_DIR   诗音频目录
+ *   IMPORT_POETRY_JSON  诗.json 路径
  */
 
 const fs = require('fs');
@@ -11,10 +18,11 @@ const FormData = require('form-data');
 const fetch = require('node-fetch');
 
 const CONFIG = {
-  baseUrl: 'http://127.0.0.1:8823/childmusic',
-  adminToken: 'local-test-token-2026',
-  manifestPath: 'F:/work/project/gusi/output/audio/manifest.jsonl',
-  poetryDir: 'F:/work/project/gusi/output/audio/诗/',
+  baseUrl: process.env.IMPORT_BASE_URL || 'http://127.0.0.1:8823/childmusic',
+  adminToken: process.env.IMPORT_ADMIN_TOKEN || '',
+  manifestPath: process.env.IMPORT_MANIFEST || '',
+  poetryDir: process.env.IMPORT_POETRY_DIR || '',
+  poetryJson: process.env.IMPORT_POETRY_JSON || '',
   categoryId: 'poetry',
   subCategoryId: 'tang300',
 };
@@ -32,6 +40,17 @@ async function request(endpoint, options = {}) {
 
 async function main() {
   console.log('=== 唐诗三百首重新导入 ===\n');
+
+  // 校验必填配置
+  const missing = [];
+  if (!CONFIG.adminToken) missing.push('IMPORT_ADMIN_TOKEN');
+  if (!CONFIG.manifestPath) missing.push('IMPORT_MANIFEST');
+  if (!CONFIG.poetryDir) missing.push('IMPORT_POETRY_DIR');
+  if (!CONFIG.poetryJson) missing.push('IMPORT_POETRY_JSON');
+  if (missing.length > 0) {
+    console.error(`缺少环境变量: ${missing.join(', ')}`);
+    process.exit(1);
+  }
 
   // 1. 获取现有 tang300 歌曲列表
   console.log('获取现有歌曲列表...');
@@ -70,7 +89,7 @@ async function main() {
   const mp3Files = allFiles.filter(f => f.endsWith('.mp3'));
 
   // 5. 从诗.json获取唐诗三百首列表
-  const poems = JSON.parse(fs.readFileSync('F:/work/project/gusi/output/诗.json', 'utf8'));
+  const poems = JSON.parse(fs.readFileSync(CONFIG.poetryJson, 'utf8'));
   const ts300 = poems.filter(p => p.type && p.type.includes('唐诗三百首'));
 
   // 6. 匹配文件

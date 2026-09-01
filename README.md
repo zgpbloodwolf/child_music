@@ -25,12 +25,14 @@ pnpm dev:app
 
 ---
 
-## 部署更新（服务器 192.168.50.88）
+## 部署更新（服务器）
+
+> 以下命令中的主机名、用户名、路径请按你的实际部署环境替换。
 
 ### 1. 拉取最新代码
 
 ```bash
-cd /DATA/AppData/childmusic/child_music
+cd <服务器上的项目路径>
 
 # 如果有本地修改冲突
 git reset --hard HEAD
@@ -101,7 +103,7 @@ pnpm build:app
 
 ```bash
 # 复制到服务器存储目录
-scp dist/build/app/*.apk user@192.168.50.88:/DATA/AppData/childmusic/child_music/server/storage/library/apk/
+scp dist/build/app/*.apk <用户名>@<服务器地址>:<项目路径>/server/storage/library/apk/
 ```
 
 ### 4. 更新版本号

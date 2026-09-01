@@ -1,7 +1,12 @@
 /**
  * 唐诗三百首导入脚本
- * 从 F:\work\project\gusi\output\audio\manifest.jsonl 读取数据
- * 通过管理API导入到音乐应用后端
+ * 通过管理 API 导入到音乐应用后端
+ *
+ * 配置通过环境变量注入（避免把真实 token / 本机路径硬编码入库）:
+ *   IMPORT_BASE_URL    后端 API 地址,如 http://127.0.0.1:8823/childmusic
+ *   IMPORT_ADMIN_TOKEN 管理接口鉴权 token(与服务端 .env 的 ADMIN_TOKEN 一致)
+ *   IMPORT_MANIFEST    manifest.jsonl 路径
+ *   IMPORT_AUDIO_DIR   音频文件目录
  */
 
 const fs = require('fs');
@@ -12,12 +17,12 @@ const fetch = require('node-fetch');
 // 配置
 const CONFIG = {
   // 后端API地址
-  baseUrl: 'http://127.0.0.1:8823/childmusic',
-  adminToken: 'local-test-token-2026',
+  baseUrl: process.env.IMPORT_BASE_URL || 'http://127.0.0.1:8823/childmusic',
+  adminToken: process.env.IMPORT_ADMIN_TOKEN || '',
 
   // 数据源路径
-  manifestPath: 'F:/work/project/gusi/output/audio/manifest.jsonl',
-  audioDir: 'G:/古诗',
+  manifestPath: process.env.IMPORT_MANIFEST || '',
+  audioDir: process.env.IMPORT_AUDIO_DIR || '',
 
   // 分类配置
   categoryId: 'poetry',
@@ -173,6 +178,16 @@ async function uploadSong(poem) {
 // 主函数
 async function main() {
   console.log('=== 唐诗三百首导入工具 ===\n');
+
+  // 校验必填配置
+  const missing = [];
+  if (!CONFIG.adminToken) missing.push('IMPORT_ADMIN_TOKEN');
+  if (!CONFIG.manifestPath) missing.push('IMPORT_MANIFEST');
+  if (!CONFIG.audioDir) missing.push('IMPORT_AUDIO_DIR');
+  if (missing.length > 0) {
+    console.error(`缺少环境变量: ${missing.join(', ')}`);
+    process.exit(1);
+  }
 
   try {
     // 1. 创建分类

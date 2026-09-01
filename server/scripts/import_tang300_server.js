@@ -1,6 +1,13 @@
 /**
  * 唐诗三百首导入脚本（服务器版本）
  * 从本地数据导入到远程服务器
+ *
+ * 配置通过环境变量注入（避免把真实地址/token 硬编码入库）：
+ *   IMPORT_BASE_URL    后端 API 地址，如 http://<服务器地址>:8823/cmusic
+ *   IMPORT_ADMIN_TOKEN 管理接口鉴权 token（与服务端 .env 的 ADMIN_TOKEN 一致）
+ *   IMPORT_MANIFEST    manifest.jsonl 路径
+ *   IMPORT_GUSHI_DIR   古诗音频目录
+ *   IMPORT_POETRY_DIR  诗音频目录
  */
 
 const fs = require('fs');
@@ -9,14 +16,12 @@ const FormData = require('form-data');
 const fetch = require('node-fetch');
 
 const CONFIG = {
-  // 服务器地址
-  baseUrl: 'http://192.168.50.88:8823/cmusic',
-  adminToken: 'a10629972ba7ecd9c3aa5258879ef7035b1ef153b5e28e1e422a1261cad99d71',
+  baseUrl: process.env.IMPORT_BASE_URL || 'http://127.0.0.1:8823/cmusic',
+  adminToken: process.env.IMPORT_ADMIN_TOKEN || '',
 
-  // 本地数据路径
-  manifestPath: 'F:/work/project/gusi/output/audio/manifest.jsonl',
-  gushiDir: 'G:/古诗/',
-  poetryDir: 'F:/work/project/gusi/output/audio/诗/',
+  manifestPath: process.env.IMPORT_MANIFEST || '',
+  gushiDir: process.env.IMPORT_GUSHI_DIR || '',
+  poetryDir: process.env.IMPORT_POETRY_DIR || '',
 
   // 分类配置
   categoryId: 'poetry',
@@ -49,6 +54,18 @@ async function request(endpoint, options = {}) {
 
 async function main() {
   console.log('=== 唐诗三百首导入工具（服务器版）===\n');
+
+  // 校验必填配置,避免空值导致后续请求失败
+  const missing = [];
+  if (!CONFIG.adminToken) missing.push('IMPORT_ADMIN_TOKEN');
+  if (!CONFIG.manifestPath) missing.push('IMPORT_MANIFEST');
+  if (!CONFIG.gushiDir) missing.push('IMPORT_GUSHI_DIR');
+  if (!CONFIG.poetryDir) missing.push('IMPORT_POETRY_DIR');
+  if (missing.length > 0) {
+    console.error(`缺少环境变量: ${missing.join(', ')}`);
+    console.error('示例:\n  set IMPORT_BASE_URL=http://127.0.0.1:8823/cmusic\n  set IMPORT_ADMIN_TOKEN=<token>\n  set IMPORT_MANIFEST=<manifest.jsonl 路径>');
+    process.exit(1);
+  }
 
   try {
     // 1. 创建分类
