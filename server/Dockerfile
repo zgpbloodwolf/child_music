@@ -1,6 +1,9 @@
 # 启蒙音频后端服务镜像
 # 构建:docker compose build  或  docker build -t childmusic-backend .
-FROM python:3.11-slim
+# 基础镜像默认走国内 daocloud 镜像加速(多架构;本机无代理直连 docker.io 拉 arm64 极慢)
+# 上游等价:docker.io/library/python:3.11-slim;如 mirror 失效可改回上游
+ARG BASE_IMAGE=docker.m.daocloud.io/library/python:3.11-slim
+FROM ${BASE_IMAGE}
 
 WORKDIR /app
 
