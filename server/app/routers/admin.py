@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..config import settings
-from ..deps import get_db, verify_admin_token
+from ..deps import get_db, require_intranet, verify_admin_token
 from ..models import Category, Song, SubCategory
 from ..schemas import (
     CategoryCreate,
@@ -27,7 +27,8 @@ from ..services.meta import song_to_out, sub_to_out
 router = APIRouter(
     prefix="/api/admin",
     tags=["管理(需 token)"],
-    dependencies=[Depends(verify_admin_token)],
+    # 顺序:先 IP 后 token —— 公网来源直接 403,不暴露 token 校验细节
+    dependencies=[Depends(require_intranet), Depends(verify_admin_token)],
 )
 
 

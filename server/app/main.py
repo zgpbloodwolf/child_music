@@ -7,13 +7,14 @@
 import mimetypes
 from collections.abc import Awaitable, Callable
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import BASE_DIR, settings
 from .database import init_db
+from .deps import require_intranet
 from .routers import admin, catalog, version
 
 
@@ -85,8 +86,8 @@ def create_app() -> FastAPI:
     admin_html = BASE_DIR / "admin_static" / "index.html"
 
     @app.get("/admin", include_in_schema=False)
-    def admin_page() -> FileResponse:
-        """极简管理页:填 token → 上传/删除歌曲。"""
+    def admin_page(_=Depends(require_intranet)) -> FileResponse:
+        """极简管理页:填 token → 上传/删除歌曲(限内网访问)。"""
         return FileResponse(admin_html)
 
     @app.get("/health", include_in_schema=False)

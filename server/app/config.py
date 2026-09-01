@@ -2,6 +2,7 @@
 
 所有路径相对 server/ 目录(BASE_DIR)。换域名/端口/前缀只改 .env 一处。
 """
+from ipaddress import IPv4Network, IPv6Network, ip_network
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -36,6 +37,18 @@ class Settings(BaseSettings):
 
     # 管理接口 token
     admin_token: str = "change-me-to-a-strong-random-string"
+
+    # 管理页(/admin)与管理写接口(/api/admin/*)的内网访问白名单。
+    # 逗号分隔的 CIDR/IP,默认放行全部私网段 + 回环;公网来源一律 403。
+    # 额外放行网段(如办公网公网出口、VPN 段)在此追加。
+    admin_allow_cidrs: str = (
+        "127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+    )
+    # 是否信任反代透传的 X-Forwarded-For 取真实客户端 IP。
+    # 后端常与 Nginx 同机,request.client.host 会是 127.0.0.1(白名单内),
+    # 若不取 XFF 则公网经反代访问会误放行,故默认开启。
+    # 注意:Nginx 默认追加(非覆盖)XFF,客户端可伪造;但写接口另有 admin_token 兜底。
+    admin_trust_forwarded: bool = True
 
     # App 整包更新配置(运维在 .env 维护,不入库;每次发版同步更新)
     # 展示版本号(versionName,如 1.0.1)
@@ -74,6 +87,23 @@ class Settings(BaseSettings):
         if self.cors_origins.strip() == "*":
             return ["*"]
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
+    def admin_allow_networks(self) -> list[IPv4Network | IPv6Network]:
+        """解析管理访问白名单为 ipaddress 网络对象,供请求 IP 判断。
+
+        非法条目跳过(不阻断启动);默认覆盖全部私网段与回环。
+        """
+        nets: list[IPv4Network | IPv6Network] = []
+        for part in self.admin_allow_cidrs.split(","):
+            cidr = part.strip()
+            if not cidr:
+                continue
+            try:
+                nets.append(ip_network(cidr, strict=False))
+            except ValueError:
+                pass
+        return nets
 
     @property
     def public_base(self) -> str:
