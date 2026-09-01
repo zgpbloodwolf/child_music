@@ -8,127 +8,323 @@
     * { box-sizing: border-box; }
     body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; background: #f5f5f7; color: #222; }
     header { background: #ff8c42; color: #fff; padding: 14px 20px; font-size: 18px; font-weight: 600; }
-    .wrap { max-width: 960px; margin: 16px auto; padding: 0 16px; }
+    .wrap { max-width: 1100px; margin: 16px auto; padding: 0 16px; }
     .card { background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
     h2 { font-size: 16px; margin: 0 0 12px; border-left: 3px solid #ff8c42; padding-left: 8px; }
     label { display: block; font-size: 13px; color: #666; margin: 8px 0 4px; }
-    input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; }
     textarea { min-height: 60px; resize: vertical; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    button { background: #ff8c42; color: #fff; border: none; border-radius: 6px; padding: 9px 16px; font-size: 14px; cursor: pointer; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    button { background: #ff8c42; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; cursor: pointer; }
     button:hover { background: #f07a2d; }
     button.ghost { background: #eee; color: #333; }
+    button.ghost:hover { background: #ddd; }
     button.danger { background: #e0533d; }
+    button.danger:hover { background: #c8442f; }
+    button.sm { padding: 5px 10px; font-size: 12px; }
     .muted { color: #999; font-size: 12px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #f0f0f0; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+    th { color: #888; font-weight: 600; }
     .msg { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-top: 10px; display: none; }
     .msg.ok { background: #e7f7ec; color: #1f8a4c; display: block; }
     .msg.err { background: #fdecea; color: #c0392b; display: block; }
-    audio { width: 100%; height: 30px; }
+    audio { height: 30px; width: 200px; }
+    .cover { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; background: #eee; }
+    .cover.placeholder { display: inline-block; }
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+    .tab { padding: 9px 18px; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 14px; color: #666; border-bottom: 2px solid transparent; }
+    .tab.active { color: #ff8c42; border-bottom-color: #ff8c42; font-weight: 600; }
+    .pane { display: none; }
+    .pane.active { display: block; }
+    .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    .toolbar input, .toolbar select { width: auto; min-width: 140px; }
+    .modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; justify-content: center; align-items: flex-start; padding-top: 60px; }
+    .modal-mask.show { display: flex; }
+    .modal { background: #fff; border-radius: 10px; width: 520px; max-width: 92vw; padding: 18px 20px; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
+    .modal h3 { margin: 0 0 14px; font-size: 16px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    .modal .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .badge { display: inline-block; background: #f0f0f0; color: #555; border-radius: 10px; padding: 1px 8px; font-size: 12px; }
+    .auth-status { font-size: 12px; margin-left: 8px; }
+    .auth-status.ok { color: #1f8a4c; }
+    .auth-status.no { color: #c0392b; }
+    .actions { display: flex; gap: 6px; flex-wrap: wrap; }
   </style>
 </head>
 <body>
   <header>启蒙音频 · 后台管理</header>
   <div class="wrap">
+    <!-- 鉴权 -->
     <div class="card">
       <h2>鉴权</h2>
-      <label>管理 Token(对应 .env 的 ADMIN_TOKEN)</label>
-      <input id="token" type="password" placeholder="粘贴管理 token" />
-      <p class="muted">token 仅存在本浏览器 localStorage,所有写操作会带 Authorization 头。</p>
+      <div class="row">
+        <div>
+          <label>管理 Token(对应 .env 的 ADMIN_TOKEN)</label>
+          <input id="token" type="password" placeholder="粘贴管理 token" />
+        </div>
+        <div>
+          <label>状态</label>
+          <p class="muted" style="margin-top:2px">token 仅存本浏览器 localStorage,所有写操作带 Authorization 头。<span id="authStatus" class="auth-status no">未验证</span></p>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-      <h2>上传新歌曲</h2>
-      <div class="row">
-        <div>
-          <label>音频文件(必填,mp3/m4a 等)</label>
-          <input id="audio" type="file" accept="audio/*" />
-        </div>
-        <div>
-          <label>封面图(可选)</label>
-          <input id="cover" type="file" accept="image/*" />
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label>歌曲 id(字母数字下划线短横,必填)</label>
-          <input id="id" placeholder="如 gs999" />
-        </div>
-        <div>
-          <label>歌名(必填)</label>
-          <input id="name" placeholder="如 小星星" />
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label>作者/来源(必填)</label>
-          <input id="artist" placeholder="如 经典儿歌" />
-        </div>
-        <div>
-          <label>专辑(可选)</label>
-          <input id="album" placeholder="可选" />
-        </div>
-      </div>
-      <div class="row">
-        <div>
-          <label>大类</label>
-          <select id="category"></select>
-        </div>
-        <div>
-          <label>子类</label>
-          <select id="sub"></select>
-        </div>
-      </div>
-      <label>歌词(lrc,可选)</label>
-      <textarea id="lyric" placeholder="[00:00.00] 歌词..."></textarea>
-      <div style="margin-top:12px"><button id="uploadBtn">上传</button></div>
-      <div id="uploadMsg" class="msg"></div>
+    <!-- 标签页 -->
+    <div class="tabs">
+      <div class="tab active" data-pane="songs">歌曲管理</div>
+      <div class="tab" data-pane="cats">大类管理</div>
+      <div class="tab" data-pane="subs">子类管理</div>
     </div>
 
-    <div class="card">
-      <h2>歌曲列表<button class="ghost" id="refreshBtn" style="float:right">刷新</button></h2>
-      <table>
-        <thead><tr><th>id</th><th>歌名</th><th>作者</th><th>子类</th><th>试听</th><th>操作</th></tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
+    <!-- 歌曲管理 -->
+    <div id="pane-songs" class="pane active">
+      <div class="card">
+        <h2>上传新歌曲</h2>
+        <div class="row">
+          <div>
+            <label>音频文件(必填,mp3/m4a 等)</label>
+            <input id="audio" type="file" accept="audio/*" />
+          </div>
+          <div>
+            <label>封面图(可选)</label>
+            <input id="cover" type="file" accept="image/*" />
+          </div>
+        </div>
+        <div class="row3">
+          <div>
+            <label>歌曲 id(字母数字下划线短横,必填)</label>
+            <input id="id" placeholder="如 gs999" />
+          </div>
+          <div>
+            <label>歌名(必填)</label>
+            <input id="name" placeholder="如 小星星" />
+          </div>
+          <div>
+            <label>作者/来源(必填)</label>
+            <input id="artist" placeholder="如 经典儿歌" />
+          </div>
+        </div>
+        <div class="row3">
+          <div>
+            <label>专辑(可选)</label>
+            <input id="album" placeholder="可选" />
+          </div>
+          <div>
+            <label>大类</label>
+            <select id="category"></select>
+          </div>
+          <div>
+            <label>子类</label>
+            <select id="sub"></select>
+          </div>
+        </div>
+        <label>歌词(lrc,可选)</label>
+        <textarea id="lyric" placeholder="[00:00.00] 歌词..."></textarea>
+        <div style="margin-top:12px"><button id="uploadBtn">上传</button></div>
+        <div id="uploadMsg" class="msg"></div>
+      </div>
+
+      <div class="card">
+        <h2>歌曲列表</h2>
+        <div class="toolbar">
+          <input id="kw" placeholder="按歌名/作者/专辑搜索" />
+          <select id="filterCat"><option value="">全部分类</option></select>
+          <select id="filterSub"><option value="">全部子类</option></select>
+          <button id="searchBtn">搜索</button>
+          <button class="ghost" id="refreshBtn">刷新</button>
+        </div>
+        <table>
+          <thead><tr><th>封面</th><th>id</th><th>歌名</th><th>作者</th><th>专辑</th><th>子类</th><th>时长</th><th>试听</th><th>操作</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <p class="muted" id="songCount" style="margin-top:8px"></p>
+      </div>
+    </div>
+
+    <!-- 大类管理 -->
+    <div id="pane-cats" class="pane">
+      <div class="card">
+        <h2>新增大类</h2>
+        <div class="row3">
+          <div><label>id(必填,如 children)</label><input id="catId" placeholder="英文 id" /></div>
+          <div><label>名称(必填)</label><input id="catName" placeholder="如 儿歌" /></div>
+          <div><label>图标(可选)</label><input id="catIcon" placeholder="emoji 或图标名" /></div>
+        </div>
+        <label>描述(可选)</label>
+        <textarea id="catDesc" placeholder="大类简介"></textarea>
+        <div style="margin-top:12px"><button id="addCatBtn">新增</button></div>
+        <div id="catMsg" class="msg"></div>
+      </div>
+
+      <div class="card">
+        <h2>大类列表<button class="ghost" id="reloadCatsBtn" style="float:right">刷新</button></h2>
+        <table>
+          <thead><tr><th>id</th><th>名称</th><th>图标</th><th>子类数</th><th>描述</th><th>操作</th></tr></thead>
+          <tbody id="catBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 子类管理 -->
+    <div id="pane-subs" class="pane">
+      <div class="card">
+        <h2>新增子类</h2>
+        <div class="row3">
+          <div><label>所属大类(必填)</label><select id="subParentCat"></select></div>
+          <div><label>id(必填,如 children-classic)</label><input id="subId" placeholder="英文 id" /></div>
+          <div><label>名称(必填)</label><input id="subName" placeholder="如 经典儿歌" /></div>
+        </div>
+        <div class="row3">
+          <div><label>图标(可选)</label><input id="subIcon" placeholder="emoji 或图标名" /></div>
+          <div><label>描述(可选)</label><input id="subDesc" placeholder="子类简介" /></div>
+          <div style="display:flex;align-items:flex-end"><button id="addSubBtn">新增</button></div>
+        </div>
+        <div id="subMsg" class="msg"></div>
+      </div>
+
+      <div class="card">
+        <h2>子类列表<button class="ghost" id="reloadSubsBtn" style="float:right">刷新</button></h2>
+        <table>
+          <thead><tr><th>id</th><th>名称</th><th>所属大类</th><th>歌曲数</th><th>描述</th><th>操作</th></tr></thead>
+          <tbody id="subBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑歌曲弹窗 -->
+  <div id="songModal" class="modal-mask">
+    <div class="modal">
+      <h3>编辑歌曲 <span id="editIdLabel" class="muted"></span></h3>
+      <div class="row3">
+        <div><label>歌名</label><input id="editName" /></div>
+        <div><label>作者</label><input id="editArtist" /></div>
+        <div><label>专辑</label><input id="editAlbum" /></div>
+      </div>
+      <div class="row">
+        <div><label>大类</label><select id="editCategory"></select></div>
+        <div><label>子类</label><select id="editSub"></select></div>
+      </div>
+      <label>歌词(lrc)</label>
+      <textarea id="editLyric" style="min-height:90px"></textarea>
+      <div class="foot">
+        <button class="ghost" id="editCancel">取消</button>
+        <button id="editSave">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑大类弹窗 -->
+  <div id="catModal" class="modal-mask">
+    <div class="modal">
+      <h3>编辑大类 <span id="editCatIdLabel" class="muted"></span></h3>
+      <div><label>名称</label><input id="editCatName" /></div>
+      <div><label>图标</label><input id="editCatIcon" /></div>
+      <div><label>描述</label><textarea id="editCatDesc"></textarea></div>
+      <div class="foot">
+        <button class="ghost" id="editCatCancel">取消</button>
+        <button id="editCatSave">保存</button>
+      </div>
     </div>
   </div>
 
 <script>
-  // 应用前缀(自动识别 /childmusic 或根),适配反代子路径部署
+  // 应用前缀(自动识别 /admin 子路径),适配反代前缀部署
   const BASE = location.pathname.replace(/\/admin\/?$/, "") || "";
+
+  // ===== 鉴权 =====
   const tokenEl = document.getElementById("token");
   tokenEl.value = localStorage.getItem("admin_token") || "";
-  tokenEl.addEventListener("change", () => localStorage.setItem("admin_token", tokenEl.value.trim()));
   const token = () => tokenEl.value.trim();
-  const api = (path, opts = {}) => fetch(BASE + path, { ...opts, headers: { ...(opts.headers || {}), Authorization: "Bearer " + token() } });
+  const authStatusEl = document.getElementById("authStatus");
+  tokenEl.addEventListener("change", () => {
+    localStorage.setItem("admin_token", token());
+    authStatusEl.textContent = "未验证";
+    authStatusEl.className = "auth-status no";
+  });
 
+  // 带鉴权的请求;ok 返回解析后数据,失败抛 {detail}
+  async function api(path, opts = {}) {
+    const res = await fetch(BASE + path, {
+      ...opts,
+      headers: { ...(opts.headers || {}), Authorization: "Bearer " + token() },
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const detail = (data && data.detail) || ("请求失败(" + res.status + ")");
+      const err = new Error(detail);
+      err.status = res.status;
+      err.detail = detail;
+      throw err;
+    }
+    return data;
+  }
+
+  // 标记鉴权状态:任意一次写操作成功即视为有效
+  function markAuthed() {
+    authStatusEl.textContent = "已验证";
+    authStatusEl.className = "auth-status ok";
+  }
   function showMsg(el, text, ok) {
     el.textContent = text;
     el.className = "msg " + (ok ? "ok" : "err");
   }
 
+  // ===== 标签页切换 =====
+  document.querySelectorAll(".tab").forEach(t => {
+    t.onclick = () => {
+      document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+      document.querySelectorAll(".pane").forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      document.getElementById("pane-" + t.dataset.pane).classList.add("active");
+    };
+  });
+
+  // ===== 分类数据(全局共享)=====
   let categories = [];
+  // 按子类聚合的歌曲数(从歌曲列表推算,无需后端额外接口)
+  let subSongCount = {};
+  // 大类 id → 子类列表
+  function subsOf(catId) {
+    const c = categories.find(c => c.id === catId);
+    return (c && c.subs) || [];
+  }
+
   async function loadCategories() {
     const res = await fetch(BASE + "/api/categories");
     categories = await res.json();
-    const catSel = document.getElementById("category");
-    catSel.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
-    catSel.onchange = renderSubs;
-    renderSubs();
+    fillCategorySelects();
+    renderCats();
+    renderSubsList();
   }
-  function renderSubs() {
-    const catId = document.getElementById("category").value;
-    const cat = categories.find(c => c.id === catId) || { subs: [] };
-    document.getElementById("sub").innerHTML = (cat.subs || []).map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  function fillCategorySelects() {
+    const opts = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    const withAll = `<option value="">全部分类</option>` + opts;
+    document.getElementById("category").innerHTML = opts;
+    document.getElementById("filterCat").innerHTML = withAll;
+    document.getElementById("subParentCat").innerHTML = opts;
+    document.getElementById("editCategory").innerHTML = opts;
+    renderSubSelect("category", "sub");
+    renderSubSelect("filterCat", "filterSub");
   }
+  function renderSubSelect(catSelId, subSelId) {
+    const catId = document.getElementById(catSelId).value;
+    const subs = subsOf(catId);
+    const allOpt = (subSelId === "filterSub") ? `<option value="">全部子类</option>` : "";
+    document.getElementById(subSelId).innerHTML = allOpt + subs.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  }
+  document.getElementById("category").onchange = () => renderSubSelect("category", "sub");
+  document.getElementById("filterCat").onchange = () => renderSubSelect("filterCat", "filterSub");
+  document.getElementById("editCategory").onchange = () => renderSubSelect("editCategory", "editSub");
 
+  // ===== 上传歌曲 =====
   document.getElementById("uploadBtn").onclick = async () => {
     const msg = document.getElementById("uploadMsg");
-    const fd = new FormData();
+    if (!token()) return showMsg(msg, "请先填写管理 token", false);
     const audio = document.getElementById("audio").files[0];
     if (!audio) return showMsg(msg, "请选择音频文件", false);
+    const fd = new FormData();
     fd.append("audio", audio);
     const cover = document.getElementById("cover").files[0];
     if (cover) fd.append("cover", cover);
@@ -140,34 +336,302 @@
     fd.append("sub_category_id", document.getElementById("sub").value);
     fd.append("lyric", document.getElementById("lyric").value);
     try {
-      const res = await api("/api/admin/songs", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) return showMsg(msg, data.detail || "上传失败", false);
+      const data = await api("/api/admin/songs", { method: "POST", body: fd });
+      markAuthed();
       showMsg(msg, "上传成功:" + data.name + "  时长 " + (data.duration ? Math.round(data.duration) + "s" : "未知"), true);
+      ["audio", "cover", "id", "name", "artist", "album", "lyric"].forEach(i => document.getElementById(i).value = "");
       loadSongs();
-    } catch (e) { showMsg(msg, "请求出错:" + e.message, false); }
+      loadCategories(); // 子类歌曲数可能变化
+    } catch (e) { showMsg(msg, e.detail || e.message, false); }
   };
 
+  // ===== 歌曲列表(搜索/过滤)=====
   async function loadSongs() {
-    const res = await fetch(BASE + "/api/songs");
+    const kw = document.getElementById("kw").value.trim();
+    const cat = document.getElementById("filterCat").value;
+    const sub = document.getElementById("filterSub").value;
+    const params = new URLSearchParams();
+    if (kw) params.set("keyword", kw);
+    if (sub) params.set("sub", sub);
+    else if (cat) params.set("category", cat);
+    const qs = params.toString() ? "?" + params.toString() : "";
+    const res = await fetch(BASE + "/api/songs" + qs);
     const list = await res.json();
+    const items = list.items || list;
+    // 推算各子类歌曲数
+    subSongCount = {};
+    items.forEach(s => { subSongCount[s.subCategory] = (subSongCount[s.subCategory] || 0) + 1; });
+    renderSongs(items);
+    renderSubsList(); // 刷新歌曲数列
+    document.getElementById("songCount").textContent = "共 " + items.length + " 首";
+  }
+  function fmtDur(d) { return d ? Math.floor(d / 60) + ":" + String(Math.round(d % 60)).padStart(2, "0") : "-"; }
+  function subNameOf(subId) {
+    for (const c of categories) {
+      const s = (c.subs || []).find(x => x.id === subId);
+      if (s) return s.name;
+    }
+    return subId || "-";
+  }
+  function renderSongs(items) {
     const tb = document.getElementById("tbody");
-    tb.innerHTML = (list.items || list).map(s => `
+    if (!items.length) { tb.innerHTML = `<tr><td colspan="9" class="muted" style="text-align:center;padding:20px">暂无歌曲</td></tr>`; return; }
+    tb.innerHTML = items.map(s => {
+      const coverCell = s.cover
+        ? `<img class="cover" src="${s.cover}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover placeholder'}))" />`
+        : `<span class="cover placeholder"></span>`;
+      return `
       <tr>
-        <td>${s.id}</td><td>${s.name}</td><td>${s.artist}</td><td>${s.subCategory || "-"}</td>
-        <td>${s.src ? `<audio src="${s.src}" controls preload="none"></audio>` : "-"}</td>
-        <td><button class="danger" data-id="${s.id}">删除</button></td>
-      </tr>`).join("");
-    tb.querySelectorAll("button.danger").forEach(b => b.onclick = async () => {
-      if (!confirm("确认删除 " + b.dataset.id + "?")) return;
-      const res = await api("/api/admin/songs/" + b.dataset.id, { method: "DELETE" });
-      if (res.ok) loadSongs(); else alert("删除失败");
-    });
+        <td>${coverCell}</td>
+        <td>${s.id}</td>
+        <td>${s.name}</td>
+        <td>${s.artist}</td>
+        <td>${s.album || "-"}</td>
+        <td>${subNameOf(s.subCategory)}</td>
+        <td>${fmtDur(s.duration)}</td>
+        <td><button class="ghost sm" data-preview="${s.id}">试听</button></td>
+        <td class="actions">
+          <button class="ghost sm" data-edit="${s.id}">编辑</button>
+          <button class="ghost sm" data-cover="${s.id}">换封面</button>
+          <button class="danger sm" data-del="${s.id}">删除</button>
+        </td>
+      </tr>`;
+    }).join("");
+    // 绑定操作
+    tb.querySelectorAll("button[data-del]").forEach(b => b.onclick = () => delSong(b.dataset.del));
+    tb.querySelectorAll("button[data-edit]").forEach(b => b.onclick = () => openEditSong(b.dataset.edit));
+    tb.querySelectorAll("button[data-preview]").forEach(b => b.onclick = () => previewSong(b.dataset.preview, b));
+    tb.querySelectorAll("button[data-cover]").forEach(b => b.onclick = () => replaceCover(b.dataset.cover));
+  }
+  document.getElementById("searchBtn").onclick = loadSongs;
+  document.getElementById("refreshBtn").onclick = () => {
+    document.getElementById("kw").value = "";
+    document.getElementById("filterCat").value = "";
+    renderSubSelect("filterCat", "filterSub");
+    loadSongs();
+  };
+
+  // 试听:列表不返回 src,按需取详情拿播放地址
+  async function previewSong(songId, btn) {
+    btn.disabled = true;
+    btn.textContent = "加载中";
+    try {
+      const data = await api("/api/songs/" + encodeURIComponent(songId));
+      if (!data.src) { btn.textContent = "无音频"; return; }
+      const audio = document.createElement("audio");
+      audio.src = data.src;
+      audio.controls = true;
+      audio.style.cssText = "vertical-align:middle;width:200px";
+      btn.replaceWith(audio);
+    } catch (e) {
+      btn.textContent = "失败";
+      alert(e.detail || e.message);
+    } finally {
+      btn.disabled = false;
+    }
   }
 
-  document.getElementById("refreshBtn").onclick = loadSongs;
-  loadCategories();
-  loadSongs();
+  // 删除歌曲
+  async function delSong(songId) {
+    if (!confirm("确认删除 " + songId + "?(含音频与封面文件,不可恢复)")) return;
+    try {
+      await api("/api/admin/songs/" + encodeURIComponent(songId), { method: "DELETE" });
+      markAuthed();
+      loadSongs();
+      loadCategories();
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  // 替换封面
+  function replaceCover(songId) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append("cover", file);
+      try {
+        await api("/api/admin/songs/" + encodeURIComponent(songId) + "/cover", { method: "POST", body: fd });
+        markAuthed();
+        loadSongs();
+      } catch (e) { alert(e.detail || e.message); }
+    };
+    input.click();
+  }
+
+  // ===== 编辑歌曲弹窗 =====
+  let editingSong = null;
+  async function openEditSong(songId) {
+    try {
+      const data = await api("/api/songs/" + encodeURIComponent(songId));
+      editingSong = data;
+      document.getElementById("editIdLabel").textContent = "(" + data.id + ")";
+      document.getElementById("editName").value = data.name || "";
+      document.getElementById("editArtist").value = data.artist || "";
+      document.getElementById("editAlbum").value = data.album || "";
+      document.getElementById("editCategory").value = data.category;
+      renderSubSelect("editCategory", "editSub");
+      document.getElementById("editSub").value = data.subCategory || "";
+      document.getElementById("editLyric").value = data.lyric || "";
+      document.getElementById("songModal").classList.add("show");
+    } catch (e) { alert(e.detail || e.message); }
+  }
+  document.getElementById("editCancel").onclick = () => document.getElementById("songModal").classList.remove("show");
+  document.getElementById("editSave").onclick = async () => {
+    if (!editingSong) return;
+    const body = {
+      name: document.getElementById("editName").value.trim(),
+      artist: document.getElementById("editArtist").value.trim(),
+      album: document.getElementById("editAlbum").value.trim(),
+      category_id: document.getElementById("editCategory").value,
+      sub_category_id: document.getElementById("editSub").value,
+      lyric: document.getElementById("editLyric").value,
+    };
+    try {
+      await api("/api/admin/songs/" + encodeURIComponent(editingSong.id), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      markAuthed();
+      document.getElementById("songModal").classList.remove("show");
+      editingSong = null;
+      loadSongs();
+      loadCategories();
+    } catch (e) { alert(e.detail || e.message); }
+  };
+
+  // ===== 大类管理 =====
+  document.getElementById("addCatBtn").onclick = async () => {
+    const msg = document.getElementById("catMsg");
+    const body = {
+      id: document.getElementById("catId").value.trim(),
+      name: document.getElementById("catName").value.trim(),
+      icon: document.getElementById("catIcon").value.trim(),
+      desc: document.getElementById("catDesc").value.trim(),
+    };
+    if (!body.id || !body.name) return showMsg(msg, "id 与名称必填", false);
+    try {
+      await api("/api/admin/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      markAuthed();
+      showMsg(msg, "新增成功", true);
+      ["catId", "catName", "catIcon", "catDesc"].forEach(i => document.getElementById(i).value = "");
+      loadCategories();
+    } catch (e) { showMsg(msg, e.detail || e.message, false); }
+  };
+  document.getElementById("reloadCatsBtn").onclick = loadCategories;
+
+  function renderCats() {
+    const tb = document.getElementById("catBody");
+    tb.innerHTML = categories.map(c => `
+      <tr>
+        <td>${c.id}</td>
+        <td>${c.name}</td>
+        <td>${c.icon || "-"}</td>
+        <td><span class="badge">${(c.subs || []).length}</span></td>
+        <td>${c.desc || "-"}</td>
+        <td class="actions">
+          <button class="ghost sm" data-catedit="${c.id}">编辑</button>
+          <button class="danger sm" data-catdel="${c.id}">删除</button>
+        </td>
+      </tr>`).join("");
+    tb.querySelectorAll("button[data-catdel]").forEach(b => b.onclick = () => delCat(b.dataset.catdel));
+    tb.querySelectorAll("button[data-catedit]").forEach(b => b.onclick = () => openEditCat(b.dataset.catedit));
+  }
+  async function delCat(catId) {
+    if (!confirm("确认删除大类 " + catId + "?(须无歌曲与子类)")) return;
+    try {
+      await api("/api/admin/categories/" + encodeURIComponent(catId), { method: "DELETE" });
+      markAuthed();
+      loadCategories();
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  // 编辑大类弹窗
+  let editingCat = null;
+  function openEditCat(catId) {
+    const c = categories.find(x => x.id === catId);
+    if (!c) return;
+    editingCat = c;
+    document.getElementById("editCatIdLabel").textContent = "(" + c.id + ")";
+    document.getElementById("editCatName").value = c.name || "";
+    document.getElementById("editCatIcon").value = c.icon || "";
+    document.getElementById("editCatDesc").value = c.desc || "";
+    document.getElementById("catModal").classList.add("show");
+  }
+  document.getElementById("editCatCancel").onclick = () => document.getElementById("catModal").classList.remove("show");
+  document.getElementById("editCatSave").onclick = async () => {
+    if (!editingCat) return;
+    const body = {
+      name: document.getElementById("editCatName").value.trim(),
+      icon: document.getElementById("editCatIcon").value.trim(),
+      desc: document.getElementById("editCatDesc").value.trim(),
+    };
+    try {
+      await api("/api/admin/categories/" + encodeURIComponent(editingCat.id), {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+      });
+      markAuthed();
+      document.getElementById("catModal").classList.remove("show");
+      editingCat = null;
+      loadCategories();
+    } catch (e) { alert(e.detail || e.message); }
+  };
+
+  // ===== 子类管理 =====
+  document.getElementById("addSubBtn").onclick = async () => {
+    const msg = document.getElementById("subMsg");
+    const body = {
+      id: document.getElementById("subId").value.trim(),
+      category_id: document.getElementById("subParentCat").value,
+      name: document.getElementById("subName").value.trim(),
+      icon: document.getElementById("subIcon").value.trim(),
+      desc: document.getElementById("subDesc").value.trim(),
+    };
+    if (!body.id || !body.name || !body.category_id) return showMsg(msg, "所属大类、id、名称必填", false);
+    try {
+      await api("/api/admin/subs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      markAuthed();
+      showMsg(msg, "新增成功", true);
+      ["subId", "subName", "subIcon", "subDesc"].forEach(i => document.getElementById(i).value = "");
+      loadCategories();
+    } catch (e) { showMsg(msg, e.detail || e.message, false); }
+  };
+  document.getElementById("reloadSubsBtn").onclick = loadCategories;
+
+  function renderSubsList() {
+    const tb = document.getElementById("subBody");
+    const rows = [];
+    categories.forEach(c => {
+      (c.subs || []).forEach(s => {
+        rows.push(`
+          <tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${c.name}</td>
+            <td><span class="badge">${subSongCount[s.id] || 0}</span></td>
+            <td>${s.desc || "-"}</td>
+            <td><button class="danger sm" data-subdel="${s.id}">删除</button></td>
+          </tr>`);
+      });
+    });
+    tb.innerHTML = rows.length ? rows.join("") : `<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">暂无子类</td></tr>`;
+    tb.querySelectorAll("button[data-subdel]").forEach(b => b.onclick = () => delSub(b.dataset.subdel));
+  }
+  async function delSub(subId) {
+    if (!confirm("确认删除子类 " + subId + "?(须无歌曲)")) return;
+    try {
+      await api("/api/admin/subs/" + encodeURIComponent(subId), { method: "DELETE" });
+      markAuthed();
+      loadCategories();
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  // ===== 启动 =====
+  loadCategories().catch(e => alert("加载分类失败:" + (e.message || e)));
+  loadSongs().catch(e => alert("加载歌曲失败:" + (e.message || e)));
 </script>
 </body>
 </html>
