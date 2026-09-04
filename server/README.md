@@ -194,28 +194,30 @@ docker compose exec childmusic python scripts/migrate_from_json.py
 - 也可在 CasaOS「自定义应用」中用本目录的 `docker-compose.yml` 导入。
 - Nginx Proxy Manager 把 `/cmusic` 转发到 `192.168.x.x:8823`(宿主机端口,见 compose 的 `ports` 映射)。
 
-### 用 docker-run.sh(纯 docker 命令,可选)
+### 用 docker-run.sh(构建推送 ACR + 运行,推荐)
 
-未安装 `docker compose` 或偏好裸 `docker` 时,用本目录的 `docker-run.sh`(与上面的 compose 流程等价):
+本目录的 `docker-run.sh` 用 `docker buildx` 一次性构建 amd64 + arm64 多架构镜像,推送阿里云 ACR 后,任意架构机器(开发机 / 橙派)`run` 都会拉取到匹配架构的镜像,**部署机无需本地 build**(绕开橙派拉基础镜像超时问题):
 
 ```bash
-./docker-run.sh all      # 打包镜像并运行(首次 / 代码更新后)
-./docker-run.sh build    # 仅打包镜像
-./docker-run.sh run      # 仅运行(镜像已存在,日常重启用)
+./docker-run.sh build    # 多架构打包并推送 ACR(代码更新后,在开发机执行)
+./docker-run.sh run      # 从 ACR 拉取镜像并运行(部署机日常 / 升级用)
+./docker-run.sh all      # 推送 ACR 后本机运行
+./docker-run.sh build-local  # 仅构建本机架构到本地 docker(不推送,调试用)
 ./docker-run.sh stop     # 停止并删除容器
 ./docker-run.sh logs     # 跟踪日志
-./docker-run.sh status   # 查看状态
 ```
+
+版本号自动管理:每次 `build` 自动查询 ACR 已有最大 `x.y.z` tag 并递增 patch(首次为 1.0.0),同时更新 `latest`;写一个 `VERSION` 文件(内容如 `1.2.3`)可显式钉住本次版本。查询远端 tag 需要 ACR 凭据:`export ACR_USER=... ACR_PASS=...`,或已 `docker login` 过 ACR(自动复用 `~/.docker/config.json` 凭据)。凭据不要写进 `.env`(会被 `--env-file` 整体注入容器)。
 
 首次导入曲库:
 ```bash
 docker exec -it childmusic python scripts/migrate_from_json.py
 ```
 
-> 国内拉基础镜像 `python:3.11-slim` 常超时(daemon.json 的 mirror 多已失效,且 dockerd 不继承 shell 代理)。先 `docker pull docker.m.daocloud.io/library/python:3.11-slim` 拉到本地,`build` 的 FROM 即命中缓存、绕过联网拉取。
+> 构建机上拉基础镜像 `python:3.11-slim` 常超时(daemon.json 的 mirror 多已失效,且 dockerd 不继承 shell 代理)。先 `docker pull docker.m.daocloud.io/library/python:3.11-slim` 拉到本地,`build` 的 FROM 即命中缓存、绕过联网拉取。
 
 > 备份:只需备份 `volumes/storage` 与 `volumes/db` 两个目录;`volumes/source` 导入后可删。
-> 升级代码:`docker compose up -d --build` 或 `./docker-run.sh all`(数据卷不受影响)。
+> 升级代码:开发机 `./docker-run.sh build`,部署机 `./docker-run.sh run`(拉取最新 latest,数据卷不受影响);或 `docker compose up -d --build` 本地构建。
 
 ## 跨端注意事项
 
