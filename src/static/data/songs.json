@@ -4,7 +4,7 @@
       "name": "儿歌",
       "icon": "🎵",
       "desc": "欢快活泼,朗朗上口",
-      "count": 239
+      "count": 799
     },
     "children-cartoon": {
       "_info": {
@@ -126,7 +126,7 @@
         "name": "经典儿歌",
         "icon": "🎶",
         "desc": "传唱多年的经典",
-        "count": 144
+        "count": 568
       },
       "songs": [
         {
@@ -1136,6 +1136,3398 @@
           "artist": "经典儿歌",
           "src": "/static/library/children/classic/cn160.mp3",
           "cover": ""
+        },
+        {
+          "id": "cn161",
+          "name": "三个和尚没水吃",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn161.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\三个和尚没水吃(台湾童谣).wma"
+        },
+        {
+          "id": "cn162",
+          "name": "不老的老师",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn162.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\不老的老师.wma"
+        },
+        {
+          "id": "cn163",
+          "name": "中华，中华",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn163.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\中华，中华.wma"
+        },
+        {
+          "id": "cn164",
+          "name": "乌骏姆",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn164.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\乌骏姆.wma"
+        },
+        {
+          "id": "cn165",
+          "name": "井冈山下种南瓜",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn165.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\井冈山下种南瓜.wma"
+        },
+        {
+          "id": "cn166",
+          "name": "再见，幼儿园",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn166.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\再见，幼儿园.wma"
+        },
+        {
+          "id": "cn167",
+          "name": "凤凰长发妹",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn167.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\凤凰长发妹.wma"
+        },
+        {
+          "id": "cn168",
+          "name": "创造者之歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn168.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\创造者之歌.wma"
+        },
+        {
+          "id": "cn169",
+          "name": "只怕不抵抗",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn169.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\只怕不抵抗.wma"
+        },
+        {
+          "id": "cn170",
+          "name": "司马光砸缸",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn170.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\司马光砸缸.wma"
+        },
+        {
+          "id": "cn171",
+          "name": "啊哈，黑猫警长",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn171.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\啊哈，黑猫警长.wma"
+        },
+        {
+          "id": "cn172",
+          "name": "嘀哩，嘀哩",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn172.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\嘀哩，嘀哩.wma"
+        },
+        {
+          "id": "cn173",
+          "name": "国旗国旗多美丽",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn173.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\国旗国旗多美丽.wma"
+        },
+        {
+          "id": "cn174",
+          "name": "在雷雨中",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn174.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\在雷雨中.wma"
+        },
+        {
+          "id": "cn175",
+          "name": "壮家的少年在红旗下成长",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn175.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\壮家的少年在红旗下成长.wma"
+        },
+        {
+          "id": "cn176",
+          "name": "大家来做广播操",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn176.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\大家来做广播操.wma"
+        },
+        {
+          "id": "cn177",
+          "name": "大海也是我的家",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn177.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\大海也是我的家.wma"
+        },
+        {
+          "id": "cn178",
+          "name": "天地之间的歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn178.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\天地之间的歌.wma"
+        },
+        {
+          "id": "cn179",
+          "name": "天边飞来小鸽子",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn179.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\天边飞来小鸽子.wma"
+        },
+        {
+          "id": "cn180",
+          "name": "奇妙的小书包",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn180.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\奇妙的小书包.wma"
+        },
+        {
+          "id": "cn181",
+          "name": "好一个土娃子",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn181.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\好一个土娃子.wma"
+        },
+        {
+          "id": "cn182",
+          "name": "好爸爸、坏爸爸",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn182.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\好爸爸、坏爸爸.wma"
+        },
+        {
+          "id": "cn183",
+          "name": "定个小计划",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn183.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\定个小计划.wma"
+        },
+        {
+          "id": "cn184",
+          "name": "小伞带着我飞翔",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn184.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小伞带着我飞翔(故事片《巴山夜雨》插曲).wma"
+        },
+        {
+          "id": "cn185",
+          "name": "小八路",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn185.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小八路(木偶片《小八路》主题歌).wma"
+        },
+        {
+          "id": "cn186",
+          "name": "小号手之歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn186.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小号手之歌(动画片《小号手》主题歌).wma"
+        },
+        {
+          "id": "cn187",
+          "name": "小小葫芦娃",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn187.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小小葫芦娃(剪纸系列片《葫芦兄弟》主题歌).wma"
+        },
+        {
+          "id": "cn188",
+          "name": "小小螺丝帽",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn188.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小小螺丝帽.wma"
+        },
+        {
+          "id": "cn189",
+          "name": "小放牛",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn189.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小放牛(河北民歌).wma"
+        },
+        {
+          "id": "cn190",
+          "name": "小月亮的话",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn190.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小月亮的话.wma"
+        },
+        {
+          "id": "cn191",
+          "name": "小板凳，你莫歪",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn191.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小板凳，你莫歪(湖北童谣).wma"
+        },
+        {
+          "id": "cn192",
+          "name": "小桥流水",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn192.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小桥流水.wma"
+        },
+        {
+          "id": "cn193",
+          "name": "小熊娃娃",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn193.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小熊娃娃.wma"
+        },
+        {
+          "id": "cn194",
+          "name": "小猴子摘桃子",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn194.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小猴子摘桃子(儿童寓言歌曲).wma"
+        },
+        {
+          "id": "cn195",
+          "name": "小白菜",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn195.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小白菜(河北民歌).wma"
+        },
+        {
+          "id": "cn196",
+          "name": "小蜜蜂",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn196.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小蜜蜂.wma"
+        },
+        {
+          "id": "cn197",
+          "name": "小镇故事",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn197.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小镇故事.wma"
+        },
+        {
+          "id": "cn198",
+          "name": "小鸟，小鸟",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn198.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小鸟，小鸟.wma"
+        },
+        {
+          "id": "cn199",
+          "name": "小鸡住新楼",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn199.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小鸡住新楼.wma"
+        },
+        {
+          "id": "cn200",
+          "name": "小鸭子",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn200.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\小鸭子.wma"
+        },
+        {
+          "id": "cn201",
+          "name": "山村老师",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn201.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\山村老师.wma"
+        },
+        {
+          "id": "cn202",
+          "name": "弯弯谣",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn202.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\弯弯谣.wma"
+        },
+        {
+          "id": "cn203",
+          "name": "心愿",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn203.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\心愿.wma"
+        },
+        {
+          "id": "cn204",
+          "name": "快乐到你家",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn204.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\快乐到你家.wma"
+        },
+        {
+          "id": "cn205",
+          "name": "快乐小精灵",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn205.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\快乐小精灵.wma"
+        },
+        {
+          "id": "cn206",
+          "name": "快乐朋友",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn206.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\快乐朋友.wma"
+        },
+        {
+          "id": "cn207",
+          "name": "快乐的小队",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn207.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\快乐的小队.wma"
+        },
+        {
+          "id": "cn208",
+          "name": "我们的春天",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn208.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\我们的春天.wma"
+        },
+        {
+          "id": "cn209",
+          "name": "我和奶奶跳皮影",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn209.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\我和奶奶跳皮影.wma"
+        },
+        {
+          "id": "cn210",
+          "name": "我家住在北京城",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn210.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\我家住在北京城.wma"
+        },
+        {
+          "id": "cn211",
+          "name": "我家的小燕子",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn211.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\我家的小燕子.wma"
+        },
+        {
+          "id": "cn212",
+          "name": "我是环保小标兵",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn212.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\我是环保小标兵.wma"
+        },
+        {
+          "id": "cn213",
+          "name": "我有一头小毛驴",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn213.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\我有一头小毛驴(新疆民歌).wma"
+        },
+        {
+          "id": "cn214",
+          "name": "我的心是小茉莉",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn214.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\我的心是小茉莉.wma"
+        },
+        {
+          "id": "cn215",
+          "name": "我给牙齿洗个澡",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn215.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\我给牙齿洗个澡.wma"
+        },
+        {
+          "id": "cn216",
+          "name": "拍手护牙歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn216.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\拍手护牙歌.wma"
+        },
+        {
+          "id": "cn217",
+          "name": "拍手歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn217.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\拍手歌(电影《霹雳贝贝》插曲).wma"
+        },
+        {
+          "id": "cn218",
+          "name": "新年，你好！",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn218.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\新年，你好！.wma"
+        },
+        {
+          "id": "cn219",
+          "name": "早操歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn219.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\早操歌.wma"
+        },
+        {
+          "id": "cn220",
+          "name": "时间歌谣",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn220.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\时间歌谣.wma"
+        },
+        {
+          "id": "cn221",
+          "name": "春姑娘，你在哪里",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn221.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\春姑娘，你在哪里.wma"
+        },
+        {
+          "id": "cn222",
+          "name": "春雨沙沙",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn222.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\春雨沙沙.wma"
+        },
+        {
+          "id": "cn223",
+          "name": "有位叔叔叫雷锋",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn223.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\有位叔叔叫雷锋.wma"
+        },
+        {
+          "id": "cn224",
+          "name": "木马歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn224.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\木马歌.wma"
+        },
+        {
+          "id": "cn225",
+          "name": "柳桥的故事",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn225.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\柳桥的故事.wma"
+        },
+        {
+          "id": "cn226",
+          "name": "桃花谣",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn226.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\桃花谣.wma"
+        },
+        {
+          "id": "cn227",
+          "name": "植树歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn227.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\植树歌.wma"
+        },
+        {
+          "id": "cn228",
+          "name": "水牛儿，水牛儿&送别",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn228.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\水牛儿，水牛儿&送别.wma"
+        },
+        {
+          "id": "cn229",
+          "name": "水立方童话",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn229.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\水立方童话.wma"
+        },
+        {
+          "id": "cn230",
+          "name": "泼水歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn230.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\泼水歌(新疆儿歌).wma"
+        },
+        {
+          "id": "cn231",
+          "name": "济公.《济公》主题曲",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn231.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\济公.《济公》主题曲.wma"
+        },
+        {
+          "id": "cn232",
+          "name": "海边的童话时光",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn232.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\海边的童话时光.wma"
+        },
+        {
+          "id": "cn233",
+          "name": "火车向着韶山跑",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn233.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\火车向着韶山跑.wma"
+        },
+        {
+          "id": "cn234",
+          "name": "灰姑娘的梦",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn234.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\灰姑娘的梦.wma"
+        },
+        {
+          "id": "cn235",
+          "name": "炫海娃",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn235.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\炫海娃.wma"
+        },
+        {
+          "id": "cn236",
+          "name": "爷爷的三峡号子",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn236.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\爷爷的三峡号子.wma"
+        },
+        {
+          "id": "cn237",
+          "name": "牧童山歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn237.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\牧童山歌.wma"
+        },
+        {
+          "id": "cn238",
+          "name": "王老先生",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn238.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\王老先生.wma"
+        },
+        {
+          "id": "cn239",
+          "name": "生日祝福歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn239.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\生日祝福歌.wma"
+        },
+        {
+          "id": "cn240",
+          "name": "男儿第一志气高",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn240.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\男儿第一志气高.wma"
+        },
+        {
+          "id": "cn241",
+          "name": "白帆",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn241.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\白帆.wma"
+        },
+        {
+          "id": "cn242",
+          "name": "百变小魔女",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn242.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\百变小魔女.wma"
+        },
+        {
+          "id": "cn243",
+          "name": "祖国的孩子们",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn243.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\祖国的孩子们.wma"
+        },
+        {
+          "id": "cn244",
+          "name": "祝福歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn244.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\祝福歌.wma"
+        },
+        {
+          "id": "cn245",
+          "name": "神奇的字",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn245.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\神奇的字.wma"
+        },
+        {
+          "id": "cn246",
+          "name": "神秘的星星",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn246.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\神秘的星星.wma"
+        },
+        {
+          "id": "cn247",
+          "name": "童年家乡",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn247.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\童年家乡.wma"
+        },
+        {
+          "id": "cn248",
+          "name": "童年的小摇车",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn248.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\童年的小摇车.wma"
+        },
+        {
+          "id": "cn249",
+          "name": "童心气球",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn249.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\童心气球.wma"
+        },
+        {
+          "id": "cn250",
+          "name": "竹山谣",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn250.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\竹山谣.wma"
+        },
+        {
+          "id": "cn251",
+          "name": "红缨枪",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn251.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\红缨枪.wma"
+        },
+        {
+          "id": "cn252",
+          "name": "老师的眼睛会说话",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn252.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\老师的眼睛会说话.wma"
+        },
+        {
+          "id": "cn253",
+          "name": "节水歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn253.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\节水歌.wma"
+        },
+        {
+          "id": "cn254",
+          "name": "花儿朵朵向太阳",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn254.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\花儿朵朵向太阳.wma"
+        },
+        {
+          "id": "cn255",
+          "name": "花海飞歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn255.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\花海飞歌.wma"
+        },
+        {
+          "id": "cn256",
+          "name": "英文字母歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn256.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\英文字母歌(美国).wma"
+        },
+        {
+          "id": "cn257",
+          "name": "茶山谣",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn257.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\茶山谣.wma"
+        },
+        {
+          "id": "cn258",
+          "name": "落雨大",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn258.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\落雨大(广东民歌).wma"
+        },
+        {
+          "id": "cn259",
+          "name": "蓝天白云跟我来",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn259.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\蓝天白云跟我来.wma"
+        },
+        {
+          "id": "cn260",
+          "name": "螃蟹歌",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn260.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\螃蟹歌(云南建水民歌).wma"
+        },
+        {
+          "id": "cn261",
+          "name": "袋鼠护送员",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn261.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\袋鼠护送员.wma"
+        },
+        {
+          "id": "cn262",
+          "name": "赞歌要比星星多",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn262.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\赞歌要比星星多.wma"
+        },
+        {
+          "id": "cn263",
+          "name": "邋遢大王",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn263.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\邋遢大王(动画片《邋遢大王》主题歌).wma"
+        },
+        {
+          "id": "cn264",
+          "name": "酸枣刺",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn264.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\酸枣刺(选自《生产大合唱》).wma"
+        },
+        {
+          "id": "cn265",
+          "name": "金孔雀",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn265.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\金孔雀.wma"
+        },
+        {
+          "id": "cn266",
+          "name": "金色的童年",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn266.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\金色的童年.wma"
+        },
+        {
+          "id": "cn267",
+          "name": "铃兰",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn267.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\铃兰.wma"
+        },
+        {
+          "id": "cn268",
+          "name": "长江我的家",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn268.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\长江我的家.wma"
+        },
+        {
+          "id": "cn269",
+          "name": "音乐小屋",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn269.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\音乐小屋.wma"
+        },
+        {
+          "id": "cn270",
+          "name": "顽皮的月亮",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn270.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\顽皮的月亮.wma"
+        },
+        {
+          "id": "cn271",
+          "name": "马兰谣",
+          "artist": "中华儿歌珍藏 160首",
+          "src": "/static/library/children/classic/cn271.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\中华儿歌珍藏 160首\\马兰谣.wma"
+        },
+        {
+          "id": "cn272",
+          "name": "儿歌-三字经儿歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn272.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-三字经儿歌.wma"
+        },
+        {
+          "id": "cn273",
+          "name": "儿歌-丑小鸭",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn273.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-丑小鸭.wma"
+        },
+        {
+          "id": "cn274",
+          "name": "儿歌-冰糖葫芦",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn274.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-冰糖葫芦.wma"
+        },
+        {
+          "id": "cn275",
+          "name": "儿歌-刷牙歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn275.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-刷牙歌.wma"
+        },
+        {
+          "id": "cn276",
+          "name": "儿歌-小猫钓鱼",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn276.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-小猫钓鱼.wma"
+        },
+        {
+          "id": "cn277",
+          "name": "儿歌-弟子规",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn277.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-弟子规.wma"
+        },
+        {
+          "id": "cn278",
+          "name": "儿歌-数星星",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn278.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-数星星.wma"
+        },
+        {
+          "id": "cn279",
+          "name": "儿歌-春晓",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn279.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-春晓.wma"
+        },
+        {
+          "id": "cn280",
+          "name": "儿歌-黑猫警长",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn280.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\4399儿歌-黑猫警长.wma"
+        },
+        {
+          "id": "cn281",
+          "name": "儿歌-巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn281.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿歌-巧虎.wma"
+        },
+        {
+          "id": "cn282",
+          "name": "儿童歌曲-1-10数字歌 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn282.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-1-10数字歌 巧虎.wma"
+        },
+        {
+          "id": "cn283",
+          "name": "儿童歌曲-ABCSong",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn283.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-ABCSong.wma"
+        },
+        {
+          "id": "cn284",
+          "name": "儿童歌曲-My Bicycle",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn284.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-My Bicycle.wma"
+        },
+        {
+          "id": "cn285",
+          "name": "儿童歌曲-一起出去玩",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn285.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-一起出去玩.wma"
+        },
+        {
+          "id": "cn286",
+          "name": "儿童歌曲-一起去郊游",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn286.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-一起去郊游.wma"
+        },
+        {
+          "id": "cn287",
+          "name": "儿童歌曲-介绍自己交朋友",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn287.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-介绍自己交朋友.wma"
+        },
+        {
+          "id": "cn288",
+          "name": "儿童歌曲-伊比呀呀 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn288.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-伊比呀呀 巧虎.wma"
+        },
+        {
+          "id": "cn289",
+          "name": "儿童歌曲-健康操-好吃的蔬菜色拉",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn289.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-健康操-好吃的蔬菜色拉.wma"
+        },
+        {
+          "id": "cn290",
+          "name": "儿童歌曲-健康操",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn290.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-健康操.wma"
+        },
+        {
+          "id": "cn291",
+          "name": "儿童歌曲-兔子跳跳跳",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn291.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-兔子跳跳跳.wma"
+        },
+        {
+          "id": "cn292",
+          "name": "儿童歌曲-再见歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn292.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-再见歌.wma"
+        },
+        {
+          "id": "cn293",
+          "name": "儿童歌曲-分享-巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn293.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-分享-巧虎.wma"
+        },
+        {
+          "id": "cn294",
+          "name": "儿童歌曲-刷牙",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn294.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-刷牙.wma"
+        },
+        {
+          "id": "cn295",
+          "name": "儿童歌曲-剪刀舞",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn295.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-剪刀舞.wma"
+        },
+        {
+          "id": "cn296",
+          "name": "儿童歌曲-勾勾手指头",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn296.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-勾勾手指头.wma"
+        },
+        {
+          "id": "cn297",
+          "name": "儿童歌曲-去海边玩",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn297.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-去海边玩.wma"
+        },
+        {
+          "id": "cn298",
+          "name": "儿童歌曲-叮叮当",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn298.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-叮叮当(巧虎).wma"
+        },
+        {
+          "id": "cn299",
+          "name": "儿童歌曲-可爱的北极熊",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn299.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-可爱的北极熊.wma"
+        },
+        {
+          "id": "cn300",
+          "name": "儿童歌曲-可爱的小海豹",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn300.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-可爱的小海豹(巧虎).wma"
+        },
+        {
+          "id": "cn301",
+          "name": "儿童歌曲-可爱的小猪",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn301.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-可爱的小猪.wma"
+        },
+        {
+          "id": "cn302",
+          "name": "儿童歌曲-可爱的小鸡",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn302.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-可爱的小鸡.wma"
+        },
+        {
+          "id": "cn303",
+          "name": "儿童歌曲-吹泡泡律动",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn303.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-吹泡泡律动.wma"
+        },
+        {
+          "id": "cn304",
+          "name": "儿童歌曲-和快乐在一起 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn304.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-和快乐在一起 巧虎.wma"
+        },
+        {
+          "id": "cn305",
+          "name": "儿童歌曲-和快乐在一起",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn305.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-和快乐在一起.wma"
+        },
+        {
+          "id": "cn306",
+          "name": "儿童歌曲-坐火车",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn306.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-坐火车.wma"
+        },
+        {
+          "id": "cn307",
+          "name": "儿童歌曲-夏天的歌手",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn307.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-夏天的歌手.wma"
+        },
+        {
+          "id": "cn308",
+          "name": "儿童歌曲-大家来刷牙",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn308.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-大家来刷牙.wma"
+        },
+        {
+          "id": "cn309",
+          "name": "儿童歌曲-大河马",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn309.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-大河马.wma"
+        },
+        {
+          "id": "cn310",
+          "name": "儿童歌曲-大白鹅",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn310.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-大白鹅.wma"
+        },
+        {
+          "id": "cn311",
+          "name": "儿童歌曲-大象歌 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn311.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-大象歌 巧虎.wma"
+        },
+        {
+          "id": "cn312",
+          "name": "儿童歌曲-头儿肩膀膝脚趾",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn312.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-头儿肩膀膝脚趾.wma"
+        },
+        {
+          "id": "cn313",
+          "name": "儿童歌曲-妈妈我爱你2",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn313.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-妈妈我爱你2(巧虎).wma"
+        },
+        {
+          "id": "cn314",
+          "name": "儿童歌曲-宝宝健康操",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn314.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-宝宝健康操.wma"
+        },
+        {
+          "id": "cn315",
+          "name": "儿童歌曲-小丑鱼",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn315.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小丑鱼.wma"
+        },
+        {
+          "id": "cn316",
+          "name": "儿童歌曲-小乌龟",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn316.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小乌龟(巧虎).wma"
+        },
+        {
+          "id": "cn317",
+          "name": "儿童歌曲-小小乌龟",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn317.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小小乌龟.wma"
+        },
+        {
+          "id": "cn318",
+          "name": "儿童歌曲-小小青蛙爱唱歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn318.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小小青蛙爱唱歌.wma"
+        },
+        {
+          "id": "cn319",
+          "name": "儿童歌曲-小松鼠",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn319.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小松鼠(巧虎).wma"
+        },
+        {
+          "id": "cn320",
+          "name": "儿童歌曲-小猴子",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn320.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小猴子.wma"
+        },
+        {
+          "id": "cn321",
+          "name": "儿童歌曲-小猴爱爱",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn321.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小猴爱爱.wma"
+        },
+        {
+          "id": "cn322",
+          "name": "儿童歌曲-小羊咩咩咩 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn322.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小羊咩咩咩 巧虎.wma"
+        },
+        {
+          "id": "cn323",
+          "name": "儿童歌曲-小花猫",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn323.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小花猫(巧虎).wma"
+        },
+        {
+          "id": "cn324",
+          "name": "儿童歌曲-小花猫之歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn324.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小花猫之歌.wma"
+        },
+        {
+          "id": "cn325",
+          "name": "儿童歌曲-小花笑哈哈",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn325.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小花笑哈哈.wma"
+        },
+        {
+          "id": "cn326",
+          "name": "儿童歌曲-小金鱼",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn326.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小金鱼.wma"
+        },
+        {
+          "id": "cn327",
+          "name": "儿童歌曲-小雨滴",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn327.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小雨滴.wma"
+        },
+        {
+          "id": "cn328",
+          "name": "儿童歌曲-小鱼快跑",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn328.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-小鱼快跑(巧虎).wma"
+        },
+        {
+          "id": "cn329",
+          "name": "儿童歌曲-巧虎-小青蛙",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn329.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-巧虎-小青蛙.wma"
+        },
+        {
+          "id": "cn330",
+          "name": "儿童歌曲-巧虎-运动会",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn330.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-巧虎-运动会.wma"
+        },
+        {
+          "id": "cn331",
+          "name": "儿童歌曲-巧虎之歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn331.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-巧虎之歌.wma"
+        },
+        {
+          "id": "cn332",
+          "name": "儿童歌曲-巧虎生日快乐",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn332.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-巧虎生日快乐.wma"
+        },
+        {
+          "id": "cn333",
+          "name": "儿童歌曲-巧虎自我介绍歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn333.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-巧虎自我介绍歌.wma"
+        },
+        {
+          "id": "cn334",
+          "name": "儿童歌曲-帮忙",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn334.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-帮忙.wma"
+        },
+        {
+          "id": "cn335",
+          "name": "儿童歌曲-床前明月光",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn335.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-床前明月光.wma"
+        },
+        {
+          "id": "cn336",
+          "name": "儿童歌曲-形状歌 巧虎歌曲",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn336.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-形状歌 巧虎歌曲.wma"
+        },
+        {
+          "id": "cn337",
+          "name": "儿童歌曲-形状歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn337.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-形状歌.wma"
+        },
+        {
+          "id": "cn338",
+          "name": "儿童歌曲-形状点心",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn338.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-形状点心.wma"
+        },
+        {
+          "id": "cn339",
+          "name": "儿童歌曲-彩色气球",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn339.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-彩色气球.wma"
+        },
+        {
+          "id": "cn340",
+          "name": "儿童歌曲-快乐吃饭歌 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn340.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-快乐吃饭歌 巧虎.wma"
+        },
+        {
+          "id": "cn341",
+          "name": "儿童歌曲-快乐吃饭歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn341.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-快乐吃饭歌.wma"
+        },
+        {
+          "id": "cn342",
+          "name": "儿童歌曲-快乐多多",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn342.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-快乐多多.wma"
+        },
+        {
+          "id": "cn343",
+          "name": "儿童歌曲-快乐巧巧农场",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn343.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-快乐巧巧农场.wma"
+        },
+        {
+          "id": "cn344",
+          "name": "儿童歌曲-快乐的小鸟",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn344.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-快乐的小鸟.wma"
+        },
+        {
+          "id": "cn345",
+          "name": "儿童歌曲-念谣",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn345.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-念谣.wma"
+        },
+        {
+          "id": "cn346",
+          "name": "儿童歌曲-念谣乐园-新年到",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn346.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-念谣乐园-新年到.wma"
+        },
+        {
+          "id": "cn347",
+          "name": "儿童歌曲-念谣乐园-来搭车",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn347.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-念谣乐园-来搭车.wma"
+        },
+        {
+          "id": "cn348",
+          "name": "儿童歌曲-恭喜恭喜 巧虎歌曲",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn348.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-恭喜恭喜 巧虎歌曲.wma"
+        },
+        {
+          "id": "cn349",
+          "name": "儿童歌曲-恭喜恭喜-巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn349.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-恭喜恭喜-巧虎.wma"
+        },
+        {
+          "id": "cn350",
+          "name": "儿童歌曲-我会洗手",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn350.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-我会洗手.wma"
+        },
+        {
+          "id": "cn351",
+          "name": "儿童歌曲-我会穿鞋子 巧虎歌曲",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn351.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-我会穿鞋子 巧虎歌曲.wma"
+        },
+        {
+          "id": "cn352",
+          "name": "儿童歌曲-我会穿鞋子",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn352.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-我会穿鞋子.wma"
+        },
+        {
+          "id": "cn353",
+          "name": "儿童歌曲-我的家人",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn353.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-我的家人.wma"
+        },
+        {
+          "id": "cn354",
+          "name": "儿童歌曲-我的新朋友巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn354.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-我的新朋友巧虎.wma"
+        },
+        {
+          "id": "cn355",
+          "name": "儿童歌曲-我的脸",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn355.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-我的脸.wma"
+        },
+        {
+          "id": "cn356",
+          "name": "儿童歌曲-我的身体",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn356.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-我的身体.wma"
+        },
+        {
+          "id": "cn357",
+          "name": "儿童歌曲-手指动物歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn357.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-手指动物歌.wma"
+        },
+        {
+          "id": "cn358",
+          "name": "儿童歌曲-拉拉手好朋友",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn358.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-拉拉手好朋友.wma"
+        },
+        {
+          "id": "cn359",
+          "name": "儿童歌曲-拍拍小手",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn359.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-拍拍小手.wma"
+        },
+        {
+          "id": "cn360",
+          "name": "儿童歌曲-拳头歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn360.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-拳头歌.wma"
+        },
+        {
+          "id": "cn361",
+          "name": "儿童歌曲-排队轮流玩 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn361.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-排队轮流玩 巧虎.wma"
+        },
+        {
+          "id": "cn362",
+          "name": "儿童歌曲-排队轮流玩",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn362.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-排队轮流玩.wma"
+        },
+        {
+          "id": "cn363",
+          "name": "儿童歌曲-握紧拳头 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn363.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-握紧拳头 巧虎.wma"
+        },
+        {
+          "id": "cn364",
+          "name": "儿童歌曲-数字歌 巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn364.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-数字歌 巧虎.wma"
+        },
+        {
+          "id": "cn365",
+          "name": "儿童歌曲-数字歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn365.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-数字歌.wma"
+        },
+        {
+          "id": "cn366",
+          "name": "儿童歌曲-晚安歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn366.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-晚安歌.wma"
+        },
+        {
+          "id": "cn367",
+          "name": "儿童歌曲-栗树下",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn367.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-栗树下.wma"
+        },
+        {
+          "id": "cn368",
+          "name": "儿童歌曲-桔子歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn368.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-桔子歌.wma"
+        },
+        {
+          "id": "cn369",
+          "name": "儿童歌曲-母鸭带小鸭律动",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn369.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-母鸭带小鸭律动.wma"
+        },
+        {
+          "id": "cn370",
+          "name": "儿童歌曲-水果歌1",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn370.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-水果歌1.wma"
+        },
+        {
+          "id": "cn371",
+          "name": "儿童歌曲-洗手歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn371.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-洗手歌.wma"
+        },
+        {
+          "id": "cn372",
+          "name": "儿童歌曲-洗澡真开心",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn372.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-洗澡真开心(巧虎).wma"
+        },
+        {
+          "id": "cn373",
+          "name": "儿童歌曲-灯笼亮又亮",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn373.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-灯笼亮又亮.wma"
+        },
+        {
+          "id": "cn374",
+          "name": "儿童歌曲-炒萝卜",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn374.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-炒萝卜.wma"
+        },
+        {
+          "id": "cn375",
+          "name": "儿童歌曲-猜拳歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn375.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-猜拳歌.wma"
+        },
+        {
+          "id": "cn376",
+          "name": "儿童歌曲-电话铃铃铃",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn376.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-电话铃铃铃.wma"
+        },
+        {
+          "id": "cn377",
+          "name": "儿童歌曲-碰碰身体",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn377.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-碰碰身体.wma"
+        },
+        {
+          "id": "cn378",
+          "name": "儿童歌曲-红灯停绿灯行",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn378.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-红灯停绿灯行.wma"
+        },
+        {
+          "id": "cn379",
+          "name": "儿童歌曲-红黄蓝",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn379.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-红黄蓝.wma"
+        },
+        {
+          "id": "cn380",
+          "name": "儿童歌曲-线团咕噜咕噜",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn380.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-线团咕噜咕噜.wma"
+        },
+        {
+          "id": "cn381",
+          "name": "儿童歌曲-耳朵长在脚上的蟋蟀",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn381.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-耳朵长在脚上的蟋蟀.wma"
+        },
+        {
+          "id": "cn382",
+          "name": "儿童歌曲-肚子咕噜噜",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn382.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-肚子咕噜噜.wma"
+        },
+        {
+          "id": "cn383",
+          "name": "儿童歌曲-花开了",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn383.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-花开了.wma"
+        },
+        {
+          "id": "cn384",
+          "name": "儿童歌曲-茶壶歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn384.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-茶壶歌.wma"
+        },
+        {
+          "id": "cn385",
+          "name": "儿童歌曲-草裙舞",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn385.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-草裙舞.wma"
+        },
+        {
+          "id": "cn386",
+          "name": "儿童歌曲-螳螂拳",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn386.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-螳螂拳.wma"
+        },
+        {
+          "id": "cn387",
+          "name": "儿童歌曲-西瓜歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn387.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-西瓜歌.wma"
+        },
+        {
+          "id": "cn388",
+          "name": "儿童歌曲-谁会这样",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn388.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-谁会这样.wma"
+        },
+        {
+          "id": "cn389",
+          "name": "儿童歌曲-跟影子玩游戏",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn389.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-跟影子玩游戏.wma"
+        },
+        {
+          "id": "cn390",
+          "name": "儿童歌曲-车子",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn390.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-车子.wma"
+        },
+        {
+          "id": "cn391",
+          "name": "儿童歌曲-采草莓",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn391.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-采草莓.wma"
+        },
+        {
+          "id": "cn392",
+          "name": "儿童歌曲-长脖子的长颈鹿",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn392.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-长脖子的长颈鹿.wma"
+        },
+        {
+          "id": "cn393",
+          "name": "儿童歌曲-青蛙舞",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn393.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-青蛙舞.wma"
+        },
+        {
+          "id": "cn394",
+          "name": "儿童歌曲-面包香喷喷",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn394.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-面包香喷喷(巧虎).wma"
+        },
+        {
+          "id": "cn395",
+          "name": "儿童歌曲-顽皮小瓢虫",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn395.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-顽皮小瓢虫.wma"
+        },
+        {
+          "id": "cn396",
+          "name": "儿童歌曲-顽皮熊",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn396.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-顽皮熊.wma"
+        },
+        {
+          "id": "cn397",
+          "name": "儿童歌曲-颜色世界真美丽",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn397.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-颜色世界真美丽.wma"
+        },
+        {
+          "id": "cn398",
+          "name": "儿童歌曲-饼干歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn398.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\儿童歌曲-饼干歌.wma"
+        },
+        {
+          "id": "cn399",
+          "name": "巧虎-巧虎儿歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn399.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎-巧虎儿歌.wma"
+        },
+        {
+          "id": "cn400",
+          "name": "巧虎儿歌-ABC Song",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn400.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-ABC Song.wma"
+        },
+        {
+          "id": "cn401",
+          "name": "巧虎儿歌-Animals",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn401.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-Animals.wma"
+        },
+        {
+          "id": "cn402",
+          "name": "巧虎儿歌-Let's Go Shopping",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn402.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-Let's Go Shopping.wma"
+        },
+        {
+          "id": "cn403",
+          "name": "巧虎儿歌-一二三木头人",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn403.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-一二三木头人.wma"
+        },
+        {
+          "id": "cn404",
+          "name": "巧虎儿歌-一起去郊游",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn404.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-一起去郊游.wma"
+        },
+        {
+          "id": "cn405",
+          "name": "巧虎儿歌-一起跳舞",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn405.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-一起跳舞.wma"
+        },
+        {
+          "id": "cn406",
+          "name": "巧虎儿歌-健康操",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn406.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-健康操.wma"
+        },
+        {
+          "id": "cn407",
+          "name": "巧虎儿歌-健康蔬果歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn407.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-健康蔬果歌.wma"
+        },
+        {
+          "id": "cn408",
+          "name": "巧虎儿歌-去郊游",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn408.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-去郊游.wma"
+        },
+        {
+          "id": "cn409",
+          "name": "巧虎儿歌-可爱的小猪",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn409.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-可爱的小猪.wma"
+        },
+        {
+          "id": "cn410",
+          "name": "巧虎儿歌-吹泡泡",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn410.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-吹泡泡.wma"
+        },
+        {
+          "id": "cn411",
+          "name": "巧虎儿歌-喂喂喂",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn411.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-喂喂喂.wma"
+        },
+        {
+          "id": "cn412",
+          "name": "巧虎儿歌-四季歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn412.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-四季歌.wma"
+        },
+        {
+          "id": "cn413",
+          "name": "巧虎儿歌-圣诞节真快乐",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn413.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-圣诞节真快乐.wma"
+        },
+        {
+          "id": "cn414",
+          "name": "巧虎儿歌-宝宝健康操",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn414.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-宝宝健康操.wma"
+        },
+        {
+          "id": "cn415",
+          "name": "巧虎儿歌-小丑鱼",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn415.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小丑鱼.wma"
+        },
+        {
+          "id": "cn416",
+          "name": "巧虎儿歌-小汽车",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn416.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小汽车.wma"
+        },
+        {
+          "id": "cn417",
+          "name": "巧虎儿歌-小火车",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn417.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小火车.wma"
+        },
+        {
+          "id": "cn418",
+          "name": "巧虎儿歌-小猫喵喵",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn418.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小猫喵喵.wma"
+        },
+        {
+          "id": "cn419",
+          "name": "巧虎儿歌-小猴子",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn419.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小猴子.wma"
+        },
+        {
+          "id": "cn420",
+          "name": "巧虎儿歌-小白兔",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn420.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小白兔.wma"
+        },
+        {
+          "id": "cn421",
+          "name": "巧虎儿歌-小花猫",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn421.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小花猫.wma"
+        },
+        {
+          "id": "cn422",
+          "name": "巧虎儿歌-小花猫之歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn422.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小花猫之歌.wma"
+        },
+        {
+          "id": "cn423",
+          "name": "巧虎儿歌-小花笑哈哈",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn423.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小花笑哈哈.wma"
+        },
+        {
+          "id": "cn424",
+          "name": "巧虎儿歌-小飞机",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn424.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小飞机.wma"
+        },
+        {
+          "id": "cn425",
+          "name": "巧虎儿歌-小鸭子",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn425.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-小鸭子.wma"
+        },
+        {
+          "id": "cn426",
+          "name": "巧虎儿歌-我的新朋友巧虎",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn426.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-我的新朋友巧虎.wma"
+        },
+        {
+          "id": "cn427",
+          "name": "巧虎儿歌-我的身体",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn427.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-我的身体.wma"
+        },
+        {
+          "id": "cn428",
+          "name": "巧虎儿歌-手指招呼歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn428.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-手指招呼歌.wma"
+        },
+        {
+          "id": "cn429",
+          "name": "巧虎儿歌-拔萝卜",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn429.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-拔萝卜.wma"
+        },
+        {
+          "id": "cn430",
+          "name": "巧虎儿歌-摇啊摇",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn430.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-摇啊摇.wma"
+        },
+        {
+          "id": "cn431",
+          "name": "巧虎儿歌-敲大鼓咚咚咚",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn431.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-敲大鼓咚咚咚.wma"
+        },
+        {
+          "id": "cn432",
+          "name": "巧虎儿歌-机器人",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn432.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-机器人.wma"
+        },
+        {
+          "id": "cn433",
+          "name": "巧虎儿歌-来跳舞",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn433.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-来跳舞.wma"
+        },
+        {
+          "id": "cn434",
+          "name": "巧虎儿歌-母鸭带小鸭",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn434.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-母鸭带小鸭.wma"
+        },
+        {
+          "id": "cn435",
+          "name": "巧虎儿歌-水果歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn435.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-水果歌.wma"
+        },
+        {
+          "id": "cn436",
+          "name": "巧虎儿歌-沙铃沙沙沙",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn436.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-沙铃沙沙沙.wma"
+        },
+        {
+          "id": "cn437",
+          "name": "巧虎儿歌-洗澡歌",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn437.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-洗澡歌.wma"
+        },
+        {
+          "id": "cn438",
+          "name": "巧虎儿歌-漂亮的小丑鱼",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn438.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-漂亮的小丑鱼.wma"
+        },
+        {
+          "id": "cn439",
+          "name": "巧虎儿歌-电话铃铃铃",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn439.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-电话铃铃铃.wma"
+        },
+        {
+          "id": "cn440",
+          "name": "巧虎儿歌-红黄蓝",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn440.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-红黄蓝.wma"
+        },
+        {
+          "id": "cn441",
+          "name": "巧虎儿歌-静夜思",
+          "artist": "巧虎儿歌170首",
+          "src": "/static/library/children/classic/cn441.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\巧虎儿歌170首\\巧虎儿歌-静夜思.wma"
+        },
+        {
+          "id": "cn532",
+          "name": "12生肖歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn532.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-12生肖歌.wma"
+        },
+        {
+          "id": "cn533",
+          "name": "A Is For Apple",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn533.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-A Is For Apple.wma"
+        },
+        {
+          "id": "cn534",
+          "name": "Fatty Fannie-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn534.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-Fatty Fannie-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn535",
+          "name": "five",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn535.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-five.wma"
+        },
+        {
+          "id": "cn536",
+          "name": "Jingle Bells",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn536.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-Jingle Bells .wma"
+        },
+        {
+          "id": "cn537",
+          "name": "Monkey King",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn537.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-Monkey King.wma"
+        },
+        {
+          "id": "cn538",
+          "name": "Ripe apple-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn538.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-Ripe apple-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn539",
+          "name": "Row Row Row Your Boat",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn539.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-Row Row Row Your Boat.wma"
+        },
+        {
+          "id": "cn540",
+          "name": "Santa Clause-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn540.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-Santa Clause-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn541",
+          "name": "Shake your body",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn541.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-Shake your body.wma"
+        },
+        {
+          "id": "cn542",
+          "name": "Year of the Dog",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn542.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-Year of the Dog.wma"
+        },
+        {
+          "id": "cn543",
+          "name": "一个拇指动一动",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn543.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-一个拇指动一动.wma"
+        },
+        {
+          "id": "cn544",
+          "name": "一代猪侠",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn544.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-一代猪侠.wma"
+        },
+        {
+          "id": "cn545",
+          "name": "万众齐心我们终将战胜新冠病毒迎来繁华",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn545.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-万众齐心我们终将战胜新冠病毒迎来繁华.wma"
+        },
+        {
+          "id": "cn546",
+          "name": "三只小熊",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn546.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-三只小熊.wma"
+        },
+        {
+          "id": "cn547",
+          "name": "三只小狗",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn547.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-三只小狗.wma"
+        },
+        {
+          "id": "cn548",
+          "name": "三只熊",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn548.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-三只熊.wma"
+        },
+        {
+          "id": "cn549",
+          "name": "不洗冷水澡",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn549.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-不洗冷水澡.wma"
+        },
+        {
+          "id": "cn550",
+          "name": "不灭的火种",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn550.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-不灭的火种.wma"
+        },
+        {
+          "id": "cn551",
+          "name": "不玩肥皂泡泡",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn551.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-不玩肥皂泡泡.wma"
+        },
+        {
+          "id": "cn552",
+          "name": "不要挑食",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn552.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-不要挑食.wma"
+        },
+        {
+          "id": "cn553",
+          "name": "不要随便亲我",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn553.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-不要随便亲我.wma"
+        },
+        {
+          "id": "cn554",
+          "name": "专业七步洗手法",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn554.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-专业七步洗手法.wma"
+        },
+        {
+          "id": "cn555",
+          "name": "乌鸦喝水",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn555.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-乌鸦喝水.wma"
+        },
+        {
+          "id": "cn556",
+          "name": "你会洗手吗",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn556.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-你会洗手吗.wma"
+        },
+        {
+          "id": "cn557",
+          "name": "侏罗纪公园",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn557.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-侏罗纪公园.wma"
+        },
+        {
+          "id": "cn558",
+          "name": "做操歌-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn558.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-做操歌-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn559",
+          "name": "做早操",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn559.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-做早操.wma"
+        },
+        {
+          "id": "cn560",
+          "name": "其实你没生病",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn560.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-其实你没生病.wma"
+        },
+        {
+          "id": "cn561",
+          "name": "冬天穿什么",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn561.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-冬天穿什么.wma"
+        },
+        {
+          "id": "cn562",
+          "name": "刷牙歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn562.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-刷牙歌.wma"
+        },
+        {
+          "id": "cn563",
+          "name": "十二生肖",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn563.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-十二生肖.wma"
+        },
+        {
+          "id": "cn564",
+          "name": "双层巴士",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn564.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-双层巴士.wma"
+        },
+        {
+          "id": "cn565",
+          "name": "口罩的正确戴法",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn565.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-口罩的正确戴法.wma"
+        },
+        {
+          "id": "cn566",
+          "name": "吃药",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn566.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-吃药.wma"
+        },
+        {
+          "id": "cn567",
+          "name": "向快乐出发",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn567.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-向快乐出发.wma"
+        },
+        {
+          "id": "cn568",
+          "name": "咏鹅",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn568.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-咏鹅.wma"
+        },
+        {
+          "id": "cn569",
+          "name": "四只小鸭嘎嘎嘎",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn569.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-四只小鸭嘎嘎嘎.wma"
+        },
+        {
+          "id": "cn570",
+          "name": "夏天的雷雨",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn570.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-夏天的雷雨.wma"
+        },
+        {
+          "id": "cn571",
+          "name": "多喝水",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn571.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-多喝水.wma"
+        },
+        {
+          "id": "cn572",
+          "name": "多来米",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn572.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-多来米.wma"
+        },
+        {
+          "id": "cn573",
+          "name": "大力士挖掘机",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn573.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-大力士挖掘机.wma"
+        },
+        {
+          "id": "cn574",
+          "name": "大千世界真奇妙",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn574.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-大千世界真奇妙.wma"
+        },
+        {
+          "id": "cn575",
+          "name": "大风来了",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn575.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-大风来了.wma"
+        },
+        {
+          "id": "cn576",
+          "name": "奔跑吧 蜗牛",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn576.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-奔跑吧 蜗牛.wma"
+        },
+        {
+          "id": "cn577",
+          "name": "如何自制口罩",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn577.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-如何自制口罩.wma"
+        },
+        {
+          "id": "cn578",
+          "name": "娃娃病了",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn578.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-娃娃病了.wma"
+        },
+        {
+          "id": "cn579",
+          "name": "字母歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn579.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-字母歌.wma"
+        },
+        {
+          "id": "cn580",
+          "name": "孙悟空",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn580.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-孙悟空 (圣诞版).wma"
+        },
+        {
+          "id": "cn581",
+          "name": "孙悟空儿歌-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn581.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-孙悟空儿歌-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn582",
+          "name": "学走路歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn582.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-学走路歌 .wma"
+        },
+        {
+          "id": "cn583",
+          "name": "宝宝不怕冷",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn583.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-宝宝不怕冷.wma"
+        },
+        {
+          "id": "cn584",
+          "name": "宝宝爱喝水",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn584.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-宝宝爱喝水.wma"
+        },
+        {
+          "id": "cn585",
+          "name": "家庭称呼",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn585.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-家庭称呼.wma"
+        },
+        {
+          "id": "cn586",
+          "name": "对抗病毒的消毒小窍门",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn586.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-对抗病毒的消毒小窍门.wma"
+        },
+        {
+          "id": "cn587",
+          "name": "小卡车",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn587.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-小卡车.wma"
+        },
+        {
+          "id": "cn588",
+          "name": "小孩小孩你别馋",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn588.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-小孩小孩你别馋.wma"
+        },
+        {
+          "id": "cn589",
+          "name": "小孩应把卫生讲",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn589.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-小孩应把卫生讲.wma"
+        },
+        {
+          "id": "cn590",
+          "name": "小小滑板车",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn590.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-小小滑板车.wma"
+        },
+        {
+          "id": "cn591",
+          "name": "小小粉刷匠",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn591.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-小小粉刷匠.wma"
+        },
+        {
+          "id": "cn592",
+          "name": "小心冻伤",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn592.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-小心冻伤.wma"
+        },
+        {
+          "id": "cn593",
+          "name": "小火车",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn593.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-小火车.wma"
+        },
+        {
+          "id": "cn594",
+          "name": "小飞机飞呀飞",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn594.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-小飞机飞呀飞.wma"
+        },
+        {
+          "id": "cn595",
+          "name": "少年司马光",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn595.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-少年司马光.wma"
+        },
+        {
+          "id": "cn596",
+          "name": "左猜猜右猜猜",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn596.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-左猜猜右猜猜.wma"
+        },
+        {
+          "id": "cn597",
+          "name": "布娃娃弹琴",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn597.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-布娃娃弹琴.wma"
+        },
+        {
+          "id": "cn598",
+          "name": "彩虹的约定",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn598.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-彩虹的约定.wma"
+        },
+        {
+          "id": "cn599",
+          "name": "快乐00后",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn599.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-快乐00后.wma"
+        },
+        {
+          "id": "cn600",
+          "name": "快乐小猪",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn600.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-快乐小猪.wma"
+        },
+        {
+          "id": "cn601",
+          "name": "快乐的小恐龙",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn601.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-快乐的小恐龙.wma"
+        },
+        {
+          "id": "cn602",
+          "name": "快乐过新年-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn602.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-快乐过新年-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn603",
+          "name": "恐龙找食物",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn603.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-恐龙找食物.wma"
+        },
+        {
+          "id": "cn604",
+          "name": "感冒歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn604.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-感冒歌.wma"
+        },
+        {
+          "id": "cn605",
+          "name": "感冒真讨厌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn605.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-感冒真讨厌.wma"
+        },
+        {
+          "id": "cn606",
+          "name": "感知成长的神奇",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn606.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-感知成长的神奇.wma"
+        },
+        {
+          "id": "cn607",
+          "name": "我上幼儿园",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn607.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我上幼儿园.wma"
+        },
+        {
+          "id": "cn608",
+          "name": "我不上你的当",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn608.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我不上你的当.wma"
+        },
+        {
+          "id": "cn609",
+          "name": "我不乱吃东西",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn609.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我不乱吃东西.wma"
+        },
+        {
+          "id": "cn610",
+          "name": "我们一起去郊游",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn610.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我们一起去郊游.wma"
+        },
+        {
+          "id": "cn611",
+          "name": "我会刷牙",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn611.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我会刷牙.wma"
+        },
+        {
+          "id": "cn612",
+          "name": "我会穿衣服",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn612.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我会穿衣服.wma"
+        },
+        {
+          "id": "cn613",
+          "name": "我冷",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn613.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我冷.wma"
+        },
+        {
+          "id": "cn614",
+          "name": "我是小海军",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn614.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我是小海军.wma"
+        },
+        {
+          "id": "cn615",
+          "name": "我是霸王龙",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn615.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我是霸王龙.wma"
+        },
+        {
+          "id": "cn616",
+          "name": "我爱我家",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn616.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我爱我家.wma"
+        },
+        {
+          "id": "cn617",
+          "name": "我爱洗澡",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn617.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我爱洗澡.wma"
+        },
+        {
+          "id": "cn618",
+          "name": "我的快乐style",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn618.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我的快乐style.wma"
+        },
+        {
+          "id": "cn619",
+          "name": "我的童年",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn619.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我的童年.wma"
+        },
+        {
+          "id": "cn620",
+          "name": "我的糖果在哪里",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn620.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-我的糖果在哪里.wma"
+        },
+        {
+          "id": "cn621",
+          "name": "手指运动",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn621.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-手指运动.wma"
+        },
+        {
+          "id": "cn622",
+          "name": "打电话儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn622.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-打电话儿歌.wma"
+        },
+        {
+          "id": "cn623",
+          "name": "找朋友歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn623.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-找朋友歌.wma"
+        },
+        {
+          "id": "cn624",
+          "name": "抵抗肺炎，请先管好自己的腿！",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn624.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-抵抗肺炎，请先管好自己的腿！.wma"
+        },
+        {
+          "id": "cn625",
+          "name": "拔萝卜儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn625.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-拔萝卜儿歌.wma"
+        },
+        {
+          "id": "cn626",
+          "name": "捉泥鳅儿歌版",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn626.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-捉泥鳅儿歌版.wma"
+        },
+        {
+          "id": "cn627",
+          "name": "掉在地上的食物不能吃",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn627.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-掉在地上的食物不能吃.wma"
+        },
+        {
+          "id": "cn628",
+          "name": "数字歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn628.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-数字歌.wma"
+        },
+        {
+          "id": "cn629",
+          "name": "新圣诞歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn629.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-新圣诞歌.wma"
+        },
+        {
+          "id": "cn630",
+          "name": "新型冠状病毒是什么",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn630.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-新型冠状病毒是什么.wma"
+        },
+        {
+          "id": "cn631",
+          "name": "新型冠状病毒进入人体后会干哪些坏事",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn631.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-新型冠状病毒进入人体后会干哪些坏事.wma"
+        },
+        {
+          "id": "cn632",
+          "name": "早教儿歌串烧",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn632.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-早教儿歌串烧.wma"
+        },
+        {
+          "id": "cn633",
+          "name": "毕业诗",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn633.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-毕业诗.wma"
+        },
+        {
+          "id": "cn634",
+          "name": "水果歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn634.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-水果歌.wma"
+        },
+        {
+          "id": "cn635",
+          "name": "江南Style",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn635.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-江南Style.wma"
+        },
+        {
+          "id": "cn636",
+          "name": "泥娃娃-",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn636.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-泥娃娃-(英文版).wma"
+        },
+        {
+          "id": "cn637",
+          "name": "洗手歌-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn637.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-洗手歌-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn638",
+          "name": "洗手歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn638.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-洗手歌.wma"
+        },
+        {
+          "id": "cn639",
+          "name": "洗澡澡",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn639.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-洗澡澡(单曲).wma"
+        },
+        {
+          "id": "cn640",
+          "name": "游子吟",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn640.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-游子吟.wma"
+        },
+        {
+          "id": "cn641",
+          "name": "爱吃手的小朋友",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn641.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-爱吃手的小朋友.wma"
+        },
+        {
+          "id": "cn642",
+          "name": "生日歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn642.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-生日歌.wma"
+        },
+        {
+          "id": "cn643",
+          "name": "白雪公主",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn643.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-白雪公主.wma"
+        },
+        {
+          "id": "cn644",
+          "name": "眼球操",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn644.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-眼球操.wma"
+        },
+        {
+          "id": "cn645",
+          "name": "祖国",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn645.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-祖国.wma"
+        },
+        {
+          "id": "cn646",
+          "name": "祝你圣诞快乐",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn646.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-祝你圣诞快乐.wma"
+        },
+        {
+          "id": "cn647",
+          "name": "种花",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn647.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-种花.wma"
+        },
+        {
+          "id": "cn648",
+          "name": "端午节",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn648.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-端午节.wma"
+        },
+        {
+          "id": "cn649",
+          "name": "第一天上幼儿园-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn649.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-第一天上幼儿园-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn650",
+          "name": "红星闪闪",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn650.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-红星闪闪.wma"
+        },
+        {
+          "id": "cn651",
+          "name": "老鹰捉小鸡",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn651.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-老鹰捉小鸡.wma"
+        },
+        {
+          "id": "cn652",
+          "name": "胖猫猫-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn652.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-胖猫猫-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn653",
+          "name": "胖胖大元帅",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn653.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-胖胖大元帅.wma"
+        },
+        {
+          "id": "cn654",
+          "name": "英文单词歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn654.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-英文单词歌.wma"
+        },
+        {
+          "id": "cn655",
+          "name": "英文摇篮曲",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn655.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-英文摇篮曲.wma"
+        },
+        {
+          "id": "cn656",
+          "name": "苹果掉下来啦-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn656.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-苹果掉下来啦-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn657",
+          "name": "西游记",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn657.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-西游记.wma"
+        },
+        {
+          "id": "cn658",
+          "name": "警车嘟嘟嘟",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn658.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-警车嘟嘟嘟.wma"
+        },
+        {
+          "id": "cn659",
+          "name": "认真锻炼身体好",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn659.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-认真锻炼身体好.wma"
+        },
+        {
+          "id": "cn660",
+          "name": "谁的脚印-亲宝儿歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn660.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-谁的脚印-亲宝儿歌.wma"
+        },
+        {
+          "id": "cn661",
+          "name": "赶海的小姑娘",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn661.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-赶海的小姑娘.wma"
+        },
+        {
+          "id": "cn662",
+          "name": "起床歌",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn662.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-起床歌.wma"
+        },
+        {
+          "id": "cn663",
+          "name": "金兔大拜年",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn663.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-金兔大拜年.wma"
+        },
+        {
+          "id": "cn664",
+          "name": "金色童年",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn664.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-金色童年.wma"
+        },
+        {
+          "id": "cn665",
+          "name": "锄禾",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn665.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-锄禾.wma"
+        },
+        {
+          "id": "cn666",
+          "name": "长的要比爸爸高",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn666.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-长的要比爸爸高.wma"
+        },
+        {
+          "id": "cn667",
+          "name": "雪绒花",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn667.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-雪绒花.wma"
+        },
+        {
+          "id": "cn668",
+          "name": "雪绒花英文版",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn668.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-雪绒花英文版.wma"
+        },
+        {
+          "id": "cn669",
+          "name": "静夜思",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn669.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-静夜思.wma"
+        },
+        {
+          "id": "cn670",
+          "name": "香香澡",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn670.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-香香澡.wma"
+        },
+        {
+          "id": "cn671",
+          "name": "黑猫尼禄",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn671.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝儿歌-黑猫尼禄.wma"
+        },
+        {
+          "id": "cn672",
+          "name": "亲宝文化-十二生肖",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn672.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\亲宝文化-十二生肖.wma"
+        },
+        {
+          "id": "cn673",
+          "name": "小苹果",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn673.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\贝瓦儿歌-小苹果.wma"
+        },
+        {
+          "id": "cn674",
+          "name": "我的好妈妈",
+          "artist": "贝瓦儿歌 196首",
+          "src": "/static/library/children/classic/cn674.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\贝瓦儿歌 196首\\贝瓦儿歌-我的好妈妈 .wma"
         }
       ]
     },
@@ -1144,7 +4536,7 @@
         "name": "英文儿歌",
         "icon": "🔤",
         "desc": "磨耳朵学英语",
-        "count": 79
+        "count": 125
       },
       "songs": [
         {
@@ -1699,6 +5091,374 @@
           "artist": "谢小禾",
           "src": "/static/library/children/english/en079.mp3",
           "cover": ""
+        },
+        {
+          "id": "en080",
+          "name": "第10集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en080.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第10集.mp4"
+        },
+        {
+          "id": "en081",
+          "name": "第11集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en081.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第11集.mp4"
+        },
+        {
+          "id": "en082",
+          "name": "第12集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en082.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第12集.mp4"
+        },
+        {
+          "id": "en083",
+          "name": "第13集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en083.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第13集.mp4"
+        },
+        {
+          "id": "en084",
+          "name": "第14集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en084.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第14集.mp4"
+        },
+        {
+          "id": "en085",
+          "name": "第15集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en085.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第15集.mp4"
+        },
+        {
+          "id": "en086",
+          "name": "第16集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en086.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第16集.mp4"
+        },
+        {
+          "id": "en087",
+          "name": "第17集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en087.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第17集.mp4"
+        },
+        {
+          "id": "en088",
+          "name": "第18集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en088.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第18集.mp4"
+        },
+        {
+          "id": "en089",
+          "name": "第19集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en089.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第19集.mp4"
+        },
+        {
+          "id": "en090",
+          "name": "第1集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en090.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第1集 .mp4"
+        },
+        {
+          "id": "en091",
+          "name": "第20集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en091.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第20集.mp4"
+        },
+        {
+          "id": "en092",
+          "name": "第21集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en092.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第21集.mp4"
+        },
+        {
+          "id": "en093",
+          "name": "第22集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en093.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第22集.mp4"
+        },
+        {
+          "id": "en094",
+          "name": "第23集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en094.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第23集.mp4"
+        },
+        {
+          "id": "en095",
+          "name": "第24集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en095.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第24集.mp4"
+        },
+        {
+          "id": "en096",
+          "name": "第25集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en096.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第25集.mp4"
+        },
+        {
+          "id": "en097",
+          "name": "第26集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en097.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第26集.mp4"
+        },
+        {
+          "id": "en098",
+          "name": "第27集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en098.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第27集.mp4"
+        },
+        {
+          "id": "en099",
+          "name": "第28集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en099.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第28集.mp4"
+        },
+        {
+          "id": "en100",
+          "name": "第29集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en100.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第29集.mp4"
+        },
+        {
+          "id": "en101",
+          "name": "第2集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en101.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第2集 .mp4"
+        },
+        {
+          "id": "en102",
+          "name": "第30集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en102.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第30集.mp4"
+        },
+        {
+          "id": "en103",
+          "name": "第32集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en103.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第32集.mp4"
+        },
+        {
+          "id": "en104",
+          "name": "第33集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en104.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第33集.mp4"
+        },
+        {
+          "id": "en105",
+          "name": "第34集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en105.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第34集.mp4"
+        },
+        {
+          "id": "en106",
+          "name": "第35集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en106.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第35集.mp4"
+        },
+        {
+          "id": "en107",
+          "name": "第36集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en107.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第36集.mp4"
+        },
+        {
+          "id": "en108",
+          "name": "第37集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en108.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第37集.mp4"
+        },
+        {
+          "id": "en109",
+          "name": "第38集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en109.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第38集.mp4"
+        },
+        {
+          "id": "en110",
+          "name": "第39集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en110.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第39集.mp4"
+        },
+        {
+          "id": "en111",
+          "name": "第3集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en111.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第3集 .mp4"
+        },
+        {
+          "id": "en112",
+          "name": "第40集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en112.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第40集.mp4"
+        },
+        {
+          "id": "en113",
+          "name": "第41集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en113.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第41集.mp4"
+        },
+        {
+          "id": "en114",
+          "name": "第42集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en114.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第42集.mp4"
+        },
+        {
+          "id": "en115",
+          "name": "第43集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en115.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第43集.mp4"
+        },
+        {
+          "id": "en116",
+          "name": "第44集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en116.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第44集.mp4"
+        },
+        {
+          "id": "en117",
+          "name": "第45集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en117.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第45集.mp4"
+        },
+        {
+          "id": "en118",
+          "name": "第46集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en118.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第46集.mp4"
+        },
+        {
+          "id": "en119",
+          "name": "第47集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en119.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第47集.mp4"
+        },
+        {
+          "id": "en120",
+          "name": "第4集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en120.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第4集 .mp4"
+        },
+        {
+          "id": "en121",
+          "name": "第5集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en121.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第5集 .mp4"
+        },
+        {
+          "id": "en122",
+          "name": "第6集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en122.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第6集 .mp4"
+        },
+        {
+          "id": "en123",
+          "name": "第7集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en123.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第7集 .mp4"
+        },
+        {
+          "id": "en124",
+          "name": "第8集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en124.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第8集 .mp4"
+        },
+        {
+          "id": "en125",
+          "name": "第9集",
+          "artist": "英文儿歌",
+          "src": "/static/library/children/english/en125.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\英文儿歌\\第9集 .mp4"
         }
       ]
     },
@@ -1716,6 +5476,736 @@
           "artist": "经典儿歌",
           "src": "/static/library/children/lullaby/cn140.mp3",
           "cover": ""
+        }
+      ]
+    },
+    "children-tongyao": {
+      "_info": {
+        "name": "童谣",
+        "icon": "🎈",
+        "desc": "校园歌曲与少年童谣",
+        "count": 90
+      },
+      "songs": [
+        {
+          "id": "cn442",
+          "name": "听妈妈讲那过去的事情",
+          "artist": "童年歌谣特辑01",
+          "src": "/static/library/children/tongyao/cn442.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑01\\21.听妈妈讲那过去的事情.mp3"
+        },
+        {
+          "id": "cn443",
+          "name": "小龙人",
+          "artist": "童年歌谣特辑01",
+          "src": "/static/library/children/tongyao/cn443.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑01\\02.小龙人.mp3"
+        },
+        {
+          "id": "cn444",
+          "name": "翩翩少年郎",
+          "artist": "童年歌谣特辑01",
+          "src": "/static/library/children/tongyao/cn444.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑01\\06.翩翩少年郎.mp3"
+        },
+        {
+          "id": "cn445",
+          "name": "捉泥鳅",
+          "artist": "童年歌谣特辑01",
+          "src": "/static/library/children/tongyao/cn445.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑01\\10.捉泥鳅.mp3"
+        },
+        {
+          "id": "cn446",
+          "name": "牵牛花",
+          "artist": "童年歌谣特辑01",
+          "src": "/static/library/children/tongyao/cn446.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑01\\17.牵牛花.mp3"
+        },
+        {
+          "id": "cn447",
+          "name": "蓝皮鼠和大脸猫",
+          "artist": "童年歌谣特辑01",
+          "src": "/static/library/children/tongyao/cn447.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑01\\18.蓝皮鼠和大脸猫.mp3"
+        },
+        {
+          "id": "cn448",
+          "name": "家族歌",
+          "artist": "童年歌谣特辑01",
+          "src": "/static/library/children/tongyao/cn448.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑01\\25.家族歌.mp3"
+        },
+        {
+          "id": "cn449",
+          "name": "三毛流浪记",
+          "artist": "童年歌谣特辑01",
+          "src": "/static/library/children/tongyao/cn449.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑01\\32.三毛流浪记.mp3"
+        },
+        {
+          "id": "cn450",
+          "name": "七色光之歌",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn450.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\23七色光之歌.mp3"
+        },
+        {
+          "id": "cn451",
+          "name": "小黄帽",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn451.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\58.小黄帽.mp3"
+        },
+        {
+          "id": "cn452",
+          "name": "我们多么幸福",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn452.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\24我们多么幸福.mp3"
+        },
+        {
+          "id": "cn453",
+          "name": "每当我走过老师窗前",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn453.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\41每当我走过老师窗前.mp3"
+        },
+        {
+          "id": "cn454",
+          "name": "海鸥",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn454.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\18海鸥.mp3"
+        },
+        {
+          "id": "cn455",
+          "name": "蓝精灵之歌",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn455.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\44蓝精灵之歌.mp3"
+        },
+        {
+          "id": "cn456",
+          "name": "雨花石",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn456.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\34雨花石.mp3"
+        },
+        {
+          "id": "cn457",
+          "name": "少年少年祖国的春天",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn457.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\02少年少年祖国的春天.mp3"
+        },
+        {
+          "id": "cn458",
+          "name": "小小少年",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn458.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\09小小少年.mp3"
+        },
+        {
+          "id": "cn459",
+          "name": "祖国和少年",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn459.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\12祖国和少年.mp3"
+        },
+        {
+          "id": "cn460",
+          "name": "在老师身边",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn460.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\13在老师身边.mp3"
+        },
+        {
+          "id": "cn461",
+          "name": "小马车",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn461.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\15小马车.mp3"
+        },
+        {
+          "id": "cn462",
+          "name": "牛背上的孩子",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn462.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\19牛背上的孩子.mp3"
+        },
+        {
+          "id": "cn463",
+          "name": "快乐的小歌手",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn463.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\21快乐的小歌手.mp3"
+        },
+        {
+          "id": "cn464",
+          "name": "乘着歌声的翅膀",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn464.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\22乘着歌声的翅膀.mp3"
+        },
+        {
+          "id": "cn465",
+          "name": "我们要做雷锋式的好少年",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn465.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\25我们要做雷锋式的好少年.mp3"
+        },
+        {
+          "id": "cn466",
+          "name": "库尔班大叔喜洋洋",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn466.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\26库尔班大叔喜洋洋.mp3"
+        },
+        {
+          "id": "cn467",
+          "name": "我的小鸡",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn467.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\30我的小鸡.mp3"
+        },
+        {
+          "id": "cn468",
+          "name": "清晨",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn468.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\36清晨.mp3"
+        },
+        {
+          "id": "cn469",
+          "name": "小牧笛",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn469.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\37小牧笛.mp3"
+        },
+        {
+          "id": "cn470",
+          "name": "太阳一出照四方",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn470.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\39太阳一出照四方.mp3"
+        },
+        {
+          "id": "cn471",
+          "name": "校园里的小白杨",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn471.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\42校园里的小白杨.mp3"
+        },
+        {
+          "id": "cn472",
+          "name": "牧马之歌",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn472.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\46牧马之歌.mp3"
+        },
+        {
+          "id": "cn473",
+          "name": "六一国际儿童节",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn473.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\50.六一国际儿童节.mp3"
+        },
+        {
+          "id": "cn474",
+          "name": "多来咪",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn474.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\53.多来咪.mp3"
+        },
+        {
+          "id": "cn475",
+          "name": "小鸭嘎嘎",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn475.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\54.小鸭嘎嘎.mp3"
+        },
+        {
+          "id": "cn476",
+          "name": "咪咪流浪记",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn476.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\55.咪咪流浪记.mp3"
+        },
+        {
+          "id": "cn477",
+          "name": "窗下一朵大红花",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn477.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\59.窗下一朵大红花.mp3"
+        },
+        {
+          "id": "cn478",
+          "name": "鬼脸娃娃",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn478.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\61.鬼脸娃娃.mp3"
+        },
+        {
+          "id": "cn479",
+          "name": "闪光的泡泡",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn479.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\62.闪光的泡泡.mp3"
+        },
+        {
+          "id": "cn480",
+          "name": "鱼儿水中游",
+          "artist": "童年歌谣特辑02",
+          "src": "/static/library/children/tongyao/cn480.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑02\\63.鱼儿水中游.mp3"
+        },
+        {
+          "id": "cn481",
+          "name": "小松树",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn481.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\47.小松树.mp3"
+        },
+        {
+          "id": "cn482",
+          "name": "快乐的节日",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn482.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\38.快乐的节日.mp3"
+        },
+        {
+          "id": "cn483",
+          "name": "我的梅花小鹿",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn483.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\44.我的梅花小鹿.mp3"
+        },
+        {
+          "id": "cn484",
+          "name": "拾豆豆",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn484.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\78.拾豆豆.mp3"
+        },
+        {
+          "id": "cn485",
+          "name": "草原赞歌",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn485.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\35.草原赞歌.mp3"
+        },
+        {
+          "id": "cn486",
+          "name": "反唱歌",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn486.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\36.反唱歌.mp3"
+        },
+        {
+          "id": "cn487",
+          "name": "天下的妈妈都是一样的",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn487.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\42.天下的妈妈都是一样的.mp3"
+        },
+        {
+          "id": "cn488",
+          "name": "我家住北京城",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn488.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\45.我家住北京城.mp3"
+        },
+        {
+          "id": "cn489",
+          "name": "真想",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn489.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\50.真想.mp3"
+        },
+        {
+          "id": "cn490",
+          "name": "世界小小小",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn490.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\68.世界小小小.mp3"
+        },
+        {
+          "id": "cn491",
+          "name": "摇篮曲",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn491.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\71.摇篮曲.mp3"
+        },
+        {
+          "id": "cn492",
+          "name": "小阿哥",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn492.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\76.小阿哥.mp3"
+        },
+        {
+          "id": "cn493",
+          "name": "大母鸡下蛋",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn493.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\77.大母鸡下蛋.mp3"
+        },
+        {
+          "id": "cn494",
+          "name": "一只小白兔",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn494.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\79.一只小白兔.mp3"
+        },
+        {
+          "id": "cn495",
+          "name": "我爱米兰",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn495.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\80.我爱米兰.mp3"
+        },
+        {
+          "id": "cn496",
+          "name": "刷新房",
+          "artist": "童年歌谣特辑03",
+          "src": "/static/library/children/tongyao/cn496.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\童年歌谣特辑03\\83.刷新房.mp3"
+        },
+        {
+          "id": "cn497",
+          "name": "咱们从小讲礼貌",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn497.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\49.咱们从小讲礼貌.mp3"
+        },
+        {
+          "id": "cn498",
+          "name": "小司机",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn498.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\46.小司机.mp3"
+        },
+        {
+          "id": "cn499",
+          "name": "少年，少年，祖国的春天",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn499.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\41.少年，少年，祖国的春天.mp3"
+        },
+        {
+          "id": "cn500",
+          "name": "我们是共产主义接班人",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn500.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\23.我们是共产主义接班人.mp3"
+        },
+        {
+          "id": "cn501",
+          "name": "爷爷为我打月饼",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn501.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\48.爷爷为我打月饼.mp3"
+        },
+        {
+          "id": "cn502",
+          "name": "虹彩妹妹",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn502.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\30.虹彩妹妹.mp3"
+        },
+        {
+          "id": "cn503",
+          "name": "婉君",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn503.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\16婉君.mp3"
+        },
+        {
+          "id": "cn504",
+          "name": "弯弯的月儿像小船",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn504.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\20弯弯的月儿像小船.mp3"
+        },
+        {
+          "id": "cn505",
+          "name": "校园多美好",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn505.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\32校园多美好.mp3"
+        },
+        {
+          "id": "cn506",
+          "name": "新鞋子旧鞋子",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn506.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\35新鞋子旧鞋子.mp3"
+        },
+        {
+          "id": "cn507",
+          "name": "对花",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn507.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\45对花.mp3"
+        },
+        {
+          "id": "cn508",
+          "name": "三月里的小雨",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn508.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\47三月里的小雨.mp3"
+        },
+        {
+          "id": "cn509",
+          "name": "男孩",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn509.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\49男孩.mp3"
+        },
+        {
+          "id": "cn510",
+          "name": "明天会更好",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn510.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\05.明天会更好.mp3"
+        },
+        {
+          "id": "cn511",
+          "name": "蜗牛",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn511.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\13.蜗牛.mp3"
+        },
+        {
+          "id": "cn512",
+          "name": "大象拔河",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn512.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\15.大象拔河.mp3"
+        },
+        {
+          "id": "cn513",
+          "name": "七色光歌",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn513.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\19.七色光歌.mp3"
+        },
+        {
+          "id": "cn514",
+          "name": "童年",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn514.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\22.童年.mp3"
+        },
+        {
+          "id": "cn515",
+          "name": "小叮当",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn515.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\24.小叮当.mp3"
+        },
+        {
+          "id": "cn516",
+          "name": "花仙子",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn516.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑01\\33.花仙子.mp3"
+        },
+        {
+          "id": "cn517",
+          "name": "问候歌",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn517.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\51.问候歌.mp3"
+        },
+        {
+          "id": "cn518",
+          "name": "人人叫我好儿童",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn518.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\56.人人叫我好儿童.mp3"
+        },
+        {
+          "id": "cn519",
+          "name": "拍皮球",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn519.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\57.拍皮球.mp3"
+        },
+        {
+          "id": "cn520",
+          "name": "蝴蝶花",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn520.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\60.蝴蝶花.mp3"
+        },
+        {
+          "id": "cn521",
+          "name": "快乐的猴子",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn521.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑02\\64.快乐的猴子.mp3"
+        },
+        {
+          "id": "cn522",
+          "name": "布娃娃",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn522.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\34.布娃娃.mp3"
+        },
+        {
+          "id": "cn523",
+          "name": "花喜鹊",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn523.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\70.花喜鹊.mp3"
+        },
+        {
+          "id": "cn524",
+          "name": "大家做广播操",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn524.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\73.大家做广播操.mp3"
+        },
+        {
+          "id": "cn525",
+          "name": "小小兵",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn525.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\74.小小兵.mp3"
+        },
+        {
+          "id": "cn526",
+          "name": "春天的孩子",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn526.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\75.春天的孩子.mp3"
+        },
+        {
+          "id": "cn527",
+          "name": "哈巴狗",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn527.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\81.哈巴狗.mp3"
+        },
+        {
+          "id": "cn528",
+          "name": "拨浪鼓",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn528.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\82.拨浪鼓.mp3"
+        },
+        {
+          "id": "cn529",
+          "name": "小青蛙",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn529.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\84.小青蛙.mp3"
+        },
+        {
+          "id": "cn530",
+          "name": "数高楼",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn530.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\85.数高楼.mp3"
+        },
+        {
+          "id": "cn531",
+          "name": "白兰花",
+          "artist": "经典儿歌打包",
+          "src": "/static/library/children/tongyao/cn531.mp3",
+          "cover": "",
+          "originalPath": "E:\\儿歌\\经典儿歌打包\\童年歌谣特辑03\\86.白兰花.mp3"
         }
       ]
     }
