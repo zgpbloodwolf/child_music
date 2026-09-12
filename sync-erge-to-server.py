@@ -5,7 +5,9 @@
 
 新歌曲 id 范围: cn161~cn674 + en080~en125(从 import-plan.json 读取)。
 
-用法: ADMIN_TOKEN=xxx python sync-erge-to-server.py
+用法:
+  ADMIN_BASE=http://<服务器>:8823/cmusic/api/admin  (目标管理接口,不设默认本机)
+  ADMIN_TOKEN=xxx python sync-erge-to-server.py
 """
 import json
 import os
@@ -18,7 +20,7 @@ from urllib.error import HTTPError, URLError
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-BASE = "http://192.168.50.88:8823/cmusic/api/admin"
+BASE = os.environ.get("ADMIN_BASE", "http://127.0.0.1:8823/cmusic/api/admin")
 TOKEN = os.environ.get("ADMIN_TOKEN", "")
 if not TOKEN:
     sys.exit("请先设置环境变量 ADMIN_TOKEN")

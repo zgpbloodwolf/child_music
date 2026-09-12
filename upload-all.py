@@ -4,6 +4,7 @@
 中文字段经 multipart 编码为 UTF-8,绕开 bash 命令行转义导致的乱码。
 
 用法:
+  ADMIN_BASE=http://<服务器>:8823/cmusic/api/admin  (目标管理接口,不设默认本机)
   set ADMIN_TOKEN=xxx   (Windows cmd)
   $env:ADMIN_TOKEN=xxx (PowerShell)
   ADMIN_TOKEN=xxx python upload-all.py (bash)
@@ -17,7 +18,7 @@ import uuid
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 
-BASE = "http://192.168.50.88:8823/cmusic/api/admin"
+BASE = os.environ.get("ADMIN_BASE", "http://127.0.0.1:8823/cmusic/api/admin")
 TOKEN = os.environ.get("ADMIN_TOKEN", "")
 if not TOKEN:
     sys.exit("请先设置环境变量 ADMIN_TOKEN")

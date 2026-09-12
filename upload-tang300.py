@@ -7,6 +7,7 @@
 上传到服务器管理接口(经 multipart),中文字段 UTF-8 编码。
 
 用法:
+  ADMIN_BASE=http://<服务器>:8823/cmusic/api/admin  (目标管理接口,不设默认本机)
   ADMIN_TOKEN=xxx python upload-tang300.py
 """
 import json
@@ -19,7 +20,7 @@ import uuid
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 
-BASE = "http://192.168.50.88:8823/cmusic/api/admin"
+BASE = os.environ.get("ADMIN_BASE", "http://127.0.0.1:8823/cmusic/api/admin")
 TOKEN = os.environ.get("ADMIN_TOKEN", "")
 if not TOKEN:
     sys.exit("请先设置环境变量 ADMIN_TOKEN")
