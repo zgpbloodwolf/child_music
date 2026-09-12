@@ -50,6 +50,11 @@
     .auth-status.ok { color: #1f8a4c; }
     .auth-status.no { color: #c0392b; }
     .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pager { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: #666; }
+    .pager label { display: inline; margin: 0; }
+    .pager input { width: 64px; text-align: center; padding: 5px 6px; }
+    .pager select { width: auto; padding: 5px 6px; }
+    button:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -73,12 +78,46 @@
     <!-- 标签页 -->
     <div class="tabs">
       <div class="tab active" data-pane="songs">歌曲管理</div>
+      <div class="tab" data-pane="upload">上传歌曲</div>
       <div class="tab" data-pane="cats">大类管理</div>
       <div class="tab" data-pane="subs">子类管理</div>
     </div>
 
     <!-- 歌曲管理 -->
     <div id="pane-songs" class="pane active">
+      <div class="card">
+        <h2>歌曲列表</h2>
+        <div class="toolbar">
+          <input id="kw" placeholder="按歌名/作者/专辑搜索" />
+          <select id="filterCat"><option value="">全部分类</option></select>
+          <select id="filterSub"><option value="">全部子类</option></select>
+          <button id="searchBtn">搜索</button>
+          <button class="ghost" id="refreshBtn">刷新</button>
+        </div>
+        <table>
+          <thead><tr><th>封面</th><th>id</th><th>歌名</th><th>作者</th><th>专辑</th><th>子类</th><th>时长</th><th>试听</th><th>操作</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="pager">
+          <button class="ghost sm" id="firstBtn">« 首页</button>
+          <button class="ghost sm" id="prevBtn">‹ 上一页</button>
+          <span>第 <input id="pageInput" type="number" min="1" value="1" /> / <span id="totalPages">1</span> 页</span>
+          <button class="ghost sm" id="nextBtn">下一页 ›</button>
+          <button class="ghost sm" id="lastBtn">末页 »</button>
+          <label>每页
+            <select id="pageSize">
+              <option value="20">20 条</option>
+              <option value="50" selected>50 条</option>
+              <option value="100">100 条</option>
+            </select>
+          </label>
+          <span class="muted" id="songCount"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 上传歌曲 -->
+    <div id="pane-upload" class="pane">
       <div class="card">
         <h2>上传新歌曲</h2>
         <div class="row">
@@ -123,22 +162,6 @@
         <textarea id="lyric" placeholder="[00:00.00] 歌词..."></textarea>
         <div style="margin-top:12px"><button id="uploadBtn">上传</button></div>
         <div id="uploadMsg" class="msg"></div>
-      </div>
-
-      <div class="card">
-        <h2>歌曲列表</h2>
-        <div class="toolbar">
-          <input id="kw" placeholder="按歌名/作者/专辑搜索" />
-          <select id="filterCat"><option value="">全部分类</option></select>
-          <select id="filterSub"><option value="">全部子类</option></select>
-          <button id="searchBtn">搜索</button>
-          <button class="ghost" id="refreshBtn">刷新</button>
-        </div>
-        <table>
-          <thead><tr><th>封面</th><th>id</th><th>歌名</th><th>作者</th><th>专辑</th><th>子类</th><th>时长</th><th>试听</th><th>操作</th></tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
-        <p class="muted" id="songCount" style="margin-top:8px"></p>
       </div>
     </div>
 
@@ -341,29 +364,61 @@
       showMsg(msg, "上传成功:" + data.name + "  时长 " + (data.duration ? Math.round(data.duration) + "s" : "未知"), true);
       ["audio", "cover", "id", "name", "artist", "album", "lyric"].forEach(i => document.getElementById(i).value = "");
       loadSongs();
-      loadCategories(); // 子类歌曲数可能变化
+      loadCategories();
+      loadSubCounts(); // 子类歌曲数可能变化
     } catch (e) { showMsg(msg, e.detail || e.message, false); }
   };
 
-  // ===== 歌曲列表(搜索/过滤)=====
-  async function loadSongs() {
+  // ===== 歌曲列表(搜索/过滤 + 分页)=====
+  let curPage = 1;    // 当前页码(从 1 起)
+  let totalPages = 1; // 总页数(随查询结果更新)
+
+  async function loadSongs(page) {
+    if (page !== undefined) curPage = Math.max(1, page);
     const kw = document.getElementById("kw").value.trim();
     const cat = document.getElementById("filterCat").value;
     const sub = document.getElementById("filterSub").value;
-    const params = new URLSearchParams();
+    const size = +document.getElementById("pageSize").value;
+    const params = new URLSearchParams({ page: curPage, size: size });
     if (kw) params.set("keyword", kw);
     if (sub) params.set("sub", sub);
     else if (cat) params.set("category", cat);
-    const qs = params.toString() ? "?" + params.toString() : "";
-    const res = await fetch(BASE + "/api/songs" + qs);
+    const res = await fetch(BASE + "/api/songs?" + params.toString());
+    const data = await res.json();
+    const items = data.items || data; // 兼容裸数组
+    const total = data.total !== undefined ? data.total : items.length;
+    totalPages = Math.max(1, Math.ceil(total / size));
+    if (curPage > totalPages) return loadSongs(totalPages); // 末页数据被删后回退
+    renderSongs(items);
+    renderPager(total);
+  }
+
+  // 渲染分页控件状态
+  function renderPager(total) {
+    document.getElementById("pageInput").value = curPage;
+    document.getElementById("totalPages").textContent = totalPages;
+    document.getElementById("songCount").textContent = "共 " + total + " 首";
+    const first = curPage <= 1, last = curPage >= totalPages;
+    document.getElementById("firstBtn").disabled = first;
+    document.getElementById("prevBtn").disabled = first;
+    document.getElementById("nextBtn").disabled = last;
+    document.getElementById("lastBtn").disabled = last;
+  }
+
+  // 跳页统一入口(钳制范围并兜底报错)
+  function goPage(p) {
+    const target = Math.max(1, Math.min(p, totalPages));
+    loadSongs(target).catch(e => alert("加载歌曲失败:" + (e.message || e)));
+  }
+
+  // 各子类歌曲数:分页后列表只有当页数据,单独全量拉元数据推算
+  async function loadSubCounts() {
+    const res = await fetch(BASE + "/api/songs");
     const list = await res.json();
     const items = list.items || list;
-    // 推算各子类歌曲数
     subSongCount = {};
     items.forEach(s => { subSongCount[s.subCategory] = (subSongCount[s.subCategory] || 0) + 1; });
-    renderSongs(items);
-    renderSubsList(); // 刷新歌曲数列
-    document.getElementById("songCount").textContent = "共 " + items.length + " 首";
+    renderSubsList(); // 刷新子类的歌曲数列
   }
   function fmtDur(d) { return d ? Math.floor(d / 60) + ":" + String(Math.round(d % 60)).padStart(2, "0") : "-"; }
   function subNameOf(subId) {
@@ -403,13 +458,23 @@
     tb.querySelectorAll("button[data-preview]").forEach(b => b.onclick = () => previewSong(b.dataset.preview, b));
     tb.querySelectorAll("button[data-cover]").forEach(b => b.onclick = () => replaceCover(b.dataset.cover));
   }
-  document.getElementById("searchBtn").onclick = loadSongs;
+  document.getElementById("searchBtn").onclick = () => goPage(1); // 新条件从第一页开始
   document.getElementById("refreshBtn").onclick = () => {
     document.getElementById("kw").value = "";
     document.getElementById("filterCat").value = "";
     renderSubSelect("filterCat", "filterSub");
-    loadSongs();
+    goPage(1);
   };
+  // 分页控件
+  document.getElementById("firstBtn").onclick = () => goPage(1);
+  document.getElementById("prevBtn").onclick = () => goPage(curPage - 1);
+  document.getElementById("nextBtn").onclick = () => goPage(curPage + 1);
+  document.getElementById("lastBtn").onclick = () => goPage(totalPages);
+  document.getElementById("pageInput").onchange = () => {
+    const v = parseInt(document.getElementById("pageInput").value, 10);
+    goPage(isNaN(v) ? curPage : v);
+  };
+  document.getElementById("pageSize").onchange = () => goPage(1); // 换每页条数从第一页开始
 
   // 试听:列表不返回 src,按需取详情拿播放地址
   async function previewSong(songId, btn) {
@@ -439,6 +504,7 @@
       markAuthed();
       loadSongs();
       loadCategories();
+      loadSubCounts();
     } catch (e) { alert(e.detail || e.message); }
   }
 
@@ -500,6 +566,7 @@
       editingSong = null;
       loadSongs();
       loadCategories();
+      loadSubCounts(); // 改所属子类会影响歌曲数
     } catch (e) { alert(e.detail || e.message); }
   };
 
@@ -631,7 +698,8 @@
 
   // ===== 启动 =====
   loadCategories().catch(e => alert("加载分类失败:" + (e.message || e)));
-  loadSongs().catch(e => alert("加载歌曲失败:" + (e.message || e)));
+  loadSubCounts().catch(e => alert("统计子类歌曲数失败:" + (e.message || e)));
+  loadSongs(1).catch(e => alert("加载歌曲失败:" + (e.message || e)));
 </script>
 </body>
 </html>
