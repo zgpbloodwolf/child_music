@@ -50,6 +50,8 @@
     .auth-status.ok { color: #1f8a4c; }
     .auth-status.no { color: #c0392b; }
     .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .sub-row td { background: #fafafa; color: #555; }
+    .sub-row td:nth-child(2) { padding-left: 24px; }
     .pager { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: #666; }
     .pager label { display: inline; margin: 0; }
     .pager input { width: 64px; text-align: center; padding: 5px 6px; }
@@ -79,8 +81,7 @@
     <div class="tabs">
       <div class="tab active" data-pane="songs">歌曲管理</div>
       <div class="tab" data-pane="upload">上传歌曲</div>
-      <div class="tab" data-pane="cats">大类管理</div>
-      <div class="tab" data-pane="subs">子类管理</div>
+      <div class="tab" data-pane="cats">分类管理</div>
     </div>
 
     <!-- 歌曲管理 -->
@@ -165,53 +166,46 @@
       </div>
     </div>
 
-    <!-- 大类管理 -->
+    <!-- 分类管理(大类 + 子类)-->
     <div id="pane-cats" class="pane">
-      <div class="card">
-        <h2>新增大类</h2>
-        <div class="row3">
-          <div><label>id(必填,如 children)</label><input id="catId" placeholder="英文 id" /></div>
-          <div><label>名称(必填)</label><input id="catName" placeholder="如 儿歌" /></div>
-          <div><label>图标(可选)</label><input id="catIcon" placeholder="emoji 或图标名" /></div>
+      <div class="row">
+        <div class="card">
+          <h2>新增大类</h2>
+          <div class="row">
+            <div><label>id(必填,如 children)</label><input id="catId" placeholder="英文 id" /></div>
+            <div><label>名称(必填)</label><input id="catName" placeholder="如 儿歌" /></div>
+          </div>
+          <div class="row">
+            <div><label>图标(可选)</label><input id="catIcon" placeholder="emoji 或图标名" /></div>
+            <div><label>描述(可选)</label><input id="catDesc" placeholder="大类简介" /></div>
+          </div>
+          <div style="margin-top:12px"><button id="addCatBtn">新增大类</button></div>
+          <div id="catMsg" class="msg"></div>
         </div>
-        <label>描述(可选)</label>
-        <textarea id="catDesc" placeholder="大类简介"></textarea>
-        <div style="margin-top:12px"><button id="addCatBtn">新增</button></div>
-        <div id="catMsg" class="msg"></div>
+        <div class="card">
+          <h2>新增子类</h2>
+          <div class="row">
+            <div><label>所属大类(必填)</label><select id="subParentCat"></select></div>
+            <div><label>id(必填,如 children-classic)</label><input id="subId" placeholder="英文 id" /></div>
+          </div>
+          <div class="row">
+            <div><label>名称(必填)</label><input id="subName" placeholder="如 经典儿歌" /></div>
+            <div><label>图标(可选)</label><input id="subIcon" placeholder="emoji 或图标名" /></div>
+          </div>
+          <label>描述(可选)</label>
+          <input id="subDesc" placeholder="子类简介" />
+          <div style="margin-top:12px"><button id="addSubBtn">新增子类</button></div>
+          <div id="subMsg" class="msg"></div>
+        </div>
       </div>
 
       <div class="card">
-        <h2>大类列表<button class="ghost" id="reloadCatsBtn" style="float:right">刷新</button></h2>
+        <h2>分类列表<button class="ghost" id="reloadCatsBtn" style="float:right">刷新</button></h2>
         <table>
-          <thead><tr><th>id</th><th>名称</th><th>图标</th><th>子类数</th><th>描述</th><th>操作</th></tr></thead>
+          <thead><tr><th>id</th><th>名称</th><th>图标</th><th>统计</th><th>描述</th><th>操作</th></tr></thead>
           <tbody id="catBody"></tbody>
         </table>
-      </div>
-    </div>
-
-    <!-- 子类管理 -->
-    <div id="pane-subs" class="pane">
-      <div class="card">
-        <h2>新增子类</h2>
-        <div class="row3">
-          <div><label>所属大类(必填)</label><select id="subParentCat"></select></div>
-          <div><label>id(必填,如 children-classic)</label><input id="subId" placeholder="英文 id" /></div>
-          <div><label>名称(必填)</label><input id="subName" placeholder="如 经典儿歌" /></div>
-        </div>
-        <div class="row3">
-          <div><label>图标(可选)</label><input id="subIcon" placeholder="emoji 或图标名" /></div>
-          <div><label>描述(可选)</label><input id="subDesc" placeholder="子类简介" /></div>
-          <div style="display:flex;align-items:flex-end"><button id="addSubBtn">新增</button></div>
-        </div>
-        <div id="subMsg" class="msg"></div>
-      </div>
-
-      <div class="card">
-        <h2>子类列表<button class="ghost" id="reloadSubsBtn" style="float:right">刷新</button></h2>
-        <table>
-          <thead><tr><th>id</th><th>名称</th><th>所属大类</th><th>歌曲数</th><th>描述</th><th>操作</th></tr></thead>
-          <tbody id="subBody"></tbody>
-        </table>
+        <p class="muted" style="margin-top:8px">大类行可编辑/删除;子类行(缩进灰底)仅支持删除。</p>
       </div>
     </div>
   </div>
@@ -318,8 +312,7 @@
     const res = await fetch(BASE + "/api/categories");
     categories = await res.json();
     fillCategorySelects();
-    renderCats();
-    renderSubsList();
+    renderCatTree();
   }
   function fillCategorySelects() {
     const opts = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
@@ -418,7 +411,7 @@
     const items = list.items || list;
     subSongCount = {};
     items.forEach(s => { subSongCount[s.subCategory] = (subSongCount[s.subCategory] || 0) + 1; });
-    renderSubsList(); // 刷新子类的歌曲数列
+    renderCatTree(); // 刷新子类歌曲数
   }
   function fmtDur(d) { return d ? Math.floor(d / 60) + ":" + String(Math.round(d % 60)).padStart(2, "0") : "-"; }
   function subNameOf(subId) {
@@ -588,24 +581,48 @@
       loadCategories();
     } catch (e) { showMsg(msg, e.detail || e.message, false); }
   };
-  document.getElementById("reloadCatsBtn").onclick = loadCategories;
+  document.getElementById("reloadCatsBtn").onclick = () => {
+    loadCategories().catch(e => alert("加载分类失败:" + (e.message || e)));
+    loadSubCounts().catch(e => alert("统计子类歌曲数失败:" + (e.message || e)));
+  };
 
-  function renderCats() {
+  // 分类树渲染:大类行 + 缩进子类行(同一张表);子类歌曲数取自 subSongCount
+  function renderCatTree() {
     const tb = document.getElementById("catBody");
-    tb.innerHTML = categories.map(c => `
+    if (!categories.length) {
+      tb.innerHTML = `<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">暂无分类</td></tr>`;
+      return;
+    }
+    let html = "";
+    categories.forEach(c => {
+      html += `
       <tr>
         <td>${c.id}</td>
         <td>${c.name}</td>
         <td>${c.icon || "-"}</td>
-        <td><span class="badge">${(c.subs || []).length}</span></td>
+        <td><span class="badge">子类 ${(c.subs || []).length}</span></td>
         <td>${c.desc || "-"}</td>
         <td class="actions">
           <button class="ghost sm" data-catedit="${c.id}">编辑</button>
           <button class="danger sm" data-catdel="${c.id}">删除</button>
         </td>
-      </tr>`).join("");
+      </tr>`;
+      (c.subs || []).forEach(s => {
+        html += `
+      <tr class="sub-row">
+        <td>${s.id}</td>
+        <td>└ ${s.name}</td>
+        <td>${s.icon || "-"}</td>
+        <td><span class="badge">歌曲 ${subSongCount[s.id] || 0}</span></td>
+        <td>${s.desc || "-"}</td>
+        <td class="actions"><button class="danger sm" data-subdel="${s.id}">删除</button></td>
+      </tr>`;
+      });
+    });
+    tb.innerHTML = html;
     tb.querySelectorAll("button[data-catdel]").forEach(b => b.onclick = () => delCat(b.dataset.catdel));
     tb.querySelectorAll("button[data-catedit]").forEach(b => b.onclick = () => openEditCat(b.dataset.catedit));
+    tb.querySelectorAll("button[data-subdel]").forEach(b => b.onclick = () => delSub(b.dataset.subdel));
   }
   async function delCat(catId) {
     if (!confirm("确认删除大类 " + catId + "?(须无歌曲与子类)")) return;
@@ -647,7 +664,7 @@
     } catch (e) { alert(e.detail || e.message); }
   };
 
-  // ===== 子类管理 =====
+  // ===== 子类(新增/删除)=====
   document.getElementById("addSubBtn").onclick = async () => {
     const msg = document.getElementById("subMsg");
     const body = {
@@ -666,27 +683,6 @@
       loadCategories();
     } catch (e) { showMsg(msg, e.detail || e.message, false); }
   };
-  document.getElementById("reloadSubsBtn").onclick = loadCategories;
-
-  function renderSubsList() {
-    const tb = document.getElementById("subBody");
-    const rows = [];
-    categories.forEach(c => {
-      (c.subs || []).forEach(s => {
-        rows.push(`
-          <tr>
-            <td>${s.id}</td>
-            <td>${s.name}</td>
-            <td>${c.name}</td>
-            <td><span class="badge">${subSongCount[s.id] || 0}</span></td>
-            <td>${s.desc || "-"}</td>
-            <td><button class="danger sm" data-subdel="${s.id}">删除</button></td>
-          </tr>`);
-      });
-    });
-    tb.innerHTML = rows.length ? rows.join("") : `<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">暂无子类</td></tr>`;
-    tb.querySelectorAll("button[data-subdel]").forEach(b => b.onclick = () => delSub(b.dataset.subdel));
-  }
   async function delSub(subId) {
     if (!confirm("确认删除子类 " + subId + "?(须无歌曲)")) return;
     try {
