@@ -12,9 +12,12 @@ const player = usePlayerStore();
 
 /**
  * 一次性求值(组件实例与页面绑定,同页内路由不变,无需响应式):
- * tabBar 页避让 tabBar(100rpx,三端已验证);普通页贴底,16rpx 与左右 margin 一致。
+ * tabBar 页避让 tabBar(基础 100rpx + 底部安全区,全面屏 Home Indicator
+ * 场景 tabBar 实际高度会更高);普通页贴底,16rpx 与左右 margin 一致。
  */
-const bottomOffset = isTabBarPage() ? '100rpx' : 'calc(16rpx + env(safe-area-inset-bottom))';
+const bottomOffset = isTabBarPage()
+  ? 'calc(100rpx + env(safe-area-inset-bottom))'
+  : 'calc(16rpx + env(safe-area-inset-bottom))';
 
 function goPlayer() {
   uni.navigateTo({ url: '/pages/player/index' });
