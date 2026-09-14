@@ -53,10 +53,14 @@ async function loadRecommend(catId: string) {
   }
 }
 
-/** 点击歌曲:以推荐歌曲为队列播放 */
-function play(song: SongMeta) {
-  const ids = recommendSongs.value.map((s) => s.id);
-  player.playSong(song.id, ids);
+/** 点击推荐歌曲:以推荐列表为队列播放 */
+function playRecommend(song: SongMeta) {
+  player.playSong(song.id, recommendSongs.value.map((s) => s.id));
+}
+
+/** 点击最近播放:以最近播放列表为队列播放(与推荐列表分开设队列,播完不串台) */
+function playRecent(song: SongMeta) {
+  player.playSong(song.id, recent.value.map((s) => s.id));
 }
 
 /** 跳转到全部音频歌单页(展示完整列表) */
@@ -107,7 +111,7 @@ function goSearch() {
             v-for="s in recent"
             :key="s.id"
             class="recent-card"
-            @click="play(s)"
+            @click="playRecent(s)"
           >
             <view class="recent-cover">
               <CoverImage :src="s.cover" :name="s.name" />
@@ -131,7 +135,7 @@ function goSearch() {
             v-for="song in recommendSongs"
             :key="song.id"
             :song="song"
-            @play="play(song)"
+            @play="playRecommend(song)"
           />
         </view>
       </view>
