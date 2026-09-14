@@ -15,6 +15,8 @@ const repo = getRepository();
 const keyword = ref('');
 const results = ref<SongMeta[]>([]);
 const searching = ref(false);
+/** 搜索请求失败标记:区分「无结果」与「失败」,失败时不误报「没有找到」 */
+const searchFailed = ref(false);
 
 /** 防抖句柄:输入停顿 350ms 后才发请求,避免在线数据源下每键一字都打一次接口 */
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -23,14 +25,21 @@ let searchTimer: ReturnType<typeof setTimeout> | null = null;
 watch(keyword, (kw) => {
   if (searchTimer) clearTimeout(searchTimer);
   const trimmed = (kw ?? '').trim();
-  if (!trimmed) { results.value = []; searching.value = false; return; }
+  if (!trimmed) {
+    results.value = [];
+    searching.value = false;
+    searchFailed.value = false;
+    return;
+  }
   searchTimer = setTimeout(async () => {
     searching.value = true;
+    searchFailed.value = false;
     try {
       results.value = await repo.search(trimmed);
     } catch (err) {
       console.warn('搜索失败:', err);
       results.value = [];
+      searchFailed.value = true;
     } finally {
       searching.value = false;
     }
@@ -56,8 +65,18 @@ function play(song: SongMeta) {
       />
     </view>
 
+    <!-- 加载态(防抖 + 请求期间显示,避免闪现「没有找到」) -->
+    <view v-if="keyword && searching" class="empty">
+      <text>搜索中...</text>
+    </view>
+
+    <!-- 失败态(网络/服务异常,与「无结果」区分) -->
+    <view v-else-if="keyword && searchFailed" class="empty">
+      <text>搜索失败,请检查网络后重试</text>
+    </view>
+
     <!-- 搜索结果(按原型带「搜索结果(N)」标题,列表项无序号) -->
-    <view v-if="keyword && results.length" class="result-section">
+    <view v-else-if="keyword && results.length" class="result-section">
       <text class="section-title">搜索结果({{ results.length }})</text>
       <view class="song-list">
         <SongItem
