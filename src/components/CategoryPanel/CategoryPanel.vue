@@ -111,8 +111,8 @@ function goCat() {
     <StoryHero v-else-if="theme === 'story'" :name="cat.name" :desc="cat.desc" />
     <PoetryHero
       v-else-if="theme === 'poetry'"
-      title="古诗"
-      subtitle="唐诗宋词 · 启蒙经典"
+      :title="cat.name"
+      :subtitle="cat.desc"
       :dynasties="dynasties"
       seal-text="诗"
     />
