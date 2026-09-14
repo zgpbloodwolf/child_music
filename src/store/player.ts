@@ -47,6 +47,30 @@ function getManager(): AudioManager {
 /** 可选倍速档位 */
 const PLAYBACK_RATES = [0.75, 1, 1.25];
 
+// ===== 播放偏好持久化(播放模式 / 倍速,重启后保留) =====
+const PREF_MODE_KEY = 'music_pref_play_mode';
+const PREF_RATE_KEY = 'music_pref_playback_rate';
+
+/** 读取持久化的播放模式(非法值回退顺序播放) */
+function loadPlayMode(): PlayMode {
+  try {
+    const v = uni.getStorageSync(PREF_MODE_KEY) as unknown;
+    if (typeof v === 'string' && Object.values(PlayMode).includes(v as PlayMode)) {
+      return v as PlayMode;
+    }
+  } catch { /* 坏数据回退默认 */ }
+  return PlayMode.SEQUENCE;
+}
+
+/** 读取持久化的倍速(非档位值回退 1) */
+function loadRate(): number {
+  try {
+    const v = Number(uni.getStorageSync(PREF_RATE_KEY));
+    if (PLAYBACK_RATES.includes(v)) return v;
+  } catch { /* 坏数据回退默认 */ }
+  return 1;
+}
+
 export const usePlayerStore = defineStore('player', () => {
   const useHistory = useHistoryStore();
 
@@ -58,11 +82,11 @@ export const usePlayerStore = defineStore('player', () => {
   const isLoading = ref(false);
   const duration = ref(0);
   const currentTime = ref(0);
-  const playMode = ref<PlayMode>(PlayMode.SEQUENCE);
+  const playMode = ref<PlayMode>(loadPlayMode());
   /** 播放错误信息(null 表示无错误) */
   const error = ref<string | null>(null);
-  /** 当前倍速 */
-  const playbackRate = ref<number>(1);
+  /** 当前倍速(初始值从偏好恢复) */
+  const playbackRate = ref<number>(loadRate());
   /** 定时关闭:设定的分钟数(0 表示未设定) */
   const timerMinutes = ref(0);
   /** 定时关闭:剩余秒数 */
@@ -257,6 +281,7 @@ export const usePlayerStore = defineStore('player', () => {
     const order: PlayMode[] = [PlayMode.SEQUENCE, PlayMode.LOOP_ONE, PlayMode.RANDOM];
     const cur = order.indexOf(playMode.value);
     playMode.value = order[(cur + 1) % order.length];
+    uni.setStorageSync(PREF_MODE_KEY, playMode.value);
   }
 
   function seek(sec: number) {
@@ -268,6 +293,7 @@ export const usePlayerStore = defineStore('player', () => {
   function setPlaybackRate(rate: number) {
     playbackRate.value = rate;
     getManager().playbackRate = rate;
+    uni.setStorageSync(PREF_RATE_KEY, rate);
   }
   /** 循环切换倍速:0.75 → 1 → 1.25 → 0.75 */
   function cyclePlaybackRate() {

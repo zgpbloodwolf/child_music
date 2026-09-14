@@ -23,7 +23,7 @@ const {
   playlist, currentIndex,
 } = storeToRefs(player);
 
-const statusBarHeight = ref<number>(uni.getSystemInfoSync().statusBarHeight || 20);
+const statusBarHeight = ref<number>(uni.getWindowInfo().statusBarHeight || 20);
 
 const lyricLines = computed<LyricLine[]>(() =>
   currentSong.value?.lyric ? parseLyric(currentSong.value.lyric) : [],
