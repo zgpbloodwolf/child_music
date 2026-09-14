@@ -56,6 +56,22 @@ get_env() {
 
 PORT="$(get_env PORT 8823)"
 
+# 端口绑定地址:默认仅回环,公网无法直连 8823 绕过反代伪造 X-Forwarded-For。
+# 若 Nginx 反代是同机容器且上游填「宿主机IP:8823」,回环绑定会不可达,
+# 请改用宿主机内网 IP 运行(如 BIND_IP=192.168.50.88 ./docker-run.sh run),勿改回 0.0.0.0。
+BIND_IP="${BIND_IP:-127.0.0.1}"
+
+# 安全底线:ADMIN_TOKEN 缺失/为空/默认值时拒绝启动。
+# 空串会导致 "Authorization: Bearer "(空 token)通过校验,造成未授权管理访问。
+require_admin_token() {
+  local t
+  t="$(get_env ADMIN_TOKEN "")"
+  if [ -z "$t" ] || [ "${t#change-me}" != "$t" ]; then
+    echo "[错误] server/.env 未配置有效的 ADMIN_TOKEN(须非空且非 change-me 默认值),拒绝启动。" >&2
+    exit 1
+  fi
+}
+
 # 确保已登录 ACR(build/push 前调用)。已登录则静默跳过。
 ensure_acr_login() {
   if ! docker pull "$ACR_REPO" >/dev/null 2>&1; then
@@ -182,13 +198,14 @@ build_local() {
 
 # 运行容器(从 ACR 拉取当前架构)
 run() {
+  require_admin_token
   echo "[运行] 拉取镜像 ${IMAGE_TAG}(自动选择本机架构)…"
   docker pull "$IMAGE_TAG"
   docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
   docker run -d \
     --name "$CONTAINER" \
     --restart unless-stopped \
-    -p "${PORT}:${PORT}" \
+    -p "${BIND_IP}:${PORT}:${PORT}" \
     -v "$(pwd)/volumes/storage:/app/storage" \
     -v "$(pwd)/volumes/db:/app/data" \
     -v "$(pwd)/volumes/source:/source:ro" \
@@ -196,7 +213,7 @@ run() {
     -e SOURCE_SONGS_JSON=/source/songs.json \
     -e SOURCE_LIBRARY_ROOT=/source \
     "$IMAGE_TAG"
-  echo "已启动: http://<本机IP>:${PORT}/cmusic"
+  echo "已启动: http://${BIND_IP}:${PORT}/cmusic(反代请指向该地址)"
   echo "日志:   ./docker-run.sh logs   或   docker logs -f $CONTAINER"
 }
 
