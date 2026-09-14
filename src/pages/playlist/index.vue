@@ -37,6 +37,10 @@ const theme = ref<string>('');
 
 /** 当前列表的歌曲 id(来源随 mode 变化,异步加载) */
 const songIds = ref<string[]>([]);
+/** 首屏加载中(loadMeta→loadIds→loadFirstPage 整个链路) */
+const initialLoading = ref(true);
+/** 加载失败标记(区分「暂无音频」与「加载失败」) */
+const loadError = ref(false);
 
 // ===== 分页加载 =====
 /** 每页加载数量 */
@@ -131,12 +135,25 @@ async function loadMore(): Promise<void> {
   }
 }
 
-/** mode / subId / authorName 变化时先加载分类元数据,再加载歌曲 id(onLoad 改值即触发) */
-watch([mode, subId, authorName, catId], async () => {
-  await loadMeta();
-  await loadIds();
-  await loadFirstPage();
-});
+/** 完整加载链路:元数据 → 歌曲id → 第一页。失败置 loadError(展示错误态
+ * 而非误报「暂无音频」),成功自动清除;供 watch 与手动重试共用。 */
+async function reload(): Promise<void> {
+  initialLoading.value = true;
+  loadError.value = false;
+  try {
+    await loadMeta();
+    await loadIds();
+    await loadFirstPage();
+  } catch (err) {
+    console.warn('歌单加载失败:', err);
+    loadError.value = true;
+  } finally {
+    initialLoading.value = false;
+  }
+}
+
+/** mode / subId / authorName 变化时重载(onLoad 改值即触发) */
+watch([mode, subId, authorName, catId], () => { void reload(); });
 
 /** 歌曲对象列表(按 id 异步取元数据,分页加载) */
 const listSongs = ref<SongMeta[]>([]);
@@ -187,6 +204,9 @@ onLoad((options) => {
   } else if (typeof subOpt === 'string' && subOpt) {
     mode.value = 'sub';
     subId.value = subOpt;
+  } else {
+    // 无任何有效参数:四个 ref 均未变化,watch 不会触发,手动兜底走一次加载链路
+    void reload();
   }
 });
 
@@ -244,7 +264,14 @@ function playAll() {
       <text>已加载全部 {{ listSongs.length }} 首</text>
     </view>
 
-    <view v-if="listSongs.length === 0 && !loadingMore" class="empty">
+    <!-- 首屏加载 / 失败(可点击重试)/ 真空态三分支 -->
+    <view v-if="initialLoading" class="empty">
+      <text>加载中...</text>
+    </view>
+    <view v-else-if="loadError" class="empty" @click="reload()">
+      <text>加载失败,点击重试</text>
+    </view>
+    <view v-else-if="listSongs.length === 0" class="empty">
       <text>该分类暂无音频</text>
     </view>
 
