@@ -3,6 +3,7 @@
 		{
 			"path": "pages/home/index",
 			"style": {
+				"navigationStyle": "custom",
 				"navigationBarTitleText": "启蒙音频"
 			}
 		},

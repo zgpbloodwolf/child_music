@@ -22,6 +22,9 @@ const history = useHistoryStore();
 const { recent } = storeToRefs(history);
 const repo = getRepository();
 
+/** 状态栏高度:本页 custom 导航栏(去掉原生标题栏,避免与页内顶栏标题重复),需自行为状态栏留白 */
+const statusBarHeight = uni.getWindowInfo().statusBarHeight || 20;
+
 /** 分类 tab:全部 + 四大类(异步加载),点击本页切换内容(不跳转) */
 const tabs = ref<Array<{ id: string; name: string }>>([{ id: 'all', name: '全部' }]);
 const currentTab = ref('all');
@@ -31,12 +34,17 @@ const recommendSongs = ref<SongMeta[]>([]);
 const loadingRecommend = ref(false);
 
 onMounted(async () => {
-  // 只加载分类树,不加载全部歌曲
-  const cats = await repo.getCategories();
-  tabs.value = [{ id: 'all', name: '全部' }, ...cats.map((c) => ({ id: c.id, name: c.name }))];
-  // 加载第一个分类的歌曲作为推荐
-  if (cats.length > 0) {
-    loadRecommend(cats[0].id);
+  // 只加载分类树,不加载全部歌曲;失败给提示(否则 tab 永远只有「全部」且无反馈)
+  try {
+    const cats = await repo.getCategories();
+    tabs.value = [{ id: 'all', name: '全部' }, ...cats.map((c) => ({ id: c.id, name: c.name }))];
+    // 加载第一个分类的歌曲作为推荐
+    if (cats.length > 0) {
+      loadRecommend(cats[0].id);
+    }
+  } catch (err) {
+    console.warn('加载分类失败:', err);
+    uni.showToast({ title: '分类加载失败,请检查网络', icon: 'none' });
   }
 });
 
@@ -76,8 +84,8 @@ function goSearch() {
 
 <template>
   <view class="page">
-    <!-- 顶栏:应用名 + 搜索图标 -->
-    <view class="topbar">
+    <!-- 顶栏:应用名 + 搜索图标(custom 导航,自行为状态栏留白) -->
+    <view class="topbar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <text class="app-name">启蒙音频</text>
       <text class="search-ico" @click="goSearch">🔍</text>
     </view>
