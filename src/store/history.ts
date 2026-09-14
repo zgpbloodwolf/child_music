@@ -1,74 +1,33 @@
 import { defineStore } from 'pinia';
-import { ref, watch } from 'vue';
-import type { SongMeta } from '@/types/song';
-import { getRepository } from '@/repository';
+import { useIdMetaList } from '@/composables/useIdMetaList';
 
 /**
  * 播放历史 store —— 「最近播放 / 继续听」(本地持久化)。
  * 记录最近听过的音频 id(最新的在前,去重,上限 MAX_HISTORY)。
- * recent 为 id 对应的轻量元数据,通过 Repository 异步映射(列表展示用,不含音频地址)。
+ * recent 为 id 对应的轻量元数据,增量补全逻辑见 useIdMetaList。
  */
 
 const HISTORY_KEY = 'music_history_ids';
 /** 最多保留多少条历史 */
 const MAX_HISTORY = 20;
 
-/** 曲库数据源(模块级单例) */
-const repo = getRepository();
-/** id → 元数据 缓存:增量补全,避免每次 add 都全量 listByIds */
-const metaCache = new Map<string, SongMeta>();
-
-/** 从本地存储读取历史 id 列表 */
-function loadHistory(): string[] {
-  try {
-    const raw = uni.getStorageSync(HISTORY_KEY);
-    if (Array.isArray(raw)) {
-      return raw.filter((id: unknown): id is string => typeof id === 'string');
-    }
-    return [];
-  } catch (e) {
-    console.error('读取播放历史失败:', e);
-    return [];
-  }
-}
-
 export const useHistoryStore = defineStore('history', () => {
+  const { ids, songs, persist } = useIdMetaList(HISTORY_KEY);
+
   /** 历史 id 列表(最新在前) */
-  const ids = ref<string[]>(loadHistory());
+  // ids 已由 useIdMetaList 提供,此处重命名导出保持对外接口不变
+  const recent = songs;
 
-  /** 历史歌曲元数据列表(最新在前,与 ids 同步) */
-  const recent = ref<SongMeta[]>([]);
-
-  /**
-   * 按 ids 顺序组装 recent;仅对缓存缺失的 id 发请求(增量)。
-   * 首次加载建缓存,之后播放一首新歌只补取那一条,不再全量重拉。
-   */
-  async function refresh() {
-    const missing = ids.value.filter((id) => !metaCache.has(id));
-    if (missing.length > 0) {
-      const got = await repo.listByIds(missing);
-      got.forEach((s) => metaCache.set(s.id, s));
-    }
-    recent.value = ids.value
-      .map((id) => metaCache.get(id))
-      .filter((s): s is SongMeta => Boolean(s));
-  }
-
-  // ids 变化时按需补全缓存并重组 recent;immediate 保证初始化即加载
-  watch(ids, () => { void refresh(); }, { immediate: true, deep: true });
-
-  /** 新增一条播放记录(去重并置顶,超过上限截断);增量补全该首元数据 */
+  /** 新增一条播放记录(去重并置顶,超过上限截断)并持久化 */
   function add(songId: string) {
     ids.value = [songId, ...ids.value.filter((id) => id !== songId)].slice(0, MAX_HISTORY);
-    uni.setStorageSync(HISTORY_KEY, ids.value);
-    void refresh();
+    persist();
   }
 
-  /** 清空历史(同时清空元数据缓存) */
+  /** 清空历史 */
   function clear() {
     ids.value = [];
-    metaCache.clear();
-    uni.setStorageSync(HISTORY_KEY, ids.value);
+    persist();
   }
 
   return { ids, recent, add, clear };
