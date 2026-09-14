@@ -91,11 +91,26 @@ function openTimer() {
 // ===== 播放列表弹层 =====
 /** 弹层是否展开 */
 const showQueue = ref(false);
-/** 当前队列对应的歌曲元数据(仅展示用);playlist 整体更换时才重新拉取,切歌不触发 */
+/** 当前队列对应的歌曲元数据(仅展示用) */
 const queueSongs = ref<SongMeta[]>([]);
-watch(playlist, async (ids) => {
+/** 已拉取元数据的 playlist 引用(标记用,非响应式);playlist 整体更换时复位 */
+let queueLoadedFor: readonly string[] | null = null;
+/**
+ * 懒加载队列元数据:首次展开弹层(或 playlist 更换后再次展开)才请求,
+ * 避免进入播放页就对整个队列(全部歌曲模式下数百条)发起 listByIds。
+ * playlist 被整体替换时引用变化,标记自动失效;切歌不替换引用、不重拉。
+ */
+async function ensureQueueLoaded(): Promise<void> {
+  const ids = playlist.value;
+  if (queueLoadedFor === ids) return;
+  queueLoadedFor = ids;
   queueSongs.value = ids.length ? await repo.listByIds(ids) : [];
-}, { immediate: true });
+}
+/** 打开弹层并按需拉取队列元数据 */
+function openQueue() {
+  showQueue.value = true;
+  void ensureQueueLoaded();
+}
 /** 弹层展开时自动滚到当前播放项 */
 const queueScrollInto = computed(() =>
   showQueue.value && currentIndex.value >= 0 ? `queue-${currentIndex.value}` : '',
@@ -184,7 +199,7 @@ function playQueueAt(i: number) {
       <view class="play" @click="player.togglePlay()">{{ isPlaying ? '❚❚' : '▶' }}</view>
       <view class="ctrl-side ctrl-side--right">
         <text class="ctrl" @click="player.playNext()">⏭</text>
-        <text class="ctrl ctrl-queue" @click="showQueue = true">☰</text>
+        <text class="ctrl ctrl-queue" @click="openQueue()">☰</text>
       </view>
     </view>
 
