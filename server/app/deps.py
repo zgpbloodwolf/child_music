@@ -14,33 +14,50 @@ def verify_admin_token(authorization: str = Header(default="", description="Bear
     """管理接口鉴权:校验 Authorization: Bearer <token>。
 
     用 secrets.compare_digest 防时序攻击;token 存 .env,传输加密由 cpolar HTTPS 保障。
-    未配置默认 token(change-me)时拒绝,避免误上线裸奔。
+    未配置默认 token(change-me)时拒绝,避免误上线裸奔;
+    空串同样拒绝(compose 的 "${ADMIN_TOKEN}" 在变量未定义时注入空串而非缺失,
+    空串会导致 "Bearer "(空 token)通过校验)。
     """
     expected = f"Bearer {settings.admin_token}"
-    if settings.admin_token.startswith("change-me") or not secrets.compare_digest(
-        authorization or "", expected
+    if (
+        not settings.admin_token
+        or settings.admin_token.startswith("change-me")
+        or not secrets.compare_digest(authorization or "", expected)
     ):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="未授权:token 无效")
 
 
+def _trusted_ip(ip_str: str) -> bool:
+    """IP 是否属于可信网段(回环/私网等,复用管理白名单配置)。"""
+    try:
+        ip = ip_address(ip_str)
+    except (ValueError, AddressValueError):
+        return False
+    return any(ip in net for net in settings.admin_allow_networks)
+
+
 def _client_ip(request: Request) -> str:
-    """取真实客户端 IP。
+    """取真实客户端 IP(防伪造)。
 
-    后端常与 Nginx 同机,request.client.host 会是 127.0.0.1(在白名单内),
-    此时公网经反代访问会误放行。故默认信任反代透传的 X-Forwarded-For,
-    取其最左端(经 Nginx 追加链的原始客户端 IP);未配置信任时回退直连 IP。
+    两层规则:
+    1. 只有「直连对端」本身可信(反代与后端同机/同私网,即 request.client.host
+       在白名单网段内)时才采信其转发的 X-Forwarded-For;公网直连者的 XFF 一律
+       忽略,直接用直连 IP——否则攻击者直连端口伪造 XFF: 10.0.0.1 即可绕过白名单。
+    2. 采信时从 XFF 右端往左取第一个非可信地址:反代链逐层把来源追加在右侧,
+       最右侧可信条目之前那一跳才是真实来源;客户端伪造的左侧条目不会被取到。
+       整条链都可信(纯内网访问)时回退直连 IP。
 
-    注意:Nginx 默认追加而非覆盖 XFF,客户端可伪造原始值;但写接口另有
-    admin_token 兜底,伪造 XFF 仅能命中 IP 检查,仍无法越权写操作。
+    畸形 XFF 条目按不可信处理(取到即后续 403,失败方向安全)。
     """
-    if settings.admin_trust_forwarded:
-        xff = request.headers.get("x-forwarded-for", "")
-        if xff:
-            # XFF 形如 "客户端IP, 一级代理, 二级代理";取最左端即原始客户端
-            first = xff.split(",")[0].strip()
-            if first:
-                return first
-    return request.client.host if request.client else ""
+    direct = request.client.host if request.client else ""
+    if not settings.admin_trust_forwarded or not _trusted_ip(direct):
+        return direct
+    xff = request.headers.get("x-forwarded-for", "")
+    for part in reversed(xff.split(",")):
+        part = part.strip()
+        if part and not _trusted_ip(part):
+            return part
+    return direct
 
 
 def require_intranet(request: Request) -> None:
@@ -50,7 +67,7 @@ def require_intranet(request: Request) -> None:
     白名单默认覆盖私网段 + 回环(见 settings.admin_allow_networks),
     额外网段(如办公网公网出口、VPN 段)在 .env 的 ADMIN_ALLOW_CIDRS 追加。
 
-    取 IP 逻辑见 _client_ip:默认信任反代透传的 X-Forwarded-For。
+    取 IP 逻辑见 _client_ip:直连对端可信才采信 X-Forwarded-For,且从右往左取。
     """
     ip_str = _client_ip(request)
     try:
