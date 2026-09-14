@@ -1,4 +1,4 @@
-"""一次性迁移:src/static/data/songs.json → SQLite + 拷贝音频文件到 storage。
+"""一次性迁移:data/songs.json → SQLite + 拷贝音频文件到 storage。
 
 关键(已踩坑验证):子类 key(如 children-classic)与文件目录名(children/classic)
 不一致,且字段路径里子类段去掉了重复的大类前缀。故**必须从每条记录的 src/cover
@@ -26,7 +26,7 @@ SERVER_DIR = Path(__file__).resolve().parent.parent
 # SOURCE_SONGS_JSON / SOURCE_LIBRARY_ROOT 指向挂载目录(/source)。
 SONGS_JSON = Path(
     os.environ.get("SOURCE_SONGS_JSON")
-    or (SERVER_DIR.parent / "src" / "static" / "data" / "songs.json")
+    or (SERVER_DIR.parent / "data" / "songs.json")
 )
 SRC_STATIC = Path(
     os.environ.get("SOURCE_LIBRARY_ROOT") or (SERVER_DIR.parent / "src" / "static")

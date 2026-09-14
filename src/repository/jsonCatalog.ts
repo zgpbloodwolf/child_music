@@ -76,12 +76,12 @@ function buildCategories(file: CatalogFile): Category[] {
 }
 
 /**
- * JSON 目录 Repository:运行时 fetch `static/data/songs.json` 到内存。
- * 同时承担「歌曲查询」与「分类树查询」—— 分类的 name/desc/icon 也来自 songs.json(单一源),
- * 不再依赖 categories.ts 静态模块。
+ * JSON 目录 Repository:运行时 fetch songs.json 到内存(当前未启用,见 repository/index.ts)。
+ * 同时承担「歌曲查询」与「分类树查询」—— 分类的 name/desc/icon 也来自 songs.json(单一源)。
  *
- * 适用规模:几千~十万首。元数据是「小数据」,全量驻留内存仅几 MB,搜索/筛选毫秒级。
- * 数据作为 static 下独立资源加载,**不进 JS bundle**(面向大规模:曲库增长不影响 bundle)。
+ * 注意:源数据文件已移至仓库 `data/songs.json`(原 static/data/ 位置会被整体打进
+ * App 包,与「数据不进包」的架构相悖)。若要重新启用本实现,需把该文件放回
+ * `src/static/data/songs.json` 或将下方 url 指向可访问的静态地址。
  *
  * 预热机制:首次查询内部自动 await warmup,消费侧无需关心时机。
  */
