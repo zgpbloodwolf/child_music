@@ -4,6 +4,7 @@
 删除分类前校验「无歌曲」才允许(避免歌曲 category_id 悬空)。
 """
 from pathlib import Path
+from typing import BinaryIO
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy import func, select
@@ -41,6 +42,17 @@ def _abs(rel_path: str) -> Path:
 # 落盘目录经 StaticFiles 公开分发,放行 .html/.svg 等会构成存储型 XSS / 任意内容分发。
 AUDIO_EXTS = {".mp3", ".m4a", ".flac", ".ogg", ".wav", ".aac"}
 COVER_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
+# 上传大小上限(流式写盘边写边计,超限拒绝),防超大请求打爆容器内存
+MAX_AUDIO_BYTES = 100 * 1024 * 1024
+MAX_COVER_BYTES = 5 * 1024 * 1024
+
+
+def _save_upload(file_obj: BinaryIO, dest: Path, max_bytes: int, kind: str) -> None:
+    """流式保存上传文件,大小/类型超限时 400(半成品文件由 write_upload 清理)。"""
+    try:
+        storage.write_upload(file_obj, dest, max_bytes, kind)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e)) from e
 
 
 def _checked_ext(filename: str | None, whitelist: set[str], kind: str) -> str:
@@ -91,13 +103,13 @@ def upload_song(
     dest_dir = storage.song_dir(category_id, sub_category_id)
     ext = _checked_ext(audio.filename, AUDIO_EXTS, "音频")
     audio_path = dest_dir / f"{id}{ext}"
-    storage.write_bytes(audio.file.read(), audio_path)
+    _save_upload(audio.file, audio_path, MAX_AUDIO_BYTES, "音频")
 
     cover_abs: Path | None = None
     if cover and cover.filename:
         cext = _checked_ext(cover.filename, COVER_EXTS, "封面")
         cover_abs = dest_dir / f"{id}{cext}"
-        storage.write_bytes(cover.file.read(), cover_abs)
+        _save_upload(cover.file, cover_abs, MAX_COVER_BYTES, "封面")
 
     song = Song(
         id=id,
@@ -160,7 +172,7 @@ def replace_cover(
     dest_dir = storage.song_dir(song.category_id, song.sub_category_id)
     cext = _checked_ext(cover.filename, COVER_EXTS, "封面")
     cover_abs = dest_dir / f"{song_id}{cext}"
-    storage.write_bytes(cover.file.read(), cover_abs)
+    _save_upload(cover.file, cover_abs, MAX_COVER_BYTES, "封面")
     if song.cover_path:  # 旧封面扩展名可能不同,一并删
         storage.safe_remove(_abs(song.cover_path))
     song.cover_path = storage.to_rel(cover_abs)

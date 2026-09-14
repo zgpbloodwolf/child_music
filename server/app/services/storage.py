@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 from pathlib import Path
+from typing import BinaryIO
 
 from mutagen import File as MutagenFile  # 自动识别格式的通用入口
 
@@ -36,6 +37,30 @@ def write_bytes(data: bytes, dest: Path) -> None:
     """字节内容落盘(自动创建父目录)。"""
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(data)
+
+
+def write_upload(file_obj: BinaryIO, dest: Path, max_bytes: int, kind: str = "文件") -> None:
+    """上传文件流式落盘(自动创建父目录),超过 max_bytes 抛 ValueError。
+
+    分块拷贝而非一次性 read() 进内存:Starlette 不限制请求体大小,
+    整读会把大请求全部载入内存,可被用于打爆容器内存(DoS)。
+    超限时删除半成品文件。
+    """
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    written = 0
+    try:
+        with open(dest, "wb") as f:
+            while True:
+                chunk = file_obj.read(1024 * 1024)
+                if not chunk:
+                    break
+                written += len(chunk)
+                if written > max_bytes:
+                    raise ValueError(f"{kind}大小超过上限({max_bytes // (1024 * 1024)} MB)")
+                f.write(chunk)
+    except ValueError:
+        dest.unlink(missing_ok=True)
+        raise
 
 
 def copy_file(src: Path, dest: Path) -> None:
