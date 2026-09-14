@@ -37,6 +37,23 @@ def _abs(rel_path: str) -> Path:
     return settings.library_dir.parent / rel_path
 
 
+# 上传扩展名白名单:白名单外一律 400。
+# 落盘目录经 StaticFiles 公开分发,放行 .html/.svg 等会构成存储型 XSS / 任意内容分发。
+AUDIO_EXTS = {".mp3", ".m4a", ".flac", ".ogg", ".wav", ".aac"}
+COVER_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
+
+
+def _checked_ext(filename: str | None, whitelist: set[str], kind: str) -> str:
+    """校验上传文件扩展名在白名单内,返回小写扩展名(含点)。"""
+    ext = Path(filename or "").suffix.lower()
+    if ext not in whitelist:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"{kind}文件类型不允许({ext or '无扩展名'}),仅支持:{'、'.join(sorted(whitelist))}",
+        )
+    return ext
+
+
 def _song_count_in_sub(db: Session, sub_id: str) -> int:
     return db.scalar(select(func.count()).where(Song.sub_category_id == sub_id)) or 0
 
@@ -72,13 +89,13 @@ def upload_song(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"子类不存在:{sub_category_id}")
 
     dest_dir = storage.song_dir(category_id, sub_category_id)
-    ext = Path(audio.filename or "x.mp3").suffix.lower() or ".mp3"
+    ext = _checked_ext(audio.filename, AUDIO_EXTS, "音频")
     audio_path = dest_dir / f"{id}{ext}"
     storage.write_bytes(audio.file.read(), audio_path)
 
     cover_abs: Path | None = None
     if cover and cover.filename:
-        cext = Path(cover.filename).suffix.lower() or ".jpg"
+        cext = _checked_ext(cover.filename, COVER_EXTS, "封面")
         cover_abs = dest_dir / f"{id}{cext}"
         storage.write_bytes(cover.file.read(), cover_abs)
 
@@ -141,7 +158,7 @@ def replace_cover(
     if not song:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "歌曲不存在")
     dest_dir = storage.song_dir(song.category_id, song.sub_category_id)
-    cext = Path(cover.filename or "x.jpg").suffix.lower() or ".jpg"
+    cext = _checked_ext(cover.filename, COVER_EXTS, "封面")
     cover_abs = dest_dir / f"{song_id}{cext}"
     storage.write_bytes(cover.file.read(), cover_abs)
     if song.cover_path:  # 旧封面扩展名可能不同,一并删
