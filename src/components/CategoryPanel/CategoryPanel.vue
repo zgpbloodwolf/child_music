@@ -12,7 +12,7 @@ import ClassicsHero from '@/components/ClassicsHero/ClassicsHero.vue';
 import StoryHero from '@/components/StoryHero/StoryHero.vue';
 import SegmentedTabs from '@/components/SegmentedTabs/SegmentedTabs.vue';
 import CoverImage from '@/components/CoverImage/CoverImage.vue';
-import type { CoverVariant } from '@/components/CoverImage/CoverImage.vue';
+import { coverVariantOf } from '@/components/CoverImage/CoverImage.vue';
 
 /**
  * 大类内容面板:首页分类 tab 切换时在首页内渲染某大类(也可被独立分类页复用)。
@@ -40,21 +40,23 @@ const authors = ref<PoetryAuthor[]>([]);
 /** poetry 朝代标签(异步) */
 const dynasties = ref<string[]>([]);
 
-/** 加载某大类的各子类歌曲列表 + 总数;poetry 额外加载作者 / 朝代 */
+/** 加载某大类的各子类歌曲列表 + 总数;poetry 额外加载作者 / 朝代。
+ * 一次 listByCategory 拉全大类后按 subCategory 客户端分组,
+ * 避免对每个子类各发一次请求(N+1)。 */
 async function loadCat(catId: string): Promise<void> {
   const cats = await repo.getCategories();
   const c = cats.find((x) => x.id === catId) ?? null;
   cat.value = c;
   if (!c) return;
-  const lists = await Promise.all(c.subs.map((s) => repo.listBySub(s.id)));
+  const songs = await repo.listByCategory(catId);
   const map: Record<string, SongMeta[]> = {};
-  let total = 0;
-  c.subs.forEach((s, i) => {
-    map[s.id] = lists[i];
-    total += lists[i].length;
+  c.subs.forEach((s) => { map[s.id] = []; });
+  songs.forEach((s) => {
+    const key = s.subCategory ?? '';
+    (map[key] ??= []).push(s);
   });
   subList.value = map;
-  totalCount.value = total;
+  totalCount.value = songs.length;
   if (catId === 'poetry') {
     authors.value = await listPoetryAuthors();
     dynasties.value = await poetryDynasties();
@@ -71,15 +73,7 @@ const poetryTabs = [
 /** 主题(=catId):驱动皮肤 class 与封面 variant */
 const theme = computed(() => props.catId);
 /** 子卡封面兜底色:按主题映射(儿歌糖果 / 三字经竹简 / 故事月光 / 古诗暖褐 / 其余默认) */
-const coverVariant = computed<CoverVariant>(() => {
-  const map: Record<string, CoverVariant> = {
-    children: 'candy',
-    poetry: 'warm',
-    classics: 'bamboo',
-    story: 'moon',
-  };
-  return map[props.catId] ?? 'primary';
-});
+const coverVariant = computed(() => coverVariantOf(props.catId));
 
 /** 某子类的歌曲数(template 用) */
 function subCount(subId: string): number {
