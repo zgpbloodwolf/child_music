@@ -9,6 +9,7 @@ import SongItem from '@/components/SongItem/SongItem.vue';
 import CoverImage from '@/components/CoverImage/CoverImage.vue';
 import MiniPlayer from '@/components/MiniPlayer/MiniPlayer.vue';
 import type { CoverVariant } from '@/components/CoverImage/CoverImage.vue';
+import { coverVariantOf } from '@/components/CoverImage/CoverImage.vue';
 import type { SongMeta } from '@/types/song';
 
 /**
@@ -164,16 +165,10 @@ const isAuthor = computed(() => mode.value === 'author');
 /** sub 模式:取第一首作品封面 */
 const cover = computed(() => listSongs.value[0]?.cover);
 
-/** 头部封面兜底色:作者用朱砂方印;子分类按所属大类映射(theme 为上方 ref) */
+/** 头部封面兜底色:作者用朱砂方印;其余按所属大类映射(映射集中在 CoverImage 导出) */
 const coverVariant = computed<CoverVariant>(() => {
   if (mode.value === 'author') return 'seal';
-  const map: Record<string, CoverVariant> = {
-    children: 'candy',
-    poetry: 'warm',
-    classics: 'bamboo',
-    story: 'moon',
-  };
-  return map[theme.value] ?? 'primary';
+  return coverVariantOf(theme.value);
 });
 
 onLoad((options) => {

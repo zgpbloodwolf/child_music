@@ -1,6 +1,17 @@
 <script lang="ts">
 /** 封面色块风格(仅无图兜底时生效);导出供 CategoryPanel / playlist 按主题映射复用 */
 export type CoverVariant = 'primary' | 'seal' | 'warm' | 'candy' | 'bamboo' | 'moon';
+
+/** 主题(大类 id)→ 封面兜底风格;集中一处,避免各页面重复硬编码同一映射 */
+export function coverVariantOf(theme: string): CoverVariant {
+  const map: Record<string, CoverVariant> = {
+    children: 'candy',
+    poetry: 'warm',
+    classics: 'bamboo',
+    story: 'moon',
+  };
+  return map[theme] ?? 'primary';
+}
 </script>
 
 <script setup lang="ts">
