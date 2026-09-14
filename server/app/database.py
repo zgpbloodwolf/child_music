@@ -5,15 +5,30 @@ SQLite 单文件,check_same_thread=False 让 FastAPI 线程池可共享连接;
 """
 from collections.abc import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 from .config import settings
 
 engine = create_engine(
     settings.sqlite_url,
-    connect_args={"check_same_thread": False},
+    # timeout:写锁等待上限(秒),默认 5s 并发写易报 database is locked
+    connect_args={"check_same_thread": False, "timeout": 30},
 )
+
+
+@event.listens_for(engine, "connect")
+def _sqlite_pragma(dbapi_conn, _record) -> None:
+    """每个连接建立时执行的 PRAGMA:
+
+    - journal_mode=WAL:读写不再全库互斥,管理写入与并发查询相遇不易锁库
+    - foreign_keys=ON:SQLite 默认不强制外键,开启后模型声明的
+      ondelete=CASCADE 等约束才真正生效(否则只是声明)
+    """
+    cur = dbapi_conn.cursor()
+    cur.execute("PRAGMA journal_mode=WAL")
+    cur.execute("PRAGMA foreign_keys=ON")
+    cur.close()
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 Base = declarative_base()
 
