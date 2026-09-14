@@ -4,7 +4,7 @@ export type CoverVariant = 'primary' | 'seal' | 'warm' | 'candy' | 'bamboo' | 'm
 </script>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 /**
  * 封面图组件:有图显示图片,无图或加载失败时用渐变色块 + 文字兜底。
@@ -31,6 +31,10 @@ const variantClass = computed(() =>
 function onError() {
   failed.value = true;
 }
+
+// src 变化时复位失败态:播放页/迷你播放条切歌会复用同一组件实例,
+// 不复位的话某首封面 404 后所有后续歌曲都永久显示兜底色块
+watch(() => props.src, () => { failed.value = false; });
 </script>
 
 <template>
