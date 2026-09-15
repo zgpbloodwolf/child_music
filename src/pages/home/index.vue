@@ -48,12 +48,18 @@ onMounted(async () => {
   }
 });
 
-/** 懒加载推荐歌曲(只加载当前分类前6首) */
+/** 推荐位展示条数(交给服务端分页,不再整类拉回后 slice) */
+const RECOMMEND_SIZE = 6;
+
+/** 懒加载推荐歌曲(服务端只取当前分类前 6 首) */
 async function loadRecommend(catId: string) {
   loadingRecommend.value = true;
   try {
-    const songs = await repo.listByCategory(catId);
-    recommendSongs.value = songs.slice(0, 6);
+    const res = await repo.listPage(
+      { category: catId },
+      { number: 1, size: RECOMMEND_SIZE },
+    );
+    recommendSongs.value = res.items;
   } catch (err) {
     console.warn('加载推荐歌曲失败:', err);
   } finally {

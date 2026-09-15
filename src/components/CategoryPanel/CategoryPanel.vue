@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { listPoetryAuthors, poetryDynasties } from '@/data/poetry';
+import { dynastiesOf, listPoetryAuthors } from '@/data/poetry';
 import type { Category } from '@/types/category';
 import { getRepository } from '@/repository';
 import { PoetryViewMode } from '@/types/poetry';
 import type { PoetryAuthor } from '@/types/poetry';
-import type { SongMeta } from '@/types/song';
 import PoetryHero from '@/components/PoetryHero/PoetryHero.vue';
 import ChildrenHero from '@/components/ChildrenHero/ChildrenHero.vue';
 import ClassicsHero from '@/components/ClassicsHero/ClassicsHero.vue';
@@ -20,7 +19,8 @@ import { coverVariantOf } from '@/components/CoverImage/CoverImage.vue';
  * - poetry:书卷质感 + 「类型/作者」分段切换 + 双面板(布局一致)
  * 皮肤 class 一律用字面量对象(非字符串拼接),避免 scoped + 小程序端丢哈希失效。
  *
- * 各子类的歌曲列表 / 数量走 Repository 异步加载(分类结构静态、歌曲数据不进 bundle)。
+ * 数据来源:各级歌曲数直接读分类树的 songCount(后端聚合下发),本面板不请求任何
+ * 歌曲列表——它只展示计数,不需要曲目明细。分类结构静态、歌曲数据不进 bundle。
  */
 const props = defineProps<{ catId: string }>();
 const repo = getRepository();
@@ -31,35 +31,27 @@ const viewMode = ref<PoetryViewMode>(PoetryViewMode.BY_TYPE);
 const cat = ref<Category | null>(null);
 const isPoetry = computed(() => props.catId === 'poetry');
 
-/** 各子类歌曲列表(subId → 列表),异步加载 */
-const subList = ref<Record<string, SongMeta[]>>({});
-/** 该大类歌曲总数 */
-const totalCount = ref(0);
-/** poetry 作者列表(异步) */
+/** poetry 作者列表(异步,作品数由后端聚合) */
 const authors = ref<PoetryAuthor[]>([]);
-/** poetry 朝代标签(异步) */
+/** poetry 朝代标签(由作者列表派生,不额外请求) */
 const dynasties = ref<string[]>([]);
 
-/** 加载某大类的各子类歌曲列表 + 总数;poetry 额外加载作者 / 朝代。
- * 一次 listByCategory 拉全大类后按 subCategory 客户端分组,
- * 避免对每个子类各发一次请求(N+1)。 */
+/** 子类歌曲数(subId → count),取自分类树 */
+const subCounts = computed<Record<string, number>>(() => {
+  const map: Record<string, number> = {};
+  cat.value?.subs.forEach((s) => { map[s.id] = s.songCount ?? 0; });
+  return map;
+});
+
+/** 加载某大类:分类树(含各级 songCount)+ poetry 作者。
+ * 计数随分类树一次取回,不再为了「N 首」去拉该大类的歌曲列表。 */
 async function loadCat(catId: string): Promise<void> {
   const cats = await repo.getCategories();
-  const c = cats.find((x) => x.id === catId) ?? null;
-  cat.value = c;
-  if (!c) return;
-  const songs = await repo.listByCategory(catId);
-  const map: Record<string, SongMeta[]> = {};
-  c.subs.forEach((s) => { map[s.id] = []; });
-  songs.forEach((s) => {
-    const key = s.subCategory ?? '';
-    (map[key] ??= []).push(s);
-  });
-  subList.value = map;
-  totalCount.value = songs.length;
+  cat.value = cats.find((x) => x.id === catId) ?? null;
+  if (!cat.value) return;
   if (catId === 'poetry') {
     authors.value = await listPoetryAuthors();
-    dynasties.value = await poetryDynasties();
+    dynasties.value = dynastiesOf(authors.value);
   }
 }
 
@@ -75,9 +67,9 @@ const theme = computed(() => props.catId);
 /** 子卡封面兜底色:按主题映射(儿歌糖果 / 三字经竹简 / 故事月光 / 古诗暖褐 / 其余默认) */
 const coverVariant = computed(() => coverVariantOf(props.catId));
 
-/** 某子类的歌曲数(template 用) */
+/** 某子类的歌曲数(template 用;来自分类树 songCount) */
 function subCount(subId: string): number {
-  return subList.value[subId]?.length ?? 0;
+  return subCounts.value[subId] ?? 0;
 }
 
 /** 点子分类 → 歌单详情 */
@@ -134,7 +126,7 @@ function goCat() {
         'play-all--moon': theme === 'story',
       }"
       @click="goCat"
-    >全部歌曲({{ totalCount }} 首)</view>
+    >全部歌曲({{ cat.songCount ?? 0 }} 首)</view>
 
     <!-- ===== 古诗:类型/作者双面板 ===== -->
     <template v-if="isPoetry">

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { onLoad, onReachBottom } from '@dcloudio/uni-app';
-import { songsOfAuthor } from '@/data/poetry';
 import type { SubCategory, Category } from '@/types/category';
-import { getRepository } from '@/repository';
+import { getRepository, type PageResult, type SongQuery } from '@/repository';
 import { usePlayerStore } from '@/store/player';
 import SongItem from '@/components/SongItem/SongItem.vue';
 import CoverImage from '@/components/CoverImage/CoverImage.vue';
@@ -13,10 +12,18 @@ import { coverVariantOf } from '@/components/CoverImage/CoverImage.vue';
 import type { SongMeta } from '@/types/song';
 
 /**
- * 歌单详情页:支持两种来源(互斥)
+ * 歌单详情页:支持四种来源(互斥)
  * - ?sub=xx    按子分类(如「唐诗」)渲染该子分类下音频
  * - ?author=xx 按作者(如「李白」)渲染该作者在 poetry 大类下的作品
+ * - ?cat=xx    按大类渲染(首页分类区「全部歌曲」入口)
+ * - ?all=1     整个曲库
  * 页面背景/标题/按钮按来源大类沿用分类皮肤,与首页分类区连贯(不断皮)。
+ *
+ * 数据分两条路径,同一批数据不重复传输:
+ * - id 队列:repo.listIds(query) 一次取回「完整且有序」的 id(体积约为带元数据的 1/10),
+ *   供「N 首」计数与 player.playList 入队使用(队列必须是完整的,否则播到已加载末尾就断了);
+ * - 列表内容:repo.listPage(query, {page,size}) 由服务端分页返回本页元数据。
+ * 两者复用同一个 listQuery,顺序口径一致,故 listSongs 的下标可直接映射到队列下标。
  */
 type ListMode = 'sub' | 'author' | 'cat' | 'all';
 
@@ -55,8 +62,13 @@ const hasMore = ref(true);
 /** 加载分类元数据(sub + theme);loadIds 依赖 sub,需先完成 */
 async function loadMeta(): Promise<void> {
   if (mode.value === 'sub') {
-    sub.value = await repo.findSub(subId.value);
-    theme.value = (await repo.categoryIdOfSub(subId.value)) ?? '';
+    // 两次查询互不依赖,并行以省一个 RTT
+    const [s, catId] = await Promise.all([
+      repo.findSub(subId.value),
+      repo.categoryIdOfSub(subId.value),
+    ]);
+    sub.value = s;
+    theme.value = catId ?? '';
   } else if (mode.value === 'cat') {
     sub.value = null;
     const cats = await repo.getCategories();
@@ -72,18 +84,29 @@ async function loadMeta(): Promise<void> {
   }
 }
 
+/**
+ * 当前列表的查询条件(由 mode 派生)。
+ * id 队列与分页内容共用同一条件,保证两者口径一致;返回 null 表示无有效来源
+ * (如 sub 模式但子分类不存在),此时 id 与列表都为空。
+ */
+const listQuery = computed<SongQuery | null>(() => {
+  if (mode.value === 'author') return { category: 'poetry', author: authorName.value };
+  if (mode.value === 'cat') return { category: catId.value };
+  if (mode.value === 'sub') return sub.value ? { subCategory: sub.value.id } : null;
+  return {}; // all:整个曲库
+});
+
+/** 仅取 id 队列(不含元数据)。用于「N 首」计数与播放入队。 */
 async function loadIds(): Promise<void> {
-  if (mode.value === 'author') {
-    songIds.value = await songsOfAuthor(authorName.value);
-  } else if (mode.value === 'cat') {
-    songIds.value = (await repo.listByCategory(catId.value)).map((s) => s.id);
-  } else if (mode.value === 'all') {
-    songIds.value = (await repo.listAll()).map((s) => s.id);
-  } else if (sub.value) {
-    songIds.value = (await repo.listBySub(sub.value.id)).map((s) => s.id);
-  } else {
-    songIds.value = [];
-  }
+  const query = listQuery.value;
+  songIds.value = query ? await repo.listIds(query) : [];
+}
+
+/** 取第 page 页(从 1 开始)列表内容,由服务端分页。 */
+async function loadPage(page: number): Promise<PageResult<SongMeta>> {
+  const query = listQuery.value;
+  if (!query) return { items: [], total: 0, page, pageSize: PAGE_SIZE };
+  return repo.listPage(query, { number: page, size: PAGE_SIZE });
 }
 
 /** 加载第一页数据 */
@@ -92,58 +115,37 @@ async function loadFirstPage(): Promise<void> {
   hasMore.value = true;
   listSongs.value = [];
 
-  const pageIds = songIds.value.slice(0, PAGE_SIZE);
-  if (pageIds.length === 0) {
-    hasMore.value = false;
-    return;
-  }
-
-  listSongs.value = await repo.listByIds(pageIds);
+  const res = await loadPage(1);
+  listSongs.value = res.items;
   loadedPage.value = 1;
-
-  // 如果总数据不足一页,标记没有更多
-  if (songIds.value.length <= PAGE_SIZE) {
-    hasMore.value = false;
-  }
+  hasMore.value = listSongs.value.length < res.total;
 }
 
 /** 加载更多数据(下一页) */
 async function loadMore(): Promise<void> {
   if (loadingMore.value || !hasMore.value) return;
 
-  const start = loadedPage.value * PAGE_SIZE;
-  const end = start + PAGE_SIZE;
-  const pageIds = songIds.value.slice(start, end);
-
-  if (pageIds.length === 0) {
-    hasMore.value = false;
-    return;
-  }
-
   loadingMore.value = true;
   try {
-    const newSongs = await repo.listByIds(pageIds);
-    listSongs.value = [...listSongs.value, ...newSongs];
-    loadedPage.value++;
-
-    // 检查是否还有更多
-    if (end >= songIds.value.length) {
-      hasMore.value = false;
-    }
+    const res = await loadPage(loadedPage.value + 1);
+    listSongs.value = [...listSongs.value, ...res.items];
+    loadedPage.value += 1;
+    // 以服务端 total 判定是否还有下一页,不再依赖本地 id 数组的切片长度
+    hasMore.value = listSongs.value.length < res.total;
   } finally {
     loadingMore.value = false;
   }
 }
 
-/** 完整加载链路:元数据 → 歌曲id → 第一页。失败置 loadError(展示错误态
- * 而非误报「暂无音频」),成功自动清除;供 watch 与手动重试共用。 */
+/** 完整加载链路:元数据 → (id 队列 ‖ 第一页)。失败置 loadError(展示错误态
+ * 而非误报「暂无音频」),成功自动清除;供 watch 与手动重试共用。
+ * id 队列与列表内容互不依赖(listQuery 在 loadMeta 后即确定),故并行发出。 */
 async function reload(): Promise<void> {
   initialLoading.value = true;
   loadError.value = false;
   try {
     await loadMeta();
-    await loadIds();
-    await loadFirstPage();
+    await Promise.all([loadIds(), loadFirstPage()]);
   } catch (err) {
     console.warn('歌单加载失败:', err);
     loadError.value = true;

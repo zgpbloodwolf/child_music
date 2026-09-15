@@ -21,6 +21,27 @@ export interface SearchFilter {
   subCategory?: string;
 }
 
+/** 列表查询条件(均可选,组合时取交集)。比 SearchFilter 多出 keyword / author。 */
+export interface SongQuery extends SearchFilter {
+  /** 搜索关键词(匹配 name / artist / album) */
+  keyword?: string;
+  /** 限定作者(精确匹配,如 '李白') */
+  author?: string;
+}
+
+/** 作者聚合查询条件(与列表过滤口径一致,只用到分类维度) */
+export type AuthorQuery = SearchFilter;
+
+/** 作者聚合统计:只含聚合结果,不含作品明细 */
+export interface AuthorStat {
+  /** 作者名(对应 Song.artist) */
+  name: string;
+  /** 作品数 */
+  count: number;
+  /** 作品涉及的子分类 id(供派生的朝代推断等逻辑使用) */
+  subs: string[];
+}
+
 /** 分页请求参数 */
 export interface Page {
   /** 页码,从 1 开始 */
@@ -45,6 +66,11 @@ export interface PageResult<T> {
  *
  * 返回值约定:列表 / 搜索类方法返回 SongMeta[](不含 src / lyric,体量小);
  * 仅 getDetail 返回完整 Song(含播放所需的 src 与歌词),供播放器使用。
+ *
+ * 查询能力的取舍:需要「列表内容 / 服务端分页 / 只要条数」时一律走 listPage
+ * (size=1 读 total 即可拿条数);需要「完整有序的 id 队列」时走 listIds。
+ * ⚠️ listAll / listBySub / listByCategory 当前已无调用方(仅存契约完整性),
+ * 新代码不要再用它们取数。
  */
 export interface SongRepository {
   /** 取某首歌的完整信息(含 src / lyric),供播放使用。不存在返回 null。 */
@@ -53,13 +79,23 @@ export interface SongRepository {
   search(keyword: string, filter?: SearchFilter): Promise<SongMeta[]>;
   /** 按 id 顺序取轻量元数据;自动跳过不存在的 id。 */
   listByIds(ids: string[]): Promise<SongMeta[]>;
-  /** 全部歌曲的轻量元数据(首页「全部音频」用)。未来大数据量将改为分页。 */
+  /** 分页查询(支持 category/subCategory/keyword/author 组合);total 可直接用于计数展示。 */
+  listPage(query: SongQuery, page: Page): Promise<PageResult<SongMeta>>;
+  /**
+   * 仅取 id 列表(不含元数据,响应体约为带元数据的 1/10)。
+   * 用于需要「完整且有序的 id 队列」的场景(播放入队 + 总数展示);
+   * 列表内容请另行用 listPage 分页取,避免同一批数据传两遍。
+   */
+  listIds(query?: SongQuery): Promise<string[]>;
+  /** 按作者聚合统计(作品数 + 涉及子类);统计在后端 GROUP BY 完成,不下拉作品列表。 */
+  listAuthors(query?: AuthorQuery): Promise<AuthorStat[]>;
+  /** 全部歌曲的轻量元数据。⚠️ 大数据量下应改用 listPage。 */
   listAll(): Promise<SongMeta[]>;
-  /** 按子分类取轻量元数据(CategoryPanel / playlist 用)。 */
+  /** 按子分类取轻量元数据。⚠️ 需要分页/计数时改用 listPage。 */
   listBySub(subCategory: string): Promise<SongMeta[]>;
-  /** 按大类取轻量元数据(playlist 的 ?cat= 模式用)。 */
+  /** 按大类取轻量元数据。⚠️ 需要分页/计数时改用 listPage。 */
   listByCategory(category: string): Promise<SongMeta[]>;
-  /** 取完整分类树(大类 + 子类,含 name/desc/icon;来自 songs.json,单一源)。 */
+  /** 取完整分类树(大类 + 子类,含 name/desc/icon 与各级 songCount,单一源)。 */
   getCategories(): Promise<Category[]>;
   /** 按 id 查找子分类。 */
   findSub(subId: string): Promise<SubCategory | null>;

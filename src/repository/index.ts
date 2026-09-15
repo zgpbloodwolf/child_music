@@ -30,5 +30,13 @@ export async function warmupRepository(): Promise<void> {
   await getRepository().warmup?.();
 }
 
-export type { SongRepository, SearchFilter, Page, PageResult } from './types';
+export type {
+  AuthorQuery,
+  AuthorStat,
+  Page,
+  PageResult,
+  SearchFilter,
+  SongQuery,
+  SongRepository,
+} from './types';
 export type { Song, SongMeta } from '@/types/song';

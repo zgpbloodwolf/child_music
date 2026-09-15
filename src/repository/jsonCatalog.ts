@@ -1,6 +1,14 @@
 import type { Song, SongMeta } from '@/types/song';
 import type { Category, SubCategory } from '@/types/category';
-import type { SearchFilter, SongRepository } from './types';
+import type {
+  AuthorQuery,
+  AuthorStat,
+  Page,
+  PageResult,
+  SearchFilter,
+  SongQuery,
+  SongRepository,
+} from './types';
 import { loadJson } from './loadJson';
 
 /** songs.json 中单首原始记录(不含 category/subCategory,由父级 key 表达) */
@@ -51,24 +59,28 @@ function flatten(file: CatalogFile): Song[] {
   return out;
 }
 
-/** 从 songs.json 的各层 _info 构建 Category[](分类树结构 + name/desc/icon)。 */
+/** 从 songs.json 的各层 _info 构建 Category[](分类树结构 + name/desc/icon + 各级 songCount)。 */
 function buildCategories(file: CatalogFile): Category[] {
   const cats: Category[] = [];
   for (const catId of Object.keys(file)) {
     const catNode = file[catId];
     const catInfo = catNode._info;
     const subs: SubCategory[] = [];
+    let catCount = 0;
     for (const subId of Object.keys(catNode)) {
       if (subId === '_info') continue;
       const subNode = catNode[subId] as SubNode;
       const info = subNode._info;
-      subs.push({ id: subId, name: info.name, icon: info.icon, desc: info.desc });
+      const count = subNode.songs.length;
+      catCount += count;
+      subs.push({ id: subId, name: info.name, icon: info.icon, desc: info.desc, songCount: count });
     }
     cats.push({
       id: catId,
       name: catInfo.name,
       icon: catInfo.icon ?? '',
       desc: catInfo.desc ?? '',
+      songCount: catCount,
       subs,
     });
   }
@@ -145,6 +157,58 @@ export class JsonCatalogRepository implements SongRepository {
       if (song) result.push(song);
     }
     return result;
+  }
+
+  /** 按查询条件筛选(过滤口径对齐后端 /api/songs:分类/作者精确匹配,关键词模糊)。 */
+  private filterSongs(query: SongQuery): SongMeta[] {
+    const kw = (query.keyword ?? '').trim().toLowerCase();
+    return this.songs.filter((s) => {
+      if (query.category && s.category !== query.category) return false;
+      if (query.subCategory && s.subCategory !== query.subCategory) return false;
+      if (query.author && s.artist !== query.author) return false;
+      if (kw) {
+        const hit =
+          s.name.toLowerCase().includes(kw) ||
+          s.artist.toLowerCase().includes(kw) ||
+          (s.album ?? '').toLowerCase().includes(kw);
+        if (!hit) return false;
+      }
+      return true;
+    });
+  }
+
+  async listPage(query: SongQuery, page: Page): Promise<PageResult<SongMeta>> {
+    await this.ensure();
+    const all = this.filterSongs(query);
+    const start = (page.number - 1) * page.size;
+    return {
+      items: all.slice(start, start + page.size),
+      total: all.length,
+      page: page.number,
+      pageSize: page.size,
+    };
+  }
+
+  /** 仅取 id 列表(内存实现:与 listPage 同口径过滤后只保留 id)。 */
+  async listIds(query?: SongQuery): Promise<string[]> {
+    await this.ensure();
+    return this.filterSongs(query ?? {}).map((s) => s.id);
+  }
+
+  /** 作者聚合:内存 GROUP BY,口径与后端 /api/authors 一致(按作品数倒序,同数按名称)。 */
+  async listAuthors(query?: AuthorQuery): Promise<AuthorStat[]> {
+    await this.ensure();
+    const map = new Map<string, AuthorStat>();
+    for (const s of this.filterSongs(query ?? {})) {
+      let entry = map.get(s.artist);
+      if (!entry) {
+        entry = { name: s.artist, count: 0, subs: [] };
+        map.set(s.artist, entry);
+      }
+      entry.count += 1;
+      if (s.subCategory && !entry.subs.includes(s.subCategory)) entry.subs.push(s.subCategory);
+    }
+    return [...map.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
   }
 
   async listAll(): Promise<SongMeta[]> {

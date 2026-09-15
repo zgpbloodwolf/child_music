@@ -2,13 +2,11 @@
  * 古诗(poetry)大类专用类型:作者聚合信息、分类页视图切换模式。
  */
 
-/** 古诗作者聚合信息(由 data/poetry.ts 派生) */
+/** 古诗作者聚合信息(由 data/poetry.ts 派生;作品数由后端聚合而来) */
 export interface PoetryAuthor {
   /** 作者名,如「李白」 */
   name: string;
-  /** 该作者在 poetry 大类下的作品 id 列表 */
-  songIds: string[];
-  /** 作品数量(= songIds.length,冗余字段便于模板直读) */
+  /** 作品数量 */
   count: number;
   /** 朝代,如「唐」「宋」;无法推断为空字符串 */
   dynasty: string;
