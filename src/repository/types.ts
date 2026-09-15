@@ -6,11 +6,15 @@ import type { Category, SubCategory } from '@/types/category';
  *
  * 设计目标:把「歌曲数据从哪来、怎么查」从业务代码中剥离,让数据源可平滑演进,
  * 而消费方(player / store / 页面)只依赖本接口,切换实现时业务代码无需改动:
- * - JsonCatalogRepository 当前实现:运行时 fetch 本地 songs.json 到内存(几百~十万首)
- * - SqliteRepository      规划中:查询本地预置数据库(十万+)
+ * - ApiCatalogRepository(当前启用):走后端 HTTP 接口,曲库数据不进包
+ * - JsonCatalogRepository:fetch 本地 songs.json 到内存,离线兜底(当前未启用)
  *
  * 契约说明:方法均为异步(Promise)。当前静态实现内部为内存数组、几乎立即完成;
  * 未来 JSON / SQLite 实现是真正的异步 IO。消费方一律按异步使用,避免日后返工。
+ *
+ * ⚠️ 实现可在内部缓存结果(ApiCatalogRepository 即对 categories / detail 等做了
+ * TTL 或 LRU 缓存),所以不要假设「每次调用都会发一次请求」;同时缓存返回的是
+ * 同一份引用,消费方只读,不要原地修改返回值。
  */
 
 /** 搜索过滤条件(均可选,组合时取交集) */
