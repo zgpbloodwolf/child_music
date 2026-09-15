@@ -7,8 +7,8 @@ import MiniPlayer from '@/components/MiniPlayer/MiniPlayer.vue';
 import type { SongMeta } from '@/types/song';
 
 /**
- * 搜索页:在内置曲库中按歌名 / 歌手 / 专辑本地搜索。
- * 通过 Repository 异步搜索(为未来大数据量 / SQLite 全文索引预留)。
+ * 搜索页:按歌名 / 歌手 / 专辑搜索曲库。
+ * 经 Repository 走后端接口(`GET /api/songs?keyword=`),不在前端内存过滤。
  */
 const player = usePlayerStore();
 const repo = getRepository();
@@ -20,33 +20,49 @@ const searchFailed = ref(false);
 
 /** 防抖句柄:输入停顿 350ms 后才发请求,避免在线数据源下每键一字都打一次接口 */
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
+/**
+ * 搜索序号:每次发起搜索时自增取号,回包时比对。
+ * 防抖只挡住「连打」,挡不住「先发的请求后返回」——若无此守卫,慢响应会用
+ * 旧关键词的结果覆盖新关键词的结果。与 player.ts 的 loadSeq 同一模式。
+ */
+let searchSeq = 0;
 
 /** 关键词变化时异步搜索(防抖;空关键词立即清空结果) */
 watch(keyword, (kw) => {
   if (searchTimer) clearTimeout(searchTimer);
   const trimmed = (kw ?? '').trim();
   if (!trimmed) {
+    // 清空关键词也要取号:使在途响应作废,否则迟到的结果会重新填满已清空的列表
+    searchSeq += 1;
     results.value = [];
     searching.value = false;
     searchFailed.value = false;
     return;
   }
   searchTimer = setTimeout(async () => {
+    const seq = ++searchSeq;
     searching.value = true;
     searchFailed.value = false;
     try {
-      results.value = await repo.search(trimmed);
+      const found = await repo.search(trimmed);
+      if (seq !== searchSeq) return; // 已被更新的关键词取代,丢弃本次结果
+      results.value = found;
     } catch (err) {
+      if (seq !== searchSeq) return; // 同上:旧请求的失败不应影响最新一次搜索的展示
       console.warn('搜索失败:', err);
       results.value = [];
       searchFailed.value = true;
     } finally {
-      searching.value = false;
+      // 只有最新一次请求才能解除加载态,避免旧请求提前把「搜索中」关掉
+      if (seq === searchSeq) searching.value = false;
     }
   }, 350);
 });
 
-onUnmounted(() => { if (searchTimer) clearTimeout(searchTimer); });
+onUnmounted(() => {
+  if (searchTimer) clearTimeout(searchTimer);
+  searchSeq += 1; // 页面已卸载,使在途响应作废
+});
 
 /** 点击搜索结果:以当前结果列表为队列播放 */
 function play(song: SongMeta) {
