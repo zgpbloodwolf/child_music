@@ -52,6 +52,11 @@
     .actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .sub-row td { background: #fafafa; color: #555; }
     .sub-row td:nth-child(2) { padding-left: 24px; }
+    .sub-row.hidden { display: none; }
+    tr.cat-row.pickable { cursor: pointer; }
+    tr.cat-row.pickable:hover td { background: #fff6ee; }
+    .twisty { display: inline-block; width: 15px; color: #ff8c42; font-size: 12px; user-select: none; }
+    .twisty.empty { visibility: hidden; }
     .pager { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: #666; }
     .pager label { display: inline; margin: 0; }
     .pager input { width: 64px; text-align: center; padding: 5px 6px; }
@@ -92,6 +97,12 @@
           <input id="kw" placeholder="按歌名/作者/专辑搜索" />
           <select id="filterCat"><option value="">全部分类</option></select>
           <select id="filterSub"><option value="">全部子类</option></select>
+          <select id="filterMissing">
+            <option value="">资料不限</option>
+            <option value="lyric">无歌词</option>
+            <option value="cover">无封面</option>
+            <option value="any">无歌词或无封面</option>
+          </select>
           <button id="searchBtn">搜索</button>
           <button class="ghost" id="refreshBtn">刷新</button>
         </div>
@@ -200,12 +211,15 @@
       </div>
 
       <div class="card">
-        <h2>分类列表<button class="ghost" id="reloadCatsBtn" style="float:right">刷新</button></h2>
+        <h2>分类列表<span style="float:right">
+          <button class="ghost sm" id="toggleAllCatsBtn">全部收起</button>
+          <button class="ghost" id="reloadCatsBtn">刷新</button>
+        </span></h2>
         <table>
           <thead><tr><th>id</th><th>名称</th><th>图标</th><th>统计</th><th>描述</th><th>操作</th></tr></thead>
           <tbody id="catBody"></tbody>
         </table>
-        <p class="muted" style="margin-top:8px">大类行可编辑/删除;子类行(缩进灰底)仅支持删除。</p>
+        <p class="muted" style="margin-top:8px">点击大类行(或 id 前的三角)可收起/展开其子类;大类行可编辑/删除,子类行(缩进灰底)仅支持删除。</p>
       </div>
     </div>
   </div>
@@ -371,9 +385,11 @@
     const kw = document.getElementById("kw").value.trim();
     const cat = document.getElementById("filterCat").value;
     const sub = document.getElementById("filterSub").value;
+    const missing = document.getElementById("filterMissing").value;
     const size = +document.getElementById("pageSize").value;
     const params = new URLSearchParams({ page: curPage, size: size });
     if (kw) params.set("keyword", kw);
+    if (missing) params.set("missing", missing); // 筛「资料缺失」:补歌词/补封面用
     if (sub) params.set("sub", sub);
     else if (cat) params.set("category", cat);
     const res = await fetch(BASE + "/api/songs?" + params.toString());
@@ -455,6 +471,7 @@
   document.getElementById("refreshBtn").onclick = () => {
     document.getElementById("kw").value = "";
     document.getElementById("filterCat").value = "";
+    document.getElementById("filterMissing").value = "";
     renderSubSelect("filterCat", "filterSub");
     goPage(1);
   };
@@ -586,6 +603,35 @@
     loadSubCounts().catch(e => alert("统计子类歌曲数失败:" + (e.message || e)));
   };
 
+  // ===== 分类树折叠(大类可收起子类)=====
+  // 折叠状态存在模块级 Set,而不是读 DOM:loadSubCounts 会重渲染整棵树,放 DOM 会丢状态。
+  // 顺带落 localStorage,刷新页面后保持收起状态(隐私模式下写失败则忽略)。
+  const COLLAPSE_KEY = "admin_collapsed_cats";
+  const collapsedCats = new Set();
+  try {
+    JSON.parse(localStorage.getItem(COLLAPSE_KEY) || "[]").forEach(id => collapsedCats.add(id));
+  } catch (e) { /* 无痕模式/脏数据:当作全部展开 */ }
+  function persistCollapsed() {
+    try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify([...collapsedCats])); } catch (e) { /* 忽略 */ }
+  }
+  // 只有「有子类」的大类可折叠(空大类不显示三角,也不响应点击)
+  function toggleCat(catId) {
+    const subs = subsOf(catId) || [];
+    if (!subs.length) return;
+    if (collapsedCats.has(catId)) collapsedCats.delete(catId); else collapsedCats.add(catId);
+    persistCollapsed();
+    renderCatTree();
+  }
+  // 一键全收/全展:当前还有展开的就先全收起
+  function toggleAllCats() {
+    const foldable = categories.filter(c => (c.subs || []).length).map(c => c.id);
+    const anyOpen = foldable.some(id => !collapsedCats.has(id));
+    collapsedCats.clear();
+    if (anyOpen) foldable.forEach(id => collapsedCats.add(id));
+    persistCollapsed();
+    renderCatTree();
+  }
+
   // 分类树渲染:大类行 + 缩进子类行(同一张表);子类歌曲数取自 subSongCount
   function renderCatTree() {
     const tb = document.getElementById("catBody");
@@ -595,21 +641,24 @@
     }
     let html = "";
     categories.forEach(c => {
+      const subs = c.subs || [];
+      const foldable = subs.length > 0;                       // 空大类没有可折叠内容
+      const folded = foldable && collapsedCats.has(c.id);
       html += `
-      <tr>
-        <td>${c.id}</td>
+      <tr class="cat-row${foldable ? " pickable" : ""}"${foldable ? ` data-cattoggle="${c.id}"` : ""}>
+        <td><span class="twisty${foldable ? "" : " empty"}">${folded ? "▸" : "▾"}</span>${c.id}</td>
         <td>${c.name}</td>
         <td>${c.icon || "-"}</td>
-        <td><span class="badge">子类 ${(c.subs || []).length}</span></td>
+        <td><span class="badge">子类 ${subs.length}</span></td>
         <td>${c.desc || "-"}</td>
         <td class="actions">
           <button class="ghost sm" data-catedit="${c.id}">编辑</button>
           <button class="danger sm" data-catdel="${c.id}">删除</button>
         </td>
       </tr>`;
-      (c.subs || []).forEach(s => {
+      subs.forEach(s => {
         html += `
-      <tr class="sub-row">
+      <tr class="sub-row${folded ? " hidden" : ""}">
         <td>${s.id}</td>
         <td>└ ${s.name}</td>
         <td>${s.icon || "-"}</td>
@@ -623,7 +672,19 @@
     tb.querySelectorAll("button[data-catdel]").forEach(b => b.onclick = () => delCat(b.dataset.catdel));
     tb.querySelectorAll("button[data-catedit]").forEach(b => b.onclick = () => openEditCat(b.dataset.catedit));
     tb.querySelectorAll("button[data-subdel]").forEach(b => b.onclick = () => delSub(b.dataset.subdel));
+    // 点整行折叠;点操作按钮时不折叠(靠 closest 排除,避免误触删除)
+    tb.querySelectorAll("tr[data-cattoggle]").forEach(tr => {
+      tr.onclick = (e) => { if (!e.target.closest("button")) toggleCat(tr.dataset.cattoggle); };
+    });
+    syncToggleAllLabel();
   }
+  // 「全部收起/展开」按钮文案跟随当前状态(任一大类还展开着就提示可收起)
+  function syncToggleAllLabel() {
+    const anyOpen = categories.some(c => (c.subs || []).length && !collapsedCats.has(c.id));
+    const btn = document.getElementById("toggleAllCatsBtn");
+    if (btn) btn.textContent = anyOpen ? "全部收起" : "全部展开";
+  }
+  document.getElementById("toggleAllCatsBtn").onclick = toggleAllCats;
   async function delCat(catId) {
     if (!confirm("确认删除大类 " + catId + "?(须无歌曲与子类)")) return;
     try {

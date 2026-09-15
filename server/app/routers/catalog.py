@@ -6,6 +6,8 @@
 统计类数据(分类各级歌曲数、按作者聚合作品数)直接挂在对应接口的响应里
 (songCount / /api/authors),调用方无需为了算一个数字把整张列表拉下来。
 """
+from typing import Literal
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -119,14 +121,26 @@ def _apply_filters(
     sub: str | None,
     keyword: str | None,
     author: str | None = None,
+    missing: Literal["lyric", "cover", "any"] | None = None,
 ):
-    """叠加 category/sub/author 过滤与 keyword 搜索(name/artist/album 包含)。"""
+    """叠加 category/sub/author 过滤与 keyword 搜索(name/artist/album 包含)。
+
+    missing 筛「资料缺失」的歌曲(管理页补录用):NULL 与纯空白都算缺。
+    lyric=无歌词,cover=无封面,any=任一缺失。
+    """
     if category:
         stmt = stmt.where(Song.category_id == category)
     if sub:
         stmt = stmt.where(Song.sub_category_id == sub)
     if author:
         stmt = stmt.where(Song.artist == author)
+    if missing:
+        no_lyric = Song.lyric.is_(None) | (func.trim(Song.lyric) == "")
+        no_cover = Song.cover_path.is_(None) | (func.trim(Song.cover_path) == "")
+        # any 是「任一缺失」(OR),不能拆成两个 where 叠加——那会变成 AND(都缺失)
+        stmt = stmt.where(
+            no_lyric if missing == "lyric" else no_cover if missing == "cover" else no_lyric | no_cover
+        )
     if keyword:
         kw = f"%{keyword}%"
         # SQLite 的 LIKE 默认大小写不敏感(ASCII),中文无大小写问题
@@ -147,6 +161,9 @@ def list_songs(
     sub: str | None = Query(None, description="子类 id"),
     keyword: str | None = Query(None, description="搜索关键词"),
     author: str | None = Query(None, description="作者(精确匹配)"),
+    missing: Literal["lyric", "cover", "any"] | None = Query(
+        None, description="筛选资料缺失:lyric=无歌词,cover=无封面,any=任一缺失"
+    ),
     ids: str | None = Query(None, description="逗号分隔的 id 列表"),
     page: int | None = Query(None, ge=1, description="页码(与 size 同时传则分页)"),
     size: int | None = Query(None, ge=1, le=500, description="每页条数"),
@@ -162,7 +179,7 @@ def list_songs(
         id_list = [i.strip() for i in ids.split(",") if i.strip()]
         base = select(Song).where(Song.id.in_(id_list))
     else:
-        base = _apply_filters(select(Song), category, sub, keyword, author)
+        base = _apply_filters(select(Song), category, sub, keyword, author, missing)
 
     # 分页
     if page is not None and size is not None:
