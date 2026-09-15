@@ -22,7 +22,10 @@ dist
 *.njsproj
 *.sln
 *.sw?
-resource/
+# resource/ 是原始资源档案层:只保留说明文件(约定要能被团队看到),
+# 里面的原始音频共约 727MB,整目录排除、切不可入库
+/resource/*
+!/resource/README.md
 src/static/library/
 .hbuilderx/launch.json
 
