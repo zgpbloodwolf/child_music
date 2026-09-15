@@ -8,7 +8,7 @@
 
 用法:
   ADMIN_BASE=http://<服务器>:8823/cmusic/api/admin  (目标管理接口,不设默认本机)
-  ADMIN_TOKEN=xxx python upload-tang300.py
+  ADMIN_TOKEN=xxx python server/scripts/upload-tang300.py
 """
 import json
 import os
@@ -25,7 +25,8 @@ TOKEN = os.environ.get("ADMIN_TOKEN", "")
 if not TOKEN:
     sys.exit("请先设置环境变量 ADMIN_TOKEN")
 
-SERVER_DIR = Path(__file__).parent / "server"
+# 本脚本位于 server/scripts/,上溯一级即 server/(与运行时工作目录无关)
+SERVER_DIR = Path(__file__).resolve().parents[1]
 OLD_DB = SERVER_DIR / "data" / "music.db"
 STORAGE = SERVER_DIR / "storage" / "library"  # audio_path 相对此处的根
 

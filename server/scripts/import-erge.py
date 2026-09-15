@@ -7,9 +7,9 @@
   4. 分配 id(cn151 起 / en080 起)
   5. ffmpeg 批量转 wma/mp4 为 mp3,落地到 server/storage/library/
   6. 直接写本地 SQLite 库(避免 570 次 HTTP)
-  7. 重建 src/static/data/songs.json
+  7. 重建 data/songs.json(仓库根的曲库源数据)
 
-用法: python import-erge.py
+用法: python server/scripts/import-erge.py
 """
 import json
 import os
@@ -26,12 +26,14 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 # ---- 配置 ----
+# 本脚本位于 server/scripts/,上溯两级才是仓库根(脚本所有路径都以仓库根为基准,
+# 因此与运行时的工作目录无关)。
 SOURCE_ROOT = Path(r"E:\儿歌")
-PROJECT_DIR = Path(__file__).parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 SERVER_DIR = PROJECT_DIR / "server"
 DB_PATH = SERVER_DIR / "data" / "music.db"
 STORAGE_ROOT = SERVER_DIR / "storage" / "library"
-SONGS_JSON = PROJECT_DIR / "src" / "static" / "data" / "songs.json"
+SONGS_JSON = PROJECT_DIR / "data" / "songs.json"
 
 # 分类映射:来源目录名 → (子类 id, 子类中文名, 子类描述)
 # 童年歌谣特辑 + 经典儿歌打包 + 少儿歌曲 → 童谣(children-tongyao,新建)
@@ -397,7 +399,7 @@ def main() -> None:
     if not plan:
         print("无新歌曲可导入"); return
 
-    # 保存映射表(中间产物,便于排查)
+    # 保存映射表(中间产物,便于排查;仓库根,已 gitignore)
     with open(PROJECT_DIR / "import-plan.json", "w", encoding="utf-8") as f:
         json.dump(plan, f, ensure_ascii=False, indent=2)
     print(f"  映射表已保存: import-plan.json")

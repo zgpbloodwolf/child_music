@@ -7,7 +7,7 @@
   ADMIN_BASE=http://<服务器>:8823/cmusic/api/admin  (目标管理接口,不设默认本机)
   set ADMIN_TOKEN=xxx   (Windows cmd)
   $env:ADMIN_TOKEN=xxx (PowerShell)
-  ADMIN_TOKEN=xxx python upload-all.py (bash)
+  ADMIN_TOKEN=xxx python server/scripts/upload-all.py (bash)
 """
 import json
 import os
@@ -23,7 +23,8 @@ TOKEN = os.environ.get("ADMIN_TOKEN", "")
 if not TOKEN:
     sys.exit("请先设置环境变量 ADMIN_TOKEN")
 
-STATIC_DIR = Path(__file__).parent / "dist/build/h5/static"
+# 本脚本位于 server/scripts/,上溯两级是仓库根(与运行时工作目录无关)
+STATIC_DIR = Path(__file__).resolve().parents[2] / "dist/build/h5/static"
 SONGS_JSON = STATIC_DIR / "data/songs.json"
 # audio_rel 经 strip_static 后为 "library/children/classic/cn002.mp3"(含 library 前缀),
 # 故文件根就是 STATIC_DIR,不要再拼 library

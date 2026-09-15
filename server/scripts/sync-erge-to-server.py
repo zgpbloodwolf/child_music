@@ -7,7 +7,7 @@
 
 用法:
   ADMIN_BASE=http://<服务器>:8823/cmusic/api/admin  (目标管理接口,不设默认本机)
-  ADMIN_TOKEN=xxx python sync-erge-to-server.py
+  ADMIN_TOKEN=xxx python server/scripts/sync-erge-to-server.py
 """
 import json
 import os
@@ -25,7 +25,8 @@ TOKEN = os.environ.get("ADMIN_TOKEN", "")
 if not TOKEN:
     sys.exit("请先设置环境变量 ADMIN_TOKEN")
 
-PROJECT_DIR = Path(__file__).parent
+# 本脚本位于 server/scripts/,上溯两级是仓库根(与运行时工作目录无关)
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 PLAN_PATH = PROJECT_DIR / "import-plan.json"
 STORAGE = PROJECT_DIR / "server" / "storage" / "library"
 
