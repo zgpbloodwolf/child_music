@@ -135,6 +135,7 @@ pnpm dev:h5             # H5 开发
 pnpm dev:mp-weixin      # 微信小程序开发(需微信开发者工具打开 dist/dev/mp-weixin)
 pnpm dev:app            # App 开发(需 HBuilderX 真机/模拟器)
 pnpm build:h5           # H5 生产构建
+pnpm build:app          # App 生产构建(产物在 dist/build/app)
 pnpm build:mp-weixin    # 微信小程序生产构建
 ```
 

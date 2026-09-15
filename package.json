@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "手机端音乐播放应用(在线曲库)",
   "scripts": {
+    "dev:app": "uni -p app",
     "dev:custom": "uni -p",
     "dev:h5": "uni",
     "dev:h5:ssr": "uni --ssr",
@@ -19,6 +20,7 @@
     "dev:quickapp-webview": "uni -p quickapp-webview",
     "dev:quickapp-webview-huawei": "uni -p quickapp-webview-huawei",
     "dev:quickapp-webview-union": "uni -p quickapp-webview-union",
+    "build:app": "uni build -p app",
     "build:custom": "uni build -p",
     "build:h5": "uni build",
     "build:h5:ssr": "uni build --ssr",
