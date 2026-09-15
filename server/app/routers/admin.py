@@ -23,7 +23,7 @@ from ..schemas import (
     SubCategoryOut,
 )
 from ..services import storage
-from ..services.meta import song_to_out, sub_to_out
+from ..services.meta import counts_by_node, song_to_out, sub_to_out
 
 router = APIRouter(
     prefix="/api/admin",
@@ -207,7 +207,16 @@ def update_category(cat_id: str, body: CategoryUpdate, db: Session = Depends(get
     subs = db.scalars(
         select(SubCategory).where(SubCategory.category_id == c.id).order_by(SubCategory.sort_order, SubCategory.id)
     ).all()
-    return CategoryOut(id=c.id, name=c.name, icon=c.icon, desc=c.desc, subs=[sub_to_out(s) for s in subs])
+    # 计数一次 GROUP BY 取全量后按需取用,避免逐个子类 COUNT(N+1)
+    sub_counts, _ = counts_by_node(db)
+    return CategoryOut(
+        id=c.id,
+        name=c.name,
+        icon=c.icon,
+        desc=c.desc,
+        song_count=sum(sub_counts.get(s.id, 0) for s in subs),
+        subs=[sub_to_out(s, sub_counts.get(s.id, 0)) for s in subs],
+    )
 
 
 @router.delete("/categories/{cat_id}", summary="删除大类(须无歌曲与子类)")

@@ -67,6 +67,9 @@ class SubCategoryOut(CamelModel):
     name: str
     icon: str | None = None
     desc: str | None = None
+    # 该子类下歌曲数 → songCount。
+    # 计数随分类树一起下发,前端展示「N 首」无需再请求歌曲列表。
+    song_count: int = 0
 
 
 class CategoryOut(CamelModel):
@@ -74,7 +77,21 @@ class CategoryOut(CamelModel):
     name: str
     icon: str
     desc: str
+    # 该大类下歌曲数(含各子类,由子类计数求和)→ songCount
+    song_count: int = 0
     subs: list[SubCategoryOut] = []
+
+
+class AuthorOut(CamelModel):
+    """按作者聚合的统计(古诗作者面板用)。
+
+    只返回聚合结果(name/count/subs),不含作品列表——作者面板只需要一个数字,
+    原先客户端为此拉全量歌曲列表再内存聚合。
+    """
+
+    name: str  # 作者名(对应 Song.artist)
+    count: int  # 作品数
+    subs: list[str] = []  # 作品涉及的子类 id(供前端推断朝代,无需作品明细)
 
 
 class PageResult(CamelModel, Generic[T]):
