@@ -42,3 +42,5 @@ src/static.zip
 .codegraph/
 .claude/settings.json
 __pycache__/
+.workbuddy/
+
