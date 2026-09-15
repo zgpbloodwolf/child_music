@@ -326,65 +326,17 @@ def write_db(plan: list[dict]) -> None:
 
 
 def rebuild_songs_json() -> None:
-    """Phase 4: 从本地 DB 全量重建 songs.json。"""
-    db = sqlite3.connect(str(DB_PATH))
-    db.row_factory = sqlite3.Row
-    c = db.cursor()
-    c.execute("SELECT * FROM categories ORDER BY sort_order, id")
-    cats = [dict(r) for r in c.fetchall()]
-    c.execute("SELECT * FROM sub_categories ORDER BY sort_order, id")
-    subs = [dict(r) for r in c.fetchall()]
-    c.execute("SELECT * FROM songs ORDER BY category_id, sub_category_id, sort_order, id")
-    songs = [dict(r) for r in c.fetchall()]
-    db.close()
+    """Phase 4: 从本地 DB 全量重建 songs.json。
 
-    out: dict = {}
-    for cat in cats:
-        cat_id = cat["id"]
-        out[cat_id] = {"_info": {"name": cat["name"], "icon": cat["icon"] or "",
-                                 "desc": cat["desc"] or ""}}
-        for sub in [s for s in subs if s["category_id"] == cat_id]:
-            sub_id = sub["id"]
-            out[cat_id][sub_id] = {
-                "_info": {"name": sub["name"], "icon": sub["icon"] or "",
-                          "desc": sub["desc"] or ""},
-                "songs": [],
-            }
-        for song in [s for s in songs if s["category_id"] == cat_id]:
-            sub_id = song["sub_category_id"]
-            if sub_id not in out[cat_id]:
-                out[cat_id][sub_id] = {"_info": {"name": sub_id, "icon": "",
-                                                  "desc": ""}, "songs": []}
-            entry = {
-                "id": song["id"],
-                "name": song["name"],
-                "artist": song["artist"],
-                "src": "/static/" + song["audio_path"],
-                "cover": "/static/" + song["cover_path"] if song["cover_path"] else "",
-            }
-            if song.get("lyric"):
-                entry["lyric"] = song["lyric"]
-            if song.get("original_path"):
-                entry["originalPath"] = song["original_path"]
-            out[cat_id][sub_id]["songs"].append(entry)
+    实现在 songs_json.py(与本脚本、enrich_lyrics.py 共用)。
+    此处以外的脚本按 `python server/scripts/xxx.py` 运行,sys.path[0] 即脚本目录,
+    故可直接 import。
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from songs_json import rebuild
 
-    # 回填 count
-    for cat_id, node in out.items():
-        total = 0
-        for sub_id, sub_node in node.items():
-            if sub_id == "_info":
-                continue
-            cnt = len(sub_node["songs"])
-            sub_node["_info"]["count"] = cnt
-            total += cnt
-        node["_info"]["count"] = total
-
-    SONGS_JSON.parent.mkdir(parents=True, exist_ok=True)
-    with open(SONGS_JSON, "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=2)
-
-    total_songs = sum(node["_info"]["count"] for node in out.values())
-    print(f"已重建 songs.json: {len(out)} 大类, {total_songs} 首")
+    n_cat, n_song = rebuild(DB_PATH, SONGS_JSON)
+    print(f"已重建 songs.json: {n_cat} 大类, {n_song} 首")
 
 
 def main() -> None:
