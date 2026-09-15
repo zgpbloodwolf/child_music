@@ -29,6 +29,8 @@ src/static/library/
 # 后端服务(server/)
 server/.env
 server/.venv/
+# 仓库根也曾建过一个 venv(仅 setuptools/pkg_resources,约 128MB),同样不入库
+/.venv/
 server/storage/
 server/data/
 server/**/__pycache__/
@@ -43,4 +45,7 @@ src/static.zip
 .claude/settings.json
 __pycache__/
 .workbuddy/
+
+# 脚本生成的中间产物(server/scripts/import-erge.py 输出的导入映射表)
+import-plan.json
 
