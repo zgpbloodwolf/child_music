@@ -29,6 +29,12 @@ let manager: AudioManager | null = null;
 let listenersBound = false;
 /** 定时器句柄(模块级,避免重复绑定丢失) */
 let timerId: ReturnType<typeof setInterval> | null = null;
+/**
+ * 定时关闭的绝对结束时刻(ms 时间戳);0 表示未设定。
+ * 用绝对时刻而非「每秒减一」累计:App/H5 进后台时定时器会被节流甚至暂停,
+ * 递减计数会越走越慢(说好 30 分钟可能实际 45 分钟),绝对时刻不受影响。
+ */
+let timerEndAt = 0;
 /** 曲库数据源(模块级单例,统一歌曲查询入口) */
 const repo = getRepository();
 /** 加载序号:每次发起切歌自增,用于丢弃被取代的异步 getDetail 结果(防竞态) */
@@ -142,11 +148,15 @@ export const usePlayerStore = defineStore('player', () => {
   /**
    * 装载某首歌到控制器(设置元数据 + src 并触发播放)。
    * 异步:App 端需先把 _www 下音频复制到 _doc(见 utils/audio resolvePlayableSrc)。
-   * 用 loadSeq 防竞态:复制期间若已切歌,丢弃本次结果,避免覆盖最新装载。
+   *
+   * 防竞态由本函数「取号」,不再依赖调用方递增:await 期间若又发生一次装载,
+   * seq 即失配,本次结果被丢弃,不会覆盖最新装载。
+   * (原先只有 playAtIndex 递增,绕过它的直接调用——如 play() 恢复播放、
+   * 单曲循环重播——不会让在途请求失效,防竞态是不完整的。)
    */
   async function loadSong(song: Song) {
     const m = getManager();
-    const seq = loadSeq;
+    const seq = ++loadSeq;
     isLoading.value = true;
     error.value = null;
     // App 端解析可播放路径(_www → _doc 复制);失败回退原路径,由 set src 的 norm 兜底转换
@@ -156,7 +166,7 @@ export const usePlayerStore = defineStore('player', () => {
     } catch (err) {
       console.warn('解析可播放路径失败,回退原路径:', err);
     }
-    if (seq !== loadSeq) return; // 复制期间已切歌,丢弃本次装载
+    if (seq !== loadSeq) return; // 期间已发生更新的装载,丢弃本次
     m.setMeta({ title: song.name, singer: song.artist, cover: song.cover });
     m.src = playableSrc;
     m.playbackRate = playbackRate.value; // 切歌后保持当前倍速
@@ -172,8 +182,8 @@ export const usePlayerStore = defineStore('player', () => {
   function handleEnded() {
     switch (playMode.value) {
       case PlayMode.LOOP_ONE:
-        // 单曲循环重播:已有 detail,直接装载;递增 loadSeq 使任何 pending 的旧请求失效
-        if (currentSong.value) { loadSeq++; void loadSong(currentSong.value); }
+        // 单曲循环重播:已有 detail,直接装载(loadSong 内部会取号,旧的在途装载随之失效)
+        if (currentSong.value) void loadSong(currentSong.value);
         break;
       case PlayMode.RANDOM:
         playRandom();
@@ -187,8 +197,8 @@ export const usePlayerStore = defineStore('player', () => {
 
   /**
    * 切到队列指定索引并播放(内部方法,异步)。
-   * 通过 repo.getDetail 取完整歌曲信息后再装载。loadSeq 防竞态:
-   * 快速切歌时,被取代的旧请求完成后会被丢弃,避免覆盖最新状态。
+   * 通过 repo.getDetail 取完整歌曲信息后再装载。此处取号是为了丢弃「被取代的
+   * 在途 getDetail」;装载阶段(await resolvePlayableSrc)的防竞态由 loadSong 自己负责。
    */
   async function playAtIndex(index: number) {
     const len = playlist.value.length;
@@ -303,24 +313,35 @@ export const usePlayerStore = defineStore('player', () => {
   }
 
   // ===== 定时关闭(哄睡)=====
+  /**
+   * 每秒对齐剩余时间:按绝对结束时刻反算,而非在上一次的值上减一。
+   * 定时器被节流/暂停导致 tick 漏掉时,剩余时间会在下次 tick 直接校正回来;
+   * 若离开期间已过结束时刻,回到前台后第一次 tick 即暂停(受平台限制,JS 定时器
+   * 在后台挂起时无法在后台当场暂停,但恢复后立即补偿,不会再往后拖)。
+   */
+  function tickTimer(): void {
+    const remain = Math.ceil((timerEndAt - Date.now()) / 1000);
+    if (remain <= 0) {
+      pause();
+      cancelTimer();
+      uni.showToast({ title: '定时关闭,已停止播放', icon: 'none' });
+      return;
+    }
+    timerRemaining.value = remain;
+  }
+
   /** 开启定时关闭(到点自动暂停) */
   function startTimer(minutes: number) {
     cancelTimer();
     timerMinutes.value = minutes;
+    timerEndAt = Date.now() + minutes * 60 * 1000;
     timerRemaining.value = minutes * 60;
-    timerId = setInterval(() => {
-      if (timerRemaining.value <= 1) {
-        pause();
-        cancelTimer();
-        uni.showToast({ title: '定时关闭,已停止播放', icon: 'none' });
-        return;
-      }
-      timerRemaining.value -= 1;
-    }, 1000);
+    timerId = setInterval(tickTimer, 1000);
   }
   /** 取消定时 */
   function cancelTimer() {
     if (timerId) { clearInterval(timerId); timerId = null; }
+    timerEndAt = 0;
     timerRemaining.value = 0;
     timerMinutes.value = 0;
   }
