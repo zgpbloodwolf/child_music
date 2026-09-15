@@ -92,7 +92,7 @@
     <!-- 歌曲管理 -->
     <div id="pane-songs" class="pane active">
       <div class="card">
-        <h2>歌曲列表</h2>
+        <h2>歌曲列表<span class="muted" id="songCountTop" style="float:right;font-weight:normal"></span></h2>
         <div class="toolbar">
           <input id="kw" placeholder="按歌名/作者/专辑搜索" />
           <select id="filterCat"><option value="">全部分类</option></select>
@@ -406,6 +406,8 @@
   function renderPager(total) {
     document.getElementById("pageInput").value = curPage;
     document.getElementById("totalPages").textContent = totalPages;
+    // 总数上(标题右侧)下(翻页栏旁)各显示一份,筛选后不必滚到底部看结果数
+    document.getElementById("songCountTop").textContent = "共 " + total + " 首";
     document.getElementById("songCount").textContent = "共 " + total + " 首";
     const first = curPage <= 1, last = curPage >= totalPages;
     document.getElementById("firstBtn").disabled = first;
