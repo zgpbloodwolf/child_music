@@ -6,6 +6,7 @@
 """
 import mimetypes
 from collections.abc import Awaitable, Callable
+from pathlib import Path
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +17,36 @@ from .config import BASE_DIR, settings
 from .database import init_db
 from .deps import require_intranet
 from .routers import admin, catalog, version
+
+# /library 的缓存策略(Starlette 默认只发 ETag / Last-Modified,不带 Cache-Control,
+# 导致每次播放都要回源做一次条件请求)。
+# - 音频:{id}.mp3,文件名即歌曲 id,且没有「同 id 换音频」的接口(只有删除后重建),
+#   内容视为不可变 → 长缓存且 immutable,播放/拖动进度不再产生任何额外请求。
+#   ⚠️ 代价:若后台删除后用同一个 id 传了新音频,老客户端最多 7 天后才会取到新文件。
+# - 其余(封面、APK):会被原地替换(封面见 admin.replace_cover,APK 每次发版覆盖同名
+#   文件),长缓存会让新版本发不出去 → 只给 5 分钟,其余靠 ETag 条件校验兜底。
+AUDIO_EXTS = {".mp3", ".m4a", ".aac", ".flac", ".wav", ".ogg"}
+AUDIO_CACHE_CONTROL = "public, max-age=604800, immutable"
+MUTABLE_CACHE_CONTROL = "public, max-age=300"
+
+
+class LibraryStaticFiles(StaticFiles):
+    """静态分发 /library,并按扩展名补上 Cache-Control。"""
+
+    def file_response(
+        self,
+        full_path,
+        stat_result,
+        scope,
+        status_code: int = 200,
+    ):
+        response = super().file_response(full_path, stat_result, scope, status_code)
+        # 命中条件请求时返回的是 304,同样应当带上 Cache-Control,故在此统一设置
+        suffix = Path(str(full_path)).suffix.lower()
+        response.headers["Cache-Control"] = (
+            AUDIO_CACHE_CONTROL if suffix in AUDIO_EXTS else MUTABLE_CACHE_CONTROL
+        )
+        return response
 
 
 class StripPrefixMiddleware:
@@ -80,8 +111,8 @@ def create_app() -> FastAPI:
     app.include_router(admin.router)
     app.include_router(version.router)
 
-    # 音频/封面静态分发(StaticFiles 原生支持 Range,返回 206)
-    app.mount("/library", StaticFiles(directory=settings.library_dir), name="library")
+    # 音频/封面静态分发(StaticFiles 原生支持 Range,返回 206;缓存头见 LibraryStaticFiles)
+    app.mount("/library", LibraryStaticFiles(directory=settings.library_dir), name="library")
 
     admin_html = BASE_DIR / "admin_static" / "index.html"
 

@@ -1,7 +1,14 @@
-fastapi>=0.115
-uvicorn[standard]>=0.30
-sqlalchemy>=2.0
-pydantic>=2.0
-pydantic-settings>=2.0
-python-multipart>=0.0.9
-mutagen>=1.47
+# 全部锁到本机实测可用(server/.venv)的具体版本。
+# 此前一律写 >= 下限,导致同一个 Dockerfile 在不同日子构建会装到不同版本
+# (上游一发大版本就可能构建失败或行为漂移)。
+#
+# 注:此处只锁「直接依赖」;uvicorn[standard] 的 extras(httptools / watchfiles /
+# websockets / PyYAML 等)与 fastapi 的传递依赖仍未锁定,要完全可复现需要引入
+# lock 文件(pip-tools 或 uv)。升级步骤:改这里的版本 → 重建 venv → 跑通 README 的验证清单。
+fastapi==0.139.0
+uvicorn[standard]==0.51.0
+sqlalchemy==2.0.51
+pydantic==2.13.4
+pydantic-settings==2.14.2
+python-multipart==0.0.32
+mutagen==1.48.1
