@@ -345,7 +345,7 @@
     document.getElementById(subSelId).innerHTML = allOpt + subs.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
   }
   document.getElementById("category").onchange = () => renderSubSelect("category", "sub");
-  document.getElementById("filterCat").onchange = () => renderSubSelect("filterCat", "filterSub");
+  document.getElementById("filterCat").onchange = () => { renderSubSelect("filterCat", "filterSub"); goPage(1); }; // 联动子类并自动搜索
   document.getElementById("editCategory").onchange = () => renderSubSelect("editCategory", "editSub");
 
   // ===== 上传歌曲 =====
@@ -470,6 +470,11 @@
     tb.querySelectorAll("button[data-cover]").forEach(b => b.onclick = () => replaceCover(b.dataset.cover));
   }
   document.getElementById("searchBtn").onclick = () => goPage(1); // 新条件从第一页开始
+  // 下拉筛选选中即自动搜索(与换每页条数行为一致);关键词输入中途不自动搜,避免频繁请求
+  ["filterSub", "filterMissing"].forEach(id => {
+    document.getElementById(id).onchange = () => goPage(1);
+  });
+  document.getElementById("kw").onkeydown = (e) => { if (e.key === "Enter") goPage(1); }; // 回车即搜
   document.getElementById("refreshBtn").onclick = () => {
     document.getElementById("kw").value = "";
     document.getElementById("filterCat").value = "";
