@@ -128,13 +128,15 @@ APP_FORCE_UPDATE=false
 │   ├── pages/          # 页面
 │   ├── components/     # 组件
 │   ├── store/          # Pinia 状态管理
-│   ├── api/            # 接口定义
+│   ├── repository/     # 曲库数据源(统一接口,后端 API 实现)
+│   ├── types/          # TypeScript 类型定义
 │   └── utils/          # 工具函数
 ├── server/             # 后端源码
 │   ├── app/            # FastAPI 应用
-│   ├── scripts/        # 数据导入脚本
-│   └── storage/        # 音频/封面存储
-└── docker-compose.yml  # Docker 部署配置
+│   ├── scripts/        # 数据导入 / 迁移 / 上传脚本
+│   ├── storage/        # 音频/封面存储
+│   └── docker-compose.yml  # Docker 部署配置
+└── data/               # 曲库源数据 songs.json(迁移脚本的输入)
 ```
 
 ---

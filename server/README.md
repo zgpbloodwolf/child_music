@@ -31,7 +31,9 @@ server/
 │   ├── routers/         # catalog(查询)/ admin(管理)
 │   └── services/        # meta(查询+URL拼接)/ storage(文件+时长)
 ├── admin_static/        # 极简管理页(/admin)
-├── scripts/migrate_from_json.py  # 一次性迁移:songs.json → SQLite + 拷贝文件
+├── scripts/             # 一次性脚本(见各自头部 docstring)
+│   ├── migrate_from_json.py      # songs.json + library → SQLite + storage
+│   └── import-*.py / upload-*.py # 批量导入、上传到远端管理接口
 ├── storage/             # 音频存储根(.gitignore)
 ├── data/                # SQLite(.gitignore)
 ├── requirements.txt
@@ -52,9 +54,10 @@ pip install -r requirements.txt
 # 1) 配置:复制模板并按需修改(尤其 ADMIN_TOKEN、PUBLIC_BASE_URL)
 cp .env.example .env
 
-# 2) 迁移:把 src/static/data/songs.json 与 src/static/library/ 导入
+# 2) 迁移:默认读 <仓库根>/data/songs.json,音频从 <仓库根>/src/static/library/ 取
+#    (音频目录不随仓库分发;若手上没有,改用下方「Docker 部署」的 volumes/source/ 流程)
 python scripts/migrate_from_json.py
-# 预期输出:分类 4、子类 17、歌曲 239、缺失音频文件 0
+# 预期输出:分类 4、子类 14、歌曲 1119、缺失音频文件 0
 
 # 3) 启动
 python run.py
@@ -78,10 +81,15 @@ python run.py
 ## API 概览
 
 **元数据查询(公开)**:
-- `GET /api/categories` 完整分类树
+- `GET /api/categories` 完整分类树(大类与子类均带 `songCount`,前端「N 首」直接读它)
 - `GET /api/songs/{id}` 歌曲详情(含 src/lyric)
-- `GET /api/songs?category=&sub=&keyword=&ids=&page=&size=` 统一查询(带 page+size 返回分页结构,否则裸数组)
-- `GET /api/subs/{id}`、`GET /api/subs/{id}/category`
+- `GET /api/songs?category=&sub=&keyword=&author=&ids=&page=&size=` 统一查询(带 page+size 返回分页结构,否则裸数组)
+- `GET /api/songs/ids?category=&sub=&keyword=&author=` 只返回有序 id 数组(用于建播放入队;响应体约为带元数据的 1/10)
+- `GET /api/authors?category=&sub=` 按作者聚合作品数(含该作者涉及的子类)
+- `GET /api/subs/{id}`(带 `songCount`)、`GET /api/subs/{id}/category`
+
+> 需要「任意条件的条数」时用 `GET /api/songs?...&page=1&size=1` 读响应里的 `total`,不要为计数新建接口。
+> ⚠️ `/api/songs/ids` 必须声明在 `/api/songs/{id}` **之前**,否则会被后者当作 `song_id="ids"` 抢先匹配并 404。
 
 **文件分发(公开,支持 Range)**:`GET /library/{大类}/{子类}/{id}.mp3`
 
@@ -97,7 +105,7 @@ python run.py
 ## 验证
 
 ```bash
-# 元数据:应返回 239 条
+# 元数据:应返回 1119 条
 curl http://localhost:8823/api/songs | python -c "import sys,json;print(len(json.load(sys.stdin)))"
 
 # 详情:src 应为完整公网 URL
@@ -130,7 +138,7 @@ sqlite3 data/music.db "SELECT sub_category_id, COUNT(*) FROM songs GROUP BY sub_
 NPM 默认保留 `/cmusic` 前缀转发到后端,后端中间件自动剥除,路由正常命中,无需手动 rewrite。
 公网访问即 `http://your-domain.example.com/cmusic/api/categories`、`.../library/children/classic/cn002.mp3`。
 
-> 缓存:建议在 NPM 对 `/library/` 路径加响应头 `Cache-Control: public, max-age=604800`(音频文件不可变)。
+> 缓存:后端已直接下发 `Cache-Control`(`.mp3` 长缓存且 `immutable`;APK 与封面走短缓存,因为二者会被原地替换),NPM 无需重复配置。
 
 ## 常驻部署
 
@@ -164,14 +172,14 @@ WantedBy=multi-user.target
 > 也可用本目录的 `docker-run.sh`(纯 `docker` 命令,与 compose 等价,适合未安装 `docker compose` 的环境),用法见本节末尾。
 
 ### 1. 准备源数据(首次导入用)
-把前端的音频目录与 `songs.json` 放到 compose 同级的 `volumes/source/`:
+把曲库源数据与音频目录放到 compose 同级的 `volumes/source/`:
 
 ```
 server/
 └── volumes/
     └── source/
-        ├── songs.json              ← 来自 src/static/data/songs.json
-        └── library/                ← 来自 src/static/library/
+        ├── songs.json              ← 来自 <仓库根>/data/songs.json
+        └── library/                ← 音频目录(现由本服务的 storage/library/ 持有,或旧工程层的 src/static/library/)
             └── children/classic/cn002.mp3 ...
 ```
 
@@ -186,7 +194,7 @@ docker compose up -d --build
 ### 4. 首次导入曲库(只需一次)
 ```bash
 docker compose exec childmusic python scripts/migrate_from_json.py
-# 预期:分类 4、子类 17、歌曲 239、缺失音频文件 0
+# 预期:分类 4、子类 14、歌曲 1119、缺失音频文件 0
 ```
 
 ### 5. CasaOS 管理
