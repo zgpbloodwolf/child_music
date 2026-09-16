@@ -20,7 +20,9 @@ set -e
 
 # ---- 可配置项 ----
 # ACR 仓库完整地址(含域名/命名空间/仓库名),不含 tag
-ACR_REPO="crpi-lgmprcsgzikcd6ib.cn-hangzhou.personal.cr.aliyuncs.com/xuezgp/child_music"
+# 真实地址不入库(git 里只留占位),实际值从环境变量 ACR_REPO 或 server/.env 的
+# ACR_REPO= 读取 —— 解析见下方「解析 ACR 仓库地址」一节。
+ACR_REPO_PLACEHOLDER="your-registry.cn-hangzhou.personal.cr.aliyuncs.com/your-namespace/child_music"
 # 镜像版本规则:
 #   - 存在 VERSION 文件:固定使用其内容(显式钉住版本,优先级最高)
 #   - build / all / build-local:查询 ACR 已有最大 x.y.z tag 并递增 patch;
@@ -34,7 +36,6 @@ PLATFORMS="linux/amd64,linux/arm64"
 # ------------------
 
 CONTAINER="childmusic"
-IMAGE_LATEST="${ACR_REPO}:latest"
 
 cd "$(dirname "$0")"
 MODE="${1:-run}"
@@ -54,11 +55,28 @@ get_env() {
   printf '%s' "${val:-$default}"
 }
 
+# ---- 解析 ACR 仓库地址(真实值不入库)----
+# 优先级:环境变量 ACR_REPO > server/.env 的 ACR_REPO= > 占位符
+ACR_REPO="${ACR_REPO:-$(get_env ACR_REPO "$ACR_REPO_PLACEHOLDER")}"
+IMAGE_LATEST="${ACR_REPO}:latest"
+
+# 安全底线:ACR_REPO 为空或仍是占位符时拒绝执行(否则会推到别人的仓库)。
+require_acr_repo() {
+  case "$ACR_REPO" in
+    ""|*your-registry*|*your-namespace*)
+      echo "[错误] 未配置 ACR_REPO(仓库地址不入库,git 里只有占位符)。请二选一:" >&2
+      echo "         1) 在 server/.env 写一行:ACR_REPO=<域名>/<命名空间>/<仓库名>" >&2
+      echo "         2) 临时:export ACR_REPO=... 后再执行本脚本" >&2
+      exit 1
+      ;;
+  esac
+}
+
 PORT="$(get_env PORT 8823)"
 
 # 端口绑定地址:默认仅回环,公网无法直连 8823 绕过反代伪造 X-Forwarded-For。
 # 若 Nginx 反代是同机容器且上游填「宿主机IP:8823」,回环绑定会不可达,
-# 请改用宿主机内网 IP 运行(如 BIND_IP=192.168.50.88 ./docker-run.sh run),勿改回 0.0.0.0。
+# 请改用宿主机内网 IP 运行(如 BIND_IP=192.168.x.x ./docker-run.sh run),勿改回 0.0.0.0。
 BIND_IP="${BIND_IP:-127.0.0.1}"
 
 # 安全底线:ADMIN_TOKEN 缺失/为空/默认值时拒绝启动。
@@ -170,6 +188,7 @@ IMAGE_TAG="${ACR_REPO}:${VERSION_VAL}"
 
 # 多架构打包并推送 ACR
 build() {
+  require_acr_repo
   echo "[构建] 多架构构建 ${PLATFORMS} 并推送 ACR…"
   ensure_acr_login
   # --provenance=false --sbom=false:ACR 个人版不支持 buildx 默认附带的
@@ -191,6 +210,7 @@ build() {
 
 # 仅构建本机架构到本地 docker(不推送,用于调试)
 build_local() {
+  require_acr_repo
   echo "[构建] 本机架构构建并加载到本地 docker…"
   docker buildx build --load -t "$IMAGE_TAG" .
   echo "[构建] 已加载本地镜像:${IMAGE_TAG}"
@@ -198,6 +218,7 @@ build_local() {
 
 # 运行容器(从 ACR 拉取当前架构)
 run() {
+  require_acr_repo
   require_admin_token
   echo "[运行] 拉取镜像 ${IMAGE_TAG}(自动选择本机架构)…"
   docker pull "$IMAGE_TAG"

@@ -1,5 +1,8 @@
-# 敏感配置(各环境不同,不入库)
+# 敏感配置(各环境不同,不入库)。连同 .env.local / .env.production 等变体一起排除,
+# 只放行模板 .env.example —— 真实内网 IP / 公网域名 / token / ACR 地址都写在 .env 里。
 .env
+.env.*
+!.env.example
 
 # Python
 __pycache__/

@@ -227,6 +227,46 @@ docker exec -it childmusic python scripts/migrate_from_json.py
 > 备份:只需备份 `volumes/storage` 与 `volumes/db` 两个目录;`volumes/source` 导入后可删。
 > 升级代码:开发机 `./docker-run.sh build`,部署机 `./docker-run.sh run`(拉取最新 latest,数据卷不受影响);或 `docker compose up -d --build` 本地构建。
 
+## 内容同步:改了本地曲库数据,怎么让线上跟着变
+
+线上服务器有一份**独立的运行库**(compose 挂 `./volumes/db`)。本机改了
+`data/songs.json` / 本地 DB 之后,线上**不会自动跟着变**,必须显式推一次。
+
+环境拓扑(别搞混,本机开发机的 IP 就是它自己的局域网 IP):
+
+| 角色 | 地址 |
+|---|---|
+| 本机开发 | `127.0.0.1:8823`(对手机联调时用本机局域网 `192.168.x.x`) |
+| 线上服务器 | `192.168.x.x:8823`,内网可直连 |
+| 公网入口 | `http://your-domain.example.com/cmusic`(反代/隧道入口,打包好的 App 写死它) |
+
+> 本文档一律用占位地址,**别把真实内网 IP 或公网隧道域名提交进仓库**
+> (cpolar 之类的免费隧道域名还会随隧道重建而变,写死反而误导)。
+> 真实地址只放各自机器的 `.env`(已 .gitignore)。
+
+推歌词:
+
+```bash
+python scripts/push_lyrics.py --base-url http://192.168.x.x:8823 --token <ADMIN_TOKEN> --verify
+```
+
+- `--token` 用**服务器** `.env` 里的 `ADMIN_TOKEN`,与开发机 `server/.env` 的
+  `local-test-token-2026` 不是同一个值。
+- 必须**在内网直连**服务器:`/api/admin/*` 有 `require_intranet`,公网来源一律 403
+  (走 cpolar 反代也一样,除非把出口网段加进 `ADMIN_ALLOW_CIDRS`)。
+- 脚本只发 `{"lyric": ...}`。远端 `SongUpdate` 无必填字段且路由用
+  `exclude_unset=True`,不会清空其他字段。开写前先用**不存在的 id** 探测一次
+  (401=token 错 / 403=不在内网 / 404=可写),该探测不改动任何数据。
+- `--dry-run` 只看差异;`--overwrite` 才覆盖两边不一致的;`--ids cn003,en077` 只推指定歌。
+
+> **坑:别用 `/api/songs?missing=lyric` 判断线上缺不缺歌词。** 线上镜像常比本地旧
+> (实测 2026-09 部署的那版没有 `missing` 参数),传了会被忽略并返回**全量**,看起来
+> 像「1119 首全都没歌词」;服务器 admin 页那个「无歌词」筛选同样是失效的。
+> 要判断线上真实覆盖,只能逐首 `GET /api/songs/{id}` —— 脚本已按此实现。
+
+> 若线上镜像确实过旧(缺 `missing` 等接口),除了推数据,也该考虑 `./docker-run.sh
+> build` + 部署机 `run` 重新发一版镜像。
+
 ## 跨端注意事项
 
 - **微信小程序(阻塞)**:小程序生产强制 HTTPS。`http://your-domain.example.com` 需有 HTTPS 入口才能用于小程序;并在公众平台配置 `request`、`downloadFile` 合法域名。App / H5 无此限制。
