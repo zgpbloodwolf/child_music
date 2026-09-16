@@ -68,7 +68,9 @@ PROJECT_DIR = Path(__file__).resolve().parents[2]
 SERVER_DIR = PROJECT_DIR / "server"
 DB_PATH = SERVER_DIR / "data" / "music.db"
 DEFAULT_CACHE = SERVER_DIR / "data" / "lrclib-cache.json"
-REVIEW_PATH = SERVER_DIR / "data" / "lrclib-review.json"
+# 复核清单落在 docs/ 而不是 server/data/ —— 后者被 .gitignore 排除,团队看不到;
+# 这份清单本来就是给人看的,要能随代码一起被 review。
+REVIEW_PATH = PROJECT_DIR / "docs" / "lyrics-review.md"
 
 # lrclib 要求用 User-Agent 标明客户端身份(名称 + 版本 + 主页/邮箱)。
 # ★ 这里还缺一个可回访的联系方式,上线前建议补成项目仓库地址。
@@ -117,6 +119,15 @@ def name_matches(ours: str, theirs: str | None) -> bool:
         return False
     return a in b or b in a
 
+
+# 人工复核确认「lrclib 结果里根本没有本曲的正主」的歌曲。按我们自己的歌曲 id 整首排除:
+# 这类曲子的候选**标题全等、时长也落在 loose 门限内**,但命中的全是同名的别首歌,
+# 上面三道机器护栏(歌名全等/包含、duration 门限、内容表头)都挡不住。
+# 逐条依据见 docs/lyrics-review.md 的复核记录。
+NO_VALID_MATCH = {
+    "cn134": "命中全是同名流行曲(苏打绿/杨千嬅/张震岳/万芳/王心凌),没有儿歌《小星星》",
+    "en003": "本曲属 children-english(早教英语),命中全是同名的中文/日文流行曲",
+}
 
 # lrclib 存在「歌词内容是另一首歌」的错标记录,且同一错误会随专辑重复出现 ——
 # 实测 cn591《小小粉刷匠》的两条记录(3980171 / 31227945,不同专辑、不同时长)
@@ -250,6 +261,91 @@ def to_simplified(text: str) -> tuple[str, bool]:
     return _T2S.convert(text), True
 
 
+# ===== 复核清单 =====
+
+_TS_ANY = re.compile(r"\[\d{1,2}:\d{1,2}(?:[.:]\d{1,3})?\]")
+
+
+def first_line(text: str, limit: int = 40) -> str:
+    """取歌词第一行有效文本(去 LRC 时间标签),给复核清单作肉眼判据。"""
+    for ln in _TS_ANY.sub("", text).splitlines():
+        ln = ln.strip()
+        if ln:
+            return ln[:limit]
+    return ""
+
+
+def write_review_md(review: list[dict], path: Path, tol_loose: float,
+                    no_valid: dict[str, str]) -> None:
+    """把待复核项写成 Markdown(给人看,所以入库到 docs/)。"""
+    def cell(s, n: int = 30) -> str:
+        return str(s or "").replace("|", "\\|")[:n]
+
+    source_cn = {"synced": "带时间轴", "plain": "纯文本"}
+
+    out = [
+        "# lrclib 歌词补录 · 待复核清单",
+        "",
+        "> 本文件由 `server/scripts/enrich_lyrics.py` 生成,请勿手工编辑;"
+        "重新运行脚本会覆盖它。",
+        "",
+        "## 这份清单是什么",
+        "",
+        "给缺歌词的歌补录时,按 `|本库时长 − lrclib 时长|` 分档:",
+        "",
+        f"- **strong(≤ {TOL_STRONG:.0f}s)**:同一录音/母带,已自动写入。",
+        f"- **loose(≤ {tol_loose:.0f}s)**:大概率是同一首歌的不同录音,"
+        "即本清单。**默认不写入** —— 因为已实测出时长能对上、其实是另一首歌的情况:"
+        "`cn134 小星星` 命中的是苏打绿的同名创作曲,歌词内容与儿歌毫无关系。",
+        "",
+        "每条都附了 lrclib 的歌词首行,用它就能判断是不是同一首歌。",
+        "",
+        "## 确认后怎么采纳",
+        "",
+        "逐条过目、确认是同一首歌之后,一次性全部写入(不重新请求 lrclib):",
+        "",
+        "```bash",
+        "server/.venv/Scripts/python.exe server/scripts/enrich_lyrics.py \\",
+        "    --no-fetch --apply-loose --rebuild-json",
+        "```",
+        "",
+        "已确认**不是**本曲的,请把歌曲 id 加进 `server/scripts/enrich_lyrics.py` 的",
+        "`NO_VALID_MATCH`,脚本会把该曲整首排除,不再出现在本清单里。",
+        "",
+    ]
+
+    if no_valid:
+        out += [
+            "## 已确认 lrclib 无正主、已排除的歌曲",
+            "",
+            "| 歌曲 id | 原因 |",
+            "|---------|------|",
+        ]
+        out += [f"| `{k}` | {v} |" for k, v in sorted(no_valid.items())]
+        out.append("")
+
+    out += [
+        f"## 待复核({len(review)} 首)",
+        "",
+        "| # | 歌曲 | 本库时长 | lrclib 命中 | lrclib 歌手 | 时长差 | 歌词 | 首行 |",
+        "|---|------|---------|-------------|-------------|--------|------|------|",
+    ]
+    for i, r in enumerate(review, 1):
+        out.append(
+            f"| {i} | `{r['id']}` {cell(r['name'], 20)} "
+            f"| {r['duration']:.1f}s "
+            f"| {cell(r['lrclibTrack'])} "
+            f"| {cell(r['lrclibArtist'], 16)} "
+            f"| {r['durationDiff']:+.2f}s "
+            f"| {source_cn.get(r['source'], r['source'])} "
+            f"| {cell(r['firstLine'], 34)} |"
+        )
+    out.append("")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(out), encoding="utf-8")
+
+
 # ===== 主流程 =====
 
 
@@ -344,7 +440,8 @@ def main() -> None:
     accepted: list[tuple] = []   # (id, name, lyric, source, diff, rec)
     review: list[dict] = []
     stats = {"strong": 0, "loose": 0, "no-name-match": 0, "dur-mismatch": 0,
-             "unknown-dur": 0, "no-result": 0, "fetch-failed": 0, "no-lyric": 0}
+             "unknown-dur": 0, "no-result": 0, "fetch-failed": 0, "no-lyric": 0,
+             "no-valid-match": 0}
 
     for sid, name, dur in targets:
         entry = cache.get(sid) or {}
@@ -354,6 +451,10 @@ def main() -> None:
         results = entry["results"]
         if not results:
             stats["no-result"] += 1
+            continue
+        # 已人工确认 lrclib 里没有正主的歌:整首排除,不写也不进复核清单
+        if sid in NO_VALID_MATCH:
+            stats["no-valid-match"] += 1
             continue
 
         rec, diff, tier = pick_candidate(name, dur, results,
@@ -377,6 +478,7 @@ def main() -> None:
             "lrclibArtist": rec.get("artistName"), "lrclibAlbum": rec.get("albumName"),
             "lrclibDuration": rec.get("duration"), "durationDiff": diff,
             "tier": tier, "source": source, "lyricChars": len(text),
+            "firstLine": first_line(text),
         }
         if tier == "strong" or args.apply_loose:
             accepted.append((sid, name, text, source, diff, rec))
@@ -394,16 +496,14 @@ def main() -> None:
 
     if review:
         review_path = Path(str(REVIEW_PATH))
-        review_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(review_path, "w", encoding="utf-8") as f:
-            json.dump(review, f, ensure_ascii=False, indent=2)
+        write_review_md(review, review_path, args.tol_loose, NO_VALID_MATCH)
         print(f"复核清单已写入: {review_path}")
         print("抽样(需人工确认是否同一首歌):")
         for r in review[:15]:
             print(f"  {r['id']} {r['name']} our={r['duration']:.1f}s | "
                   f"{r['lrclibTrack']!r}/{r['lrclibArtist']!r} "
                   f"dur={r['lrclibDuration']} diff={r['durationDiff']:.2f} "
-                  f"{r['source']} {r['lyricChars']}字")
+                  f"{r['source']} {r['lyricChars']}字 | 首行 {r['firstLine']}")
 
     if args.dry_run:
         print("\n[dry-run] 未写库。抽样预览:")
