@@ -91,12 +91,15 @@ python run.py
 > 需要「任意条件的条数」时用 `GET /api/songs?...&page=1&size=1` 读响应里的 `total`,不要为计数新建接口。
 > ⚠️ `/api/songs/ids` 必须声明在 `/api/songs/{id}` **之前**,否则会被后者当作 `song_id="ids"` 抢先匹配并 404。
 
-**文件分发(公开,支持 Range)**:`GET /library/{大类}/{子类}/{id}.mp3`
+**文件分发(公开,支持 Range)**:`GET /library/{大类}/{子类}/{id}.mp3`、大类合集封面 `GET /library/{大类}/_cover.jpg`
+
+> 封面(歌曲封面 / 大类合集封面)只能经各自的 `/cover` 上传接口写入 —— 落盘目录与文件名由后端按 id 推导(不采信上传名),对应的 `PUT` 请求模型里没有 cover 字段。
 
 **管理(需 `Authorization: Bearer <ADMIN_TOKEN>`)**:
 - `POST /api/admin/songs` 上传(multipart:audio + cover? + 元数据)
 - `PUT /api/admin/songs/{id}` 编辑、`DELETE /api/admin/songs/{id}` 删除(连文件)
-- `POST /api/admin/songs/{id}/cover` 替换封面
+- `POST /api/admin/songs/{id}/cover` 替换歌曲封面
+- `POST /api/admin/categories/{id}/cover` 设置/替换大类合集封面(用于该大类歌单页头部大图)
 - `POST /api/admin/categories`、`PUT /api/admin/categories/{id}`、`DELETE /api/admin/categories/{id}`
 - `POST /api/admin/subs`、`DELETE /api/admin/subs/{id}`
 
@@ -272,4 +275,4 @@ python scripts/push_lyrics.py --base-url http://192.168.x.x:8823 --token <ADMIN_
 - **微信小程序(阻塞)**:小程序生产强制 HTTPS。`http://your-domain.example.com` 需有 HTTPS 入口才能用于小程序;并在公众平台配置 `request`、`downloadFile` 合法域名。App / H5 无此限制。
 - **H5**:依赖后端 CORS(已配置);开发期 `CORS_ORIGINS=*`,生产收敛到具体域名。
 - **App 端**:`INTERNET` 权限默认有;backgroundAudioManager 原生支持网络流播放(后台/锁屏/Range)。
-- **封面**:现有数据无封面图,`cover` 返回的 URL 会 404,前端用色块兜底;可通过管理页或 `/api/admin/songs/{id}/cover` 补传。
+- **封面**:图片文件不入库(`server/storage/` 被 gitignore),可经管理页「换封面 / 设封面」或 `/api/admin/songs/{id}/cover`、`/api/admin/categories/{id}/cover` 补传。未设置的封面 `cover` 返回**空串**(不是 404),前端用色块兜底;核对歌曲封面进度用 `GET /api/songs?missing=cover`(只统计歌曲,不含大类封面)。

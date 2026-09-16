@@ -31,6 +31,11 @@ export interface Category {
   icon: string;
   /** 描述 */
   desc: string;
+  /**
+   * 大类合集封面完整 URL(后端随分类树下发;未设置为空串)。
+   * 用作大类歌单页头部大图;为空时回落到首曲封面或色块。
+   */
+  cover?: string;
   /** 该大类下歌曲总数(含各子分类;后端随分类树下发) */
   songCount?: number;
   /** 该大类下的子分类列表 */

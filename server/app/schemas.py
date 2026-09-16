@@ -77,6 +77,9 @@ class CategoryOut(CamelModel):
     name: str
     icon: str
     desc: str
+    # 大类合集封面完整公网 URL(未设置为空字符串,前端回落色块/首曲封面)。
+    # 由 services/meta.build_url 拼出,与歌曲 cover 同口径。
+    cover: str = ""
     # 该大类下歌曲数(含各子类,由子类计数求和)→ songCount
     song_count: int = 0
     subs: list[SubCategoryOut] = []

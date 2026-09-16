@@ -181,8 +181,14 @@ const headerDesc = computed(() => {
 });
 /** 作者模式:头部封面用朱砂方印 */
 const isAuthor = computed(() => mode.value === 'author');
-/** sub 模式:取第一首作品封面 */
-const cover = computed(() => listSongs.value[0]?.cover);
+/**
+ * 头部封面:cat 模式优先用大类合集封面(后台设置的该大类大图),未设置时回落到
+ * 首曲封面;sub / all 模式沿用首曲封面。author 模式走朱砂方印(模板里单独分支)。
+ */
+const cover = computed(() => {
+  if (mode.value === 'cat' && catMeta.value?.cover) return catMeta.value.cover;
+  return listSongs.value[0]?.cover;
+});
 
 /** 头部封面兜底色:作者用朱砂方印;其余按所属大类映射(映射集中在 CoverImage 导出) */
 const coverVariant = computed<CoverVariant>(() => {

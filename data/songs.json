@@ -6270,6 +6270,7 @@
       "name": "古诗",
       "icon": "📜",
       "desc": "唐诗宋词,启蒙经典",
+      "cover": "/static/library/poetry/_cover.jpg",
       "count": 320
     },
     "tang300": {
@@ -6285,7 +6286,7 @@
           "name": "望岳",
           "artist": "杜甫",
           "src": "/static/library/poetry/tang300/tang300_01b4dc684990.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_01b4dc684990.jpg",
           "lyric": "[00:00.25]《望岳》\n[00:02.25]杜甫\n[00:05.21]岱宗夫如何\n[00:08.25]齐鲁青未了\n[00:12.48]造化钟神秀\n[00:15.20]阴阳割昏晓\n[00:20.05]荡胸生曾云\n[00:22.90]决眦入归鸟\n[00:26.89]( 曾 通：层)\n[00:27.96]会当凌绝顶\n[00:30.97]一览众山小\n"
         },
         {
@@ -6301,7 +6302,7 @@
           "name": "塞下曲·月黑雁飞高",
           "artist": "卢纶",
           "src": "/static/library/poetry/tang300/tang300_04e7450c7a55.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_04e7450c7a55.jpg",
           "lyric": "[00:00.27]《塞下曲·月黑雁飞高》\n[00:06.89]卢纶\n[00:09.36]月黑雁飞高\n[00:12.49]单于夜遁逃\n[00:15.86]欲将轻骑逐\n[00:18.10]大雪满弓刀\n"
         },
         {
@@ -6645,7 +6646,7 @@
           "name": "相思",
           "artist": "王维",
           "src": "/static/library/poetry/tang300/tang300_254d2b986a8e.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_254d2b986a8e.jpg",
           "lyric": "[00:00.25]《相思》\n[00:01.70]王维\n[00:04.49]红豆生南国\n[00:07.77]春来发几枝\n[00:11.97]愿君多采撷\n[00:16.01]此物最相思\n"
         },
         {
@@ -6917,7 +6918,7 @@
           "name": "宿建德江",
           "artist": "孟浩然",
           "src": "/static/library/poetry/tang300/tang300_44ec0788b577.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_44ec0788b577.jpg",
           "lyric": "[00:00.27]《宿建德江》\n[00:03.45]孟浩然\n[00:06.64]移舟泊烟渚\n[00:09.66]日暮客愁新\n[00:12.88]野旷天低树\n[00:15.44]江清月近人\n"
         },
         {
@@ -6933,7 +6934,7 @@
           "name": "春晓",
           "artist": "孟浩然",
           "src": "/static/library/poetry/tang300/tang300_46c82fb45814.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_46c82fb45814.jpg",
           "lyric": "[00:00.19]《春晓》\n[00:01.62]孟浩然\n[00:05.13]春眠不觉晓\n[00:09.00]处处闻啼鸟\n[00:13.16]夜来风雨声\n[00:15.96]花落知多少\n"
         },
         {
@@ -6965,7 +6966,7 @@
           "name": "黄鹤楼送孟浩然之广陵",
           "artist": "李白",
           "src": "/static/library/poetry/tang300/tang300_487767070d5d.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_487767070d5d.jpg",
           "lyric": "[00:00.41]《黄鹤楼送孟浩然之广陵》\n[00:06.68]李白\n[00:09.25]故人西辞黄鹤楼\n[00:12.85]烟花三月下扬州\n[00:17.02]孤帆远影碧空尽\n[00:21.05]唯见长江天际流\n[00:25.61](唯 通：惟)\n"
         },
         {
@@ -6973,7 +6974,7 @@
           "name": "山居秋暝",
           "artist": "王维",
           "src": "/static/library/poetry/tang300/tang300_4888552cb3a4.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_4888552cb3a4.jpg",
           "lyric": "[00:00.38]《山居秋暝》\n[00:03.58]王维\n[00:06.05]空山新雨后\n[00:08.37]天气晚来秋\n[00:12.77]明月松间照\n[00:15.17]清泉石上流\n[00:20.73]竹喧归浣女\n[00:23.53]莲动下渔舟\n[00:35.11]随意春芳歇\n[00:38.68]王孙自可留\n"
         },
         {
@@ -7053,7 +7054,7 @@
           "name": "出塞·秦时明月汉时关",
           "artist": "王昌龄",
           "src": "/static/library/poetry/tang300/tang300_4f918af3a90b.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_4f918af3a90b.jpg",
           "lyric": "[00:00.38]《出塞·秦时明月汉时关》\n[00:06.86]王昌龄\n[00:09.73]秦时明月汉时关\n[00:12.53]万里长征人未还\n[00:16.77]但使龙城飞将在\n[00:18.85]不教胡马度阴山\n"
         },
         {
@@ -7069,7 +7070,7 @@
           "name": "江雪",
           "artist": "柳宗元",
           "src": "/static/library/poetry/tang300/tang300_4fa141b479ab.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_4fa141b479ab.jpg",
           "lyric": "[00:00.19]《江雪》\n[00:03.01]柳宗元\n[00:05.69]千山鸟飞绝\n[00:09.30]万径人踪灭\n[00:13.49]孤舟蓑笠翁\n[00:17.34]独钓寒江雪\n"
         },
         {
@@ -7149,7 +7150,7 @@
           "name": "九月九日忆山东兄弟",
           "artist": "王维",
           "src": "/static/library/poetry/tang300/tang300_5a09675a7a76.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_5a09675a7a76.jpg",
           "lyric": "[00:00.00]《九月九日忆山东兄弟》\n[00:06.08]王维\n[00:09.48]独在异乡为异客\n[00:14.73]每逢佳节倍思亲\n[00:21.17]遥知兄弟登高处\n[00:25.61]遍插茱萸少一人\n"
         },
         {
@@ -7229,7 +7230,7 @@
           "name": "过故人庄",
           "artist": "孟浩然",
           "src": "/static/library/poetry/tang300/tang300_60f27af1e265.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_60f27af1e265.jpg",
           "lyric": "[00:00.19]《过故人庄》\n[00:02.28]孟浩然\n[00:05.37]故人具鸡黍\n[00:08.28]邀我至田家\n[00:12.04]绿树村边合\n[00:14.36]青山郭外斜\n[00:18.38]开轩面场圃\n[00:20.62]把酒话桑麻\n[00:24.21]待到重阳日\n[00:26.45]还来就菊花\n"
         },
         {
@@ -7237,7 +7238,7 @@
           "name": "静夜思",
           "artist": "李白",
           "src": "/static/library/poetry/tang300/tang300_62830109bb18.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_62830109bb18.jpg",
           "lyric": "[00:00.22]《静夜思》\n[00:02.27]李白\n[00:05.05]床前明月光\n[00:08.12]疑是地上霜\n[00:13.33]举头望明月\n[00:16.89]低头思故乡\n"
         },
         {
@@ -7493,7 +7494,7 @@
           "name": "凉州词",
           "artist": "王之涣",
           "src": "/static/library/poetry/tang300/tang300_7c8fd181c151.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_7c8fd181c151.jpg",
           "lyric": "[00:00.27]《凉州词》\n[00:02.19]王之涣\n[00:06.09]黄河远上白云间\n[00:10.33]一片孤城万仞山\n[00:15.61]羌笛何须怨杨柳\n[00:20.22]春风不度玉门关\n"
         },
         {
@@ -7789,7 +7790,7 @@
           "name": "早发白帝城",
           "artist": "李白",
           "src": "/static/library/poetry/tang300/tang300_96aca56ee5c4.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_96aca56ee5c4.jpg",
           "lyric": "[00:00.25]《早发白帝城》\n[00:02.88]李白\n[00:05.73]朝辞白帝彩云间\n[00:09.44]千里江陵一日还\n[00:13.89]两岸猿声啼不住\n[00:17.09]轻舟已过万重山\n"
         },
         {
@@ -7981,7 +7982,7 @@
           "name": "鹿柴",
           "artist": "王维",
           "src": "/static/library/poetry/tang300/tang300_ab2a71c9ae6b.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_ab2a71c9ae6b.jpg",
           "lyric": "[00:00.22]《鹿柴》\n[00:02.73]王维\n[00:05.38]空山不见人\n[00:08.81]但闻人语响\n[00:13.41]返景入深林\n[00:17.25]复照青苔上\n"
         },
         {
@@ -8077,7 +8078,7 @@
           "name": "登鹳雀楼",
           "artist": "王之涣",
           "src": "/static/library/poetry/tang300/tang300_b0674ca0d828.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_b0674ca0d828.jpg",
           "lyric": "[00:00.22]《登鹳雀楼》\n[00:01.87]王之涣\n[00:09.73]白日依山尽\n[00:11.81]黄河入海流\n[00:14.69]欲穷千里目\n[00:17.06]更上一层楼\n"
         },
         {
@@ -8173,7 +8174,7 @@
           "name": "寻隐者不遇",
           "artist": "贾岛",
           "src": "/static/library/poetry/tang300/tang300_bb0a135edf60.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_bb0a135edf60.jpg",
           "lyric": "[00:00.41]《寻隐者不遇》\n[00:03.77]贾岛\n[00:06.01]松下问童子\n[00:08.81]言师采药去\n[00:12.64]只在此山中\n[00:15.68]云深不知处\n"
         },
         {
@@ -8213,7 +8214,7 @@
           "name": "望月怀远",
           "artist": "张九龄",
           "src": "/static/library/poetry/tang300/tang300_c062503df3b6.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_c062503df3b6.jpg",
           "lyric": "[00:00.22]《望月怀远》\n[00:04.53]张九龄\n[00:07.34]海上生明月\n[00:10.64]天涯共此时\n[00:16.01]情人怨遥夜\n[00:20.01]竟夕起相思\n[00:25.29]灭烛怜光满\n[00:30.39]披衣觉露滋\n[00:35.49]不堪盈手赠\n[00:38.33]还寝梦佳期\n"
         },
         {
@@ -8373,7 +8374,7 @@
           "name": "渭城曲",
           "artist": "王维",
           "src": "/static/library/poetry/tang300/tang300_cc258709147e.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_cc258709147e.jpg",
           "lyric": "[00:00.22]《渭城曲》\n[00:02.28]王维\n[00:04.65]渭城朝雨浥轻尘\n[00:09.32]客舍青青柳色新\n[00:13.88](一作：客舍依依杨柳春)\n[00:26.09]劝君更尽一杯酒\n[00:31.00]西出阳关无故人\n"
         },
         {
@@ -8765,7 +8766,7 @@
           "name": "枫桥夜泊",
           "artist": "张继",
           "src": "/static/library/poetry/tang300/tang300_f72a52cdaf80.mp3",
-          "cover": "",
+          "cover": "/static/library/poetry/tang300/tang300_f72a52cdaf80.jpg",
           "lyric": "[00:00.35]《枫桥夜泊》\n[00:02.96]张继\n[00:35.35]月落乌啼霜满天\n[00:42.81]江枫渔火对愁眠\n[00:50.93]姑苏城外寒山寺\n[00:54.29]夜半钟声到客船\n"
         },
         {

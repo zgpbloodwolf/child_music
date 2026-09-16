@@ -108,6 +108,7 @@ def build_category_tree(db: Session) -> list[CategoryOut]:
             name=c.name,
             icon=c.icon,
             desc=c.desc,
+            cover=build_url(c.cover_path),
             song_count=cat_counts.get(c.id, 0),
             subs=[
                 sub_to_out(s, sub_counts.get(s.id, 0))

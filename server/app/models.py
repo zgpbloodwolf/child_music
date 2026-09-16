@@ -19,6 +19,9 @@ class Category(Base):
     icon = Column(String(32), default="", nullable=False)
     desc = Column(Text, default="", nullable=False)
     sort_order = Column(Integer, default=0, nullable=False)
+    # 大类合集封面(如古诗 tab 的大图),相对 storage 根;文件可能不存在。
+    # 与歌曲封面同规矩:只能经 POST /api/admin/categories/{id}/cover 写入。
+    cover_path = Column(String(512), nullable=True)
 
     subs = relationship(
         "SubCategory",

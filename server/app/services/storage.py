@@ -33,6 +33,15 @@ def song_dir(category_id: str, sub_category_id: str) -> Path:
     return settings.library_dir / category_id / sub_dir
 
 
+def category_dir(category_id: str) -> Path:
+    """大类级文件目录:storage/library/{category}。
+
+    存放「属于大类本身、不属于任何子类」的资源(如大类合集封面)。歌曲一律在
+    下一层 library/{category}/{sub_dir}/ 内,故两者不会同名冲突。
+    """
+    return settings.library_dir / category_id
+
+
 def write_bytes(data: bytes, dest: Path) -> None:
     """字节内容落盘(自动创建父目录)。"""
     dest.parent.mkdir(parents=True, exist_ok=True)

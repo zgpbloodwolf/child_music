@@ -216,10 +216,10 @@
           <button class="ghost" id="reloadCatsBtn">刷新</button>
         </span></h2>
         <table>
-          <thead><tr><th>id</th><th>名称</th><th>图标</th><th>统计</th><th>描述</th><th>操作</th></tr></thead>
+          <thead><tr><th>id</th><th>名称</th><th>图标</th><th>封面</th><th>统计</th><th>描述</th><th>操作</th></tr></thead>
           <tbody id="catBody"></tbody>
         </table>
-        <p class="muted" style="margin-top:8px">点击大类行(或 id 前的三角)可收起/展开其子类;大类行可编辑/删除,子类行(缩进灰底)仅支持删除。</p>
+        <p class="muted" style="margin-top:8px">点击大类行(或 id 前的三角)可收起/展开其子类;大类行可编辑/删除/设封面,子类行(缩进灰底)仅支持删除。大类封面用作该大类歌单页的头部大图。</p>
       </div>
     </div>
   </div>
@@ -525,7 +525,7 @@
     } catch (e) { alert(e.detail || e.message); }
   }
 
-  // 替换封面
+  // 替换歌曲封面
   function replaceCover(songId) {
     const input = document.createElement("input");
     input.type = "file";
@@ -539,6 +539,25 @@
         await api("/api/admin/songs/" + encodeURIComponent(songId) + "/cover", { method: "POST", body: fd });
         markAuthed();
         loadSongs();
+      } catch (e) { alert(e.detail || e.message); }
+    };
+    input.click();
+  }
+
+  // 设置/替换大类合集封面(用作该大类歌单页的头部大图)
+  function replaceCatCover(catId) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append("cover", file);
+      try {
+        await api("/api/admin/categories/" + encodeURIComponent(catId) + "/cover", { method: "POST", body: fd });
+        markAuthed();
+        loadCategories(); // 内含 renderCatTree,刷新缩略图与按钮文案
       } catch (e) { alert(e.detail || e.message); }
     };
     input.click();
@@ -643,7 +662,7 @@
   function renderCatTree() {
     const tb = document.getElementById("catBody");
     if (!categories.length) {
-      tb.innerHTML = `<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">暂无分类</td></tr>`;
+      tb.innerHTML = `<tr><td colspan="7" class="muted" style="text-align:center;padding:20px">暂无分类</td></tr>`;
       return;
     }
     let html = "";
@@ -651,14 +670,20 @@
       const subs = c.subs || [];
       const foldable = subs.length > 0;                       // 空大类没有可折叠内容
       const folded = foldable && collapsedCats.has(c.id);
+      // 大类封面是后端拼好的完整 URL;未设置时空串 → 占位方块
+      const coverCell = c.cover
+        ? `<img class="cover" src="${c.cover}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover placeholder'}))" />`
+        : `<span class="cover placeholder"></span>`;
       html += `
       <tr class="cat-row${foldable ? " pickable" : ""}"${foldable ? ` data-cattoggle="${c.id}"` : ""}>
         <td><span class="twisty${foldable ? "" : " empty"}">${folded ? "▸" : "▾"}</span>${c.id}</td>
         <td>${c.name}</td>
         <td>${c.icon || "-"}</td>
+        <td>${coverCell}</td>
         <td><span class="badge">子类 ${subs.length}</span></td>
         <td>${c.desc || "-"}</td>
         <td class="actions">
+          <button class="ghost sm" data-catcover="${c.id}">${c.cover ? "换封面" : "设封面"}</button>
           <button class="ghost sm" data-catedit="${c.id}">编辑</button>
           <button class="danger sm" data-catdel="${c.id}">删除</button>
         </td>
@@ -669,6 +694,7 @@
         <td>${s.id}</td>
         <td>└ ${s.name}</td>
         <td>${s.icon || "-"}</td>
+        <td>-</td>
         <td><span class="badge">歌曲 ${subSongCount[s.id] || 0}</span></td>
         <td>${s.desc || "-"}</td>
         <td class="actions"><button class="danger sm" data-subdel="${s.id}">删除</button></td>
@@ -678,6 +704,7 @@
     tb.innerHTML = html;
     tb.querySelectorAll("button[data-catdel]").forEach(b => b.onclick = () => delCat(b.dataset.catdel));
     tb.querySelectorAll("button[data-catedit]").forEach(b => b.onclick = () => openEditCat(b.dataset.catedit));
+    tb.querySelectorAll("button[data-catcover]").forEach(b => b.onclick = () => replaceCatCover(b.dataset.catcover));
     tb.querySelectorAll("button[data-subdel]").forEach(b => b.onclick = () => delSub(b.dataset.subdel));
     // 点整行折叠;点操作按钮时不折叠(靠 closest 排除,避免误触删除)
     tb.querySelectorAll("tr[data-cattoggle]").forEach(tr => {

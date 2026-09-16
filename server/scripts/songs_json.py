@@ -34,8 +34,13 @@ def rebuild(db_path: Path = DEFAULT_DB, out_path: Path = DEFAULT_OUT) -> tuple[i
     out: dict = {}
     for cat in cats:
         cat_id = cat["id"]
-        out[cat_id] = {"_info": {"name": cat["name"], "icon": cat["icon"] or "",
-                                 "desc": cat["desc"] or ""}}
+        info = {"name": cat["name"], "icon": cat["icon"] or "", "desc": cat["desc"] or ""}
+        # 大类封面只在「已设置」时输出:若空值也写(空串或 null),4 个大类的 _info
+        # 都会多出一个键,给每次导出都添上无意义 diff。
+        # 用 .get 而非 cat["cover_path"]:老库尚未补列时本函数仍可运行。
+        if cat.get("cover_path"):
+            info["cover"] = "/static/" + cat["cover_path"]
+        out[cat_id] = {"_info": info}
         for sub in [s for s in subs if s["category_id"] == cat_id]:
             sub_id = sub["id"]
             out[cat_id][sub_id] = {

@@ -72,6 +72,8 @@ def main() -> None:
                     name=info.get("name") or cat_id,
                     icon=info.get("icon", ""),
                     desc=info.get("desc", ""),
+                    # 大类合集封面(可选):与歌曲封面同格式,存相对 storage 根的路径
+                    cover_path=strip_static(info.get("cover", "")) or None,
                     sort_order=cat_order,
                 )
             )

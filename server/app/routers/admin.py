@@ -1,7 +1,8 @@
 """管理路由(写操作),全部依赖 verify_admin_token。
 
-涵盖:歌曲上传/编辑/删除/替换封面,大类与子类的新建/编辑/删除。
+涵盖:歌曲上传/编辑/删除/替换封面,大类与子类的新建/编辑/删除,大类合集封面。
 删除分类前校验「无歌曲」才允许(避免歌曲 category_id 悬空)。
+封面(歌曲/大类)只能经各自的 /cover 上传接口写入 —— 上传名不采信、目录由后端推导。
 """
 from pathlib import Path
 from typing import BinaryIO
@@ -23,7 +24,7 @@ from ..schemas import (
     SubCategoryOut,
 )
 from ..services import storage
-from ..services.meta import counts_by_node, song_to_out, sub_to_out
+from ..services.meta import build_url, counts_by_node, song_to_out, sub_to_out
 
 router = APIRouter(
     prefix="/api/admin",
@@ -45,6 +46,10 @@ COVER_EXTS = {".jpg", ".jpeg", ".png", ".webp"}
 # 上传大小上限(流式写盘边写边计,超限拒绝),防超大请求打爆容器内存
 MAX_AUDIO_BYTES = 100 * 1024 * 1024
 MAX_COVER_BYTES = 5 * 1024 * 1024
+
+# 大类封面的文件名主干。歌曲文件在 library/{category}/{sub_dir}/ 下,大类封面在
+# 上一层的 library/{category}/ 下,层级不同故不会与任何 song_id 冲突。
+CATEGORY_COVER_STEM = "_cover"
 
 
 def _save_upload(file_obj: BinaryIO, dest: Path, max_bytes: int, kind: str) -> None:
@@ -72,6 +77,29 @@ def _song_count_in_sub(db: Session, sub_id: str) -> int:
 
 def _song_count_in_cat(db: Session, cat_id: str) -> int:
     return db.scalar(select(func.count()).where(Song.category_id == cat_id)) or 0
+
+
+def _cat_out(db: Session, c: Category) -> CategoryOut:
+    """单个大类的响应(含其子类与各级计数)。
+
+    create / update / cover 三个写接口共用,避免各写一份组装逻辑而漂移。
+    """
+    subs = db.scalars(
+        select(SubCategory)
+        .where(SubCategory.category_id == c.id)
+        .order_by(SubCategory.sort_order, SubCategory.id)
+    ).all()
+    # 计数一次 GROUP BY 取全量后按需取用,避免逐个子类 COUNT(N+1)
+    sub_counts, _ = counts_by_node(db)
+    return CategoryOut(
+        id=c.id,
+        name=c.name,
+        icon=c.icon,
+        desc=c.desc,
+        cover=build_url(c.cover_path),
+        song_count=sum(sub_counts.get(s.id, 0) for s in subs),
+        subs=[sub_to_out(s, sub_counts.get(s.id, 0)) for s in subs],
+    )
 
 
 # ===== 歌曲 =====
@@ -196,11 +224,12 @@ def create_category(body: CategoryCreate, db: Session = Depends(get_db)) -> Cate
     db.add(c)
     db.commit()
     db.refresh(c)
-    return CategoryOut(id=c.id, name=c.name, icon=c.icon, desc=c.desc, subs=[])
+    return _cat_out(db, c)
 
 
 @router.put("/categories/{cat_id}", response_model=CategoryOut, summary="编辑大类")
 def update_category(cat_id: str, body: CategoryUpdate, db: Session = Depends(get_db)) -> CategoryOut:
+    """仅改元数据。封面不在 CategoryUpdate 里,只能经 /cover 接口写。"""
     c = db.get(Category, cat_id)
     if not c:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "大类不存在")
@@ -208,19 +237,37 @@ def update_category(cat_id: str, body: CategoryUpdate, db: Session = Depends(get
         setattr(c, key, value)
     db.commit()
     db.refresh(c)
-    subs = db.scalars(
-        select(SubCategory).where(SubCategory.category_id == c.id).order_by(SubCategory.sort_order, SubCategory.id)
-    ).all()
-    # 计数一次 GROUP BY 取全量后按需取用,避免逐个子类 COUNT(N+1)
-    sub_counts, _ = counts_by_node(db)
-    return CategoryOut(
-        id=c.id,
-        name=c.name,
-        icon=c.icon,
-        desc=c.desc,
-        song_count=sum(sub_counts.get(s.id, 0) for s in subs),
-        subs=[sub_to_out(s, sub_counts.get(s.id, 0)) for s in subs],
-    )
+    return _cat_out(db, c)
+
+
+@router.post("/categories/{cat_id}/cover", response_model=CategoryOut, summary="替换大类封面")
+def replace_category_cover(
+    cat_id: str,
+    cover: UploadFile = File(...),
+    db: Session = Depends(get_db),
+) -> CategoryOut:
+    """设置/替换大类合集封面(如古诗 tab / 大类歌单头的大图)。
+
+    与歌曲封面同规矩:落盘目录由后端按 cat_id 推导、文件名由后端生成(不采信
+    上传名,防路径穿越),cover_path 只存相对路径。CategoryUpdate 不含 cover
+    字段 —— 封面只能经本接口写入,手工改库会绕过扩展名与体积校验。
+    """
+    c = db.get(Category, cat_id)
+    if not c:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "大类不存在")
+    if not storage.valid_id(cat_id):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "大类 id 含非法字符,无法用于文件路径")
+    cext = _checked_ext(cover.filename, COVER_EXTS, "封面")
+    cover_abs = storage.category_dir(cat_id) / f"{CATEGORY_COVER_STEM}{cext}"
+    old_abs = _abs(c.cover_path) if c.cover_path else None
+    _save_upload(cover.file, cover_abs, MAX_COVER_BYTES, "封面")
+    # 同扩展名时新旧路径相同,旧文件已被覆盖,删了会把刚传的封面删掉
+    if old_abs and old_abs != cover_abs:
+        storage.safe_remove(old_abs)
+    c.cover_path = storage.to_rel(cover_abs)
+    db.commit()
+    db.refresh(c)
+    return _cat_out(db, c)
 
 
 @router.delete("/categories/{cat_id}", summary="删除大类(须无歌曲与子类)")
@@ -232,6 +279,8 @@ def delete_category(cat_id: str, db: Session = Depends(get_db)) -> dict[str, str
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "该大类下仍有歌曲,请先迁移或删除")
     if db.scalar(select(func.count()).where(SubCategory.category_id == cat_id)):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "该大类下仍有子类,请先删除子类")
+    if c.cover_path:  # 大类封面文件不在子类目录下,不随 CASCADE 清理
+        storage.safe_remove(_abs(c.cover_path))
     db.delete(c)
     db.commit()
     return {"deleted": cat_id}
