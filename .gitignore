@@ -55,3 +55,7 @@ __pycache__/
 # 脚本生成的中间产物(server/scripts/import-erge.py 输出的导入映射表)
 import-plan.json
 
+# outputs/ 是封面制作流水线工作区(AI 原图、成品、临时脚本与验收报告,约 50MB),
+# 成品已经管理接口入库到 server/storage/,本地保留、不入库
+outputs/
+
