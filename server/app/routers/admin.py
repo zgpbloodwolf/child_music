@@ -172,9 +172,13 @@ def replace_cover(
     dest_dir = storage.song_dir(song.category_id, song.sub_category_id)
     cext = _checked_ext(cover.filename, COVER_EXTS, "封面")
     cover_abs = dest_dir / f"{song_id}{cext}"
+    old_abs = _abs(song.cover_path) if song.cover_path else None
     _save_upload(cover.file, cover_abs, MAX_COVER_BYTES, "封面")
-    if song.cover_path:  # 旧封面扩展名可能不同,一并删
-        storage.safe_remove(_abs(song.cover_path))
+    # 仅当扩展名变了才需要删旧文件。新旧路径相同时,旧文件已被本次写入覆盖,
+    # 再删就会把刚上传的封面删掉 —— 而「同扩展名替换」恰恰是最常见的用法,
+    # 会留下一个指向空文件的 cover_path(前端 404,且 missing=cover 查不出来)。
+    if old_abs and old_abs != cover_abs:
+        storage.safe_remove(old_abs)
     song.cover_path = storage.to_rel(cover_abs)
     db.commit()
     db.refresh(song)
