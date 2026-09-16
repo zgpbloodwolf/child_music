@@ -55,11 +55,14 @@ def main() -> None:
     ops = {"link": 0, "copy": 0, "skip": 0}
 
     with SessionLocal() as db:
-        # 幂等:清空三表全量重建
+        # 幂等:清空三表全量重建。
+        # 这里**不能 commit**:三个 delete 必须与后面的 insert 同事务。否则一旦重建
+        # 中途失败(见下方 flush 处的 FK 顺序说明),就会留下一个「已清空但没建回」
+        # 的空库 —— 一次运行把曲库清掉,而调用方只看到一个报错。
         db.query(Song).delete()
         db.query(SubCategory).delete()
         db.query(Category).delete()
-        db.commit()
+        db.flush()  # 显式按 Song→SubCategory→Category 顺序执行删除,不依赖 UoW 自行重排
 
         for cat_order, (cat_id, cat_node) in enumerate(raw.items()):
             info = (cat_node or {}).get("_info", {}) or {}
@@ -87,6 +90,11 @@ def main() -> None:
                         sort_order=sub_order,
                     )
                 )
+                # 必须显式 flush:Category / SubCategory / Song 之间只有裸外键列、没有
+                # relationship 关联,SQLAlchemy 的 unit-of-work 推不出「songs 要排在
+                # sub_categories 之后」,实际会把 songs 先批量插入 → 命中 FK 约束。
+                # 空库首次导入必炸(旧版本即如此,且因上面那个 commit 会留下空库)。
+                db.flush()
                 sub_n += 1
                 for song_order, entry in enumerate(sub_node.get("songs", []) or []):
                     audio_rel = strip_static(entry.get("src", ""))
