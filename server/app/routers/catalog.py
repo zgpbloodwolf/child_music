@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from ..deps import get_db
+from ..deps import get_db, require_member_or_admin
 from ..models import Song, SubCategory
 from ..schemas import (
     AuthorOut,
@@ -30,7 +30,9 @@ from ..services.meta import (
     sub_to_out,
 )
 
-router = APIRouter(prefix="/api", tags=["曲库查询"])
+# 整路由强制登录态:曲库元数据不对未登录者开放(/api/auth、/api/version、/api/admin 例外)。
+# 管理页用管理员 token 读曲库维护数据,故同时放行管理员(require_member_or_admin)
+router = APIRouter(prefix="/api", tags=["曲库查询"], dependencies=[Depends(require_member_or_admin)])
 
 
 @router.get("/categories", response_model=list[CategoryOut], summary="完整分类树")

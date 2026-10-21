@@ -1,30 +1,39 @@
 """管理路由(写操作),全部依赖 verify_admin_token。
 
-涵盖:歌曲上传/编辑/删除/替换封面,大类与子类的新建/编辑/删除,大类合集封面。
-删除分类前校验「无歌曲」才允许(避免歌曲 category_id 悬空)。
-封面(歌曲/大类)只能经各自的 /cover 上传接口写入 —— 上传名不采信、目录由后端推导。
+涵盖:歌曲上传/编辑/删除/替换音频/替换与清除封面,大类与子类的新建/编辑/删除,
+大类合集封面。删除分类前校验「无歌曲」才允许(避免歌曲 category_id 悬空)。
+封面与音频文件只能经各自的 /cover、/audio 上传接口写入 —— 上传名不采信、
+目录由后端推导。
 """
 from pathlib import Path
 from typing import BinaryIO
+import secrets
+import uuid
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from ..config import settings
 from ..deps import get_db, require_intranet, verify_admin_token
-from ..models import Category, Song, SubCategory
+from ..models import Category, Favorite, Member, PlayHistory, Song, SubCategory
 from ..schemas import (
     CategoryCreate,
     CategoryOut,
     CategoryUpdate,
+    MemberAdminCreate,
+    MemberAdminOut,
+    MemberOut,
+    MemberPasswordReset,
     SongOut,
     SongUpdate,
     SubCategoryCreate,
     SubCategoryOut,
 )
+from ..security import hash_password
 from ..services import storage
 from ..services.meta import build_url, counts_by_node, song_to_out, sub_to_out
+from .members import check_password, check_username, member_out
 
 router = APIRouter(
     prefix="/api/admin",
@@ -50,6 +59,102 @@ MAX_COVER_BYTES = 5 * 1024 * 1024
 # 大类封面的文件名主干。歌曲文件在 library/{category}/{sub_dir}/ 下,大类封面在
 # 上一层的 library/{category}/ 下,层级不同故不会与任何 song_id 冲突。
 CATEGORY_COVER_STEM = "_cover"
+
+# ===== 成员账号管理 =====
+
+# 自动生成密码的长度与字符集(去掉易混淆的 0/o/1/i/l,便于口口相传)
+GEN_PASSWORD_LEN = 8
+_GEN_ALPHABET = "23456789abcdefghjkmnpqrstuvwxyz"
+
+
+def _gen_password(n: int = GEN_PASSWORD_LEN) -> str:
+    """生成可读随机密码(cryptographically secure,无易混淆字符)。"""
+    return "".join(secrets.choice(_GEN_ALPHABET) for _ in range(n))
+
+
+def _member_admin_out(member: Member, password: str) -> MemberAdminOut:
+    base = member_out(member)
+    return MemberAdminOut(
+        id=base.id,
+        name=base.name,
+        username=base.username,
+        avatar=base.avatar,
+        created_at=base.created_at,
+        password=password,
+    )
+
+
+@router.get("/members", response_model=list[MemberOut], summary="成员账号列表")
+def admin_list_members(db: Session = Depends(get_db)) -> list[MemberOut]:
+    rows = db.scalars(select(Member).order_by(Member.created_at, Member.id)).all()
+    return [member_out(m) for m in rows]
+
+
+@router.post(
+    "/members",
+    response_model=MemberAdminOut,
+    status_code=status.HTTP_201_CREATED,
+    summary="创建成员账号(密码缺省时自动生成)",
+)
+def admin_create_member(body: MemberAdminCreate, db: Session = Depends(get_db)) -> MemberAdminOut:
+    """开账号并下发凭证:响应里的明文密码只出现这一次,服务端只存散列。
+
+    password 不传时自动生成 8 位无易混淆字符的密码,由管理员转交给使用者。
+    """
+    username = check_username(body.username)
+    if db.scalar(select(Member).where(Member.username == username)):
+        raise HTTPException(status.HTTP_409_CONFLICT, "该账号已被使用")
+    name = body.name.strip()
+    if not name:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "昵称不能为空")
+    password = check_password(body.password) if body.password is not None else _gen_password()
+
+    member = Member(
+        id=uuid.uuid4().hex,
+        name=name[:64],
+        username=username,
+        password_hash=hash_password(password),
+        avatar=body.avatar.strip()[:16],
+    )
+    db.add(member)
+    db.commit()
+    db.refresh(member)
+    return _member_admin_out(member, password)
+
+
+@router.put(
+    "/members/{member_id}/password",
+    response_model=MemberAdminOut,
+    summary="重置账号密码(缺省时自动生成)",
+)
+def admin_reset_password(
+    member_id: str, body: MemberPasswordReset, db: Session = Depends(get_db)
+) -> MemberAdminOut:
+    """重置后旧密码立即失效;新明文密码随本响应下发一次。"""
+    member = db.get(Member, member_id)
+    if not member:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "成员不存在")
+    password = check_password(body.password) if body.password is not None else _gen_password()
+    member.password_hash = hash_password(password)
+    db.commit()
+    db.refresh(member)
+    return _member_admin_out(member, password)
+
+
+@router.delete(
+    "/members/{member_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="删除成员账号(其收藏/历史级联删除)",
+)
+def admin_delete_member(member_id: str, db: Session = Depends(get_db)) -> None:
+    member = db.get(Member, member_id)
+    if not member:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "成员不存在")
+    # 与 /api/members/{id} 同口径:级联由外键 ON DELETE CASCADE 完成,此处显式删兜底
+    db.execute(delete(Favorite).where(Favorite.member_id == member_id))
+    db.execute(delete(PlayHistory).where(PlayHistory.member_id == member_id))
+    db.delete(member)
+    db.commit()
 
 
 def _save_upload(file_obj: BinaryIO, dest: Path, max_bytes: int, kind: str) -> None:
@@ -171,6 +276,60 @@ def update_song(song_id: str, body: SongUpdate, db: Session = Depends(get_db)) -
     for key, value in data.items():
         setattr(song, key, value)
     db.commit()
+    db.refresh(song)
+    return song_to_out(song)
+
+
+@router.post("/songs/{song_id}/audio", response_model=SongOut, summary="替换音频")
+def replace_audio(
+    song_id: str,
+    audio: UploadFile = File(..., description="新音频文件"),
+    db: Session = Depends(get_db),
+) -> SongOut:
+    """替换音频文件:落盘新文件、重读时长、删除旧文件。
+
+    文件名策略:优先 {id}{ext};若恰好是当前音频路径(同扩展名替换,最常见
+    情形)或已被占用,则改用 {id}-2{ext}、{id}-3{ext}… 找一个未占用的名字。
+    之所以不原地覆盖:音频响应带 immutable 长缓存(见 main.py),同 URL 换
+    内容会让老客户端最长 7 天拿不到新音频;换文件名即换 URL,缓存自然失效。
+    旧文件名释放后,下次替换可复用(与 -2 交替),不会无限增长。
+
+    注:App 端 detail 有会话级 LRU 缓存,正在使用的客户端可能仍指向已删旧文件
+    (与删除歌曲的行为一致),重启后恢复。
+    """
+    song = db.get(Song, song_id)
+    if not song:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "歌曲不存在")
+    dest_dir = storage.song_dir(song.category_id, song.sub_category_id)
+    ext = _checked_ext(audio.filename, AUDIO_EXTS, "音频")
+    old_abs = _abs(song.audio_path)
+    cand = dest_dir / f"{song_id}{ext}"
+    n = 2
+    while cand == old_abs or cand.exists():
+        cand = dest_dir / f"{song_id}-{n}{ext}"
+        n += 1
+    _save_upload(audio.file, cand, MAX_AUDIO_BYTES, "音频")
+    song.audio_path = storage.to_rel(cand)
+    song.duration = storage.read_duration(cand)
+    db.commit()
+    # 先提交 DB 再删旧文件:commit 失败时仅多一个孤儿新文件(可接受);
+    # 反过来会出现 DB 指向已删文件、客户端 404 的更糟状态
+    if old_abs and old_abs != cand:
+        storage.safe_remove(old_abs)
+    db.refresh(song)
+    return song_to_out(song)
+
+
+@router.delete("/songs/{song_id}/cover", response_model=SongOut, summary="清除封面")
+def clear_cover(song_id: str, db: Session = Depends(get_db)) -> SongOut:
+    """删除封面文件并清空 cover_path(无封面时为空操作)。"""
+    song = db.get(Song, song_id)
+    if not song:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "歌曲不存在")
+    if song.cover_path:
+        storage.safe_remove(_abs(song.cover_path))
+        song.cover_path = None
+        db.commit()
     db.refresh(song)
     return song_to_out(song)
 

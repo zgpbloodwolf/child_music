@@ -1,9 +1,12 @@
-"""ORM 模型:categories(大类)/ sub_categories(子类)/ songs(歌曲)。
+"""ORM 模型:categories(大类)/ sub_categories(子类)/ songs(歌曲)
++ members(成员)/ favorites(收藏)/ play_history(播放历史)。
 
 字段对齐前端 types/song.ts、types/category.ts;audio_path/cover_path 仅存
 相对 storage 根的路径,返回时由 services/meta.py 拼成完整公网 URL。
 """
-from sqlalchemy import Column, Float, ForeignKey, Integer, String, Text
+from datetime import datetime
+
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -78,3 +81,57 @@ class Song(Base):
     cover_path = Column(String(512), nullable=True)  # 相对 storage 根;文件可能不存在
     original_path = Column(Text, nullable=True)  # 原始来源路径(溯源用)
     sort_order = Column(Integer, default=0, nullable=False)
+
+
+class Member(Base):
+    """成员账号:用户名 + 密码(PBKDF2 散列),登录后才能访问 /api 与曲库。
+
+    - username 全局唯一(大小写不敏感,统一存小写);password_hash 为空表示
+      旧版「无密码成员」(历史数据),不能登录,由管理端补设或删除;
+    - 数据隔离(收藏/播放历史)仍按 member_id,即登录账号本身;
+    - 媒体文件(/library)另有共享资源令牌 ACCESS_TOKEN 分层保护。
+    """
+
+    __tablename__ = "members"
+
+    id = Column(String(32), primary_key=True)  # uuid4().hex
+    name = Column(String(64), nullable=False)
+    # 登录账号(小写;None = 未设置密码的旧成员)
+    username = Column(String(64), nullable=True, unique=True, index=True)
+    # 格式:pbkdf2_sha256$<iterations>$<salt_hex>$<hash_hex>(见 app/security.py)
+    password_hash = Column(String(256), nullable=True)
+    # 头像为 emoji 字符(展示用,避免引入图片文件与裁切链路)
+    avatar = Column(String(16), default="", nullable=False)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+
+
+class Favorite(Base):
+    """收藏:member_id + song_id 联合主键;position 保留客户端提交的顺序。
+
+    同步策略是「客户端全量、服务端照单全收」的 PUT 替换(见 routers/members.py),
+    服务端不做增量事件,position 即客户端列表顺序。
+    """
+
+    __tablename__ = "favorites"
+
+    member_id = Column(
+        String(32), ForeignKey("members.id", ondelete="CASCADE"), primary_key=True
+    )
+    song_id = Column(
+        String(64), ForeignKey("songs.id", ondelete="CASCADE"), primary_key=True
+    )
+    position = Column(Integer, default=0, nullable=False)
+
+
+class PlayHistory(Base):
+    """播放历史:按 played_at 倒序;条数上限由服务端截断(客户端本就只留 20 条)。"""
+
+    __tablename__ = "play_history"
+
+    member_id = Column(
+        String(32), ForeignKey("members.id", ondelete="CASCADE"), primary_key=True
+    )
+    song_id = Column(
+        String(64), ForeignKey("songs.id", ondelete="CASCADE"), primary_key=True
+    )
+    played_at = Column(DateTime, default=datetime.now, nullable=False)

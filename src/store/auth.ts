@@ -1,0 +1,60 @@
+/**
+ * 登录态 store:登录 / 启动校验 / 登出。
+ *
+ * - 登录成功 = 拿到会话令牌 + 确定当前成员(数据隔离身份);
+ * - 账号一律由管理员在后台创建(或已登录用户在 App 内添加),登录页不开放注册;
+ * - 启动校验(GET /api/auth/me)确认令牌仍有效、账号未被删;
+ * - 切换账号 = 退出登录 → 登录页用另一账号登录(不做免密切换)。
+ */
+import { defineStore } from 'pinia';
+import { request } from '@/utils/request';
+import { clearAuthToken, getAuthToken, setAuthToken } from '@/utils/authToken';
+import { useMemberStore } from '@/store/member';
+import { currentMember, MEMBER_STORAGE_KEY, type MemberInfo } from '@/store/memberPrefs';
+
+/** POST /api/auth/login 响应 */
+interface LoginResp {
+  token: string;
+  member: MemberInfo;
+}
+
+export const useAuthStore = defineStore('auth', () => {
+  /** 账号密码登录:存令牌 → 确定当前成员(收藏/历史随账号加载) */
+  async function login(username: string, password: string): Promise<void> {
+    const resp = await request<LoginResp>({
+      url: '/api/auth/login',
+      method: 'POST',
+      data: { username, password },
+    });
+    setAuthToken(resp.token);
+    await useMemberStore().select(resp.member);
+  }
+
+  /**
+   * 启动校验:本地有令牌时回读当前账号,确认令牌有效、账号未被删。
+   * 返回是否有效;失败(401 等)由 request.ts 统一清令牌并踢回登录页,
+   * 调用方(App.vue)据返回值决定是否继续预热等启动初始化。
+   */
+  async function ensureValid(): Promise<boolean> {
+    if (!getAuthToken()) return false;
+    try {
+      const me = await request<MemberInfo>({ url: '/api/auth/me' });
+      currentMember.value = me;
+      uni.setStorageSync(MEMBER_STORAGE_KEY, me);
+      return true;
+    } catch {
+      // 令牌无效时 request.ts 已处理跳转;网络抖动则保持本地现状
+      return false;
+    }
+  }
+
+  /** 登出:清令牌与本地身份,回到未选成员状态,跳转登录页 */
+  function logout(): void {
+    clearAuthToken();
+    void useMemberStore().select(null).finally(() => {
+      uni.reLaunch({ url: '/pages/login/index' });
+    });
+  }
+
+  return { login, ensureValid, logout };
+});

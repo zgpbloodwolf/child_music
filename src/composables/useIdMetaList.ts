@@ -33,12 +33,15 @@ function loadIds(key: string): string[] {
 }
 
 /**
- * @param storageKey 本地存储 key(ids 持久化位置)
+ * @param storageKey 本地存储 key(ids 持久化位置;成员切换可经 resetKey 更换)
  * @returns ids:id 列表(含义由调用方决定:最新在前 / 收藏顺序);
- *          songs:ids 对应的元数据列表(与 ids 同步同序);persist:落盘
+ *          songs:ids 对应的元数据列表(与 ids 同步同序);persist:落盘;
+ *          resetKey:切换存储 key(成员切换时由各 store 调用)
  */
 export function useIdMetaList(storageKey: string) {
-  const ids = ref<string[]>(loadIds(storageKey));
+  /** 当前生效的存储 key(成员切换时经 resetKey 更新,persist 跟随此 key) */
+  let key = storageKey;
+  const ids = ref<string[]>(loadIds(key));
   const songs = ref<SongMeta[]>([]);
 
   /** 按 ids 顺序组装 songs;仅对缓存缺失的 id 发请求(增量)。 */
@@ -53,13 +56,24 @@ export function useIdMetaList(storageKey: string) {
       .filter((s): s is SongMeta => Boolean(s));
   }
 
-  // ids 变化时按需补全缓存并重组 songs;immediate 保证初始化即加载
-  watch(ids, () => { void refresh(); }, { immediate: true, deep: true });
+  // ids 变化时按需补全缓存并重组 songs;immediate 保证初始化即加载。
+  // 失败静默(未登录被 request 层拦截 / 网络抖动),避免未处理的 rejection
+  watch(ids, () => { void refresh().catch(() => {}); }, { immediate: true, deep: true });
 
   /** 持久化 ids 到本地存储(变更动作后由调用方调用) */
   function persist(): void {
-    uni.setStorageSync(storageKey, ids.value);
+    uni.setStorageSync(key, ids.value);
   }
 
-  return { ids, songs, refresh, persist };
+  /**
+   * 切换存储 key(成员切换):从新 key 重读 ids 并触发元数据按需补全。
+   * 写入(persist)从此跟随新 key —— 每个成员的本地缓存彼此独立。
+   */
+  function resetKey(nextKey: string): void {
+    if (nextKey === key) return;
+    key = nextKey;
+    ids.value = loadIds(key);
+  }
+
+  return { ids, songs, refresh, persist, resetKey };
 }

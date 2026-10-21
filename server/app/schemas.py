@@ -5,8 +5,9 @@ Category/SubCategory);FastAPI 默认按 alias 输出 JSON。管理请求模型�
 使用,保留 snake_case 属性名。
 """
 from typing import Generic, TypeVar
+from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 T = TypeVar("T")
@@ -60,6 +61,9 @@ class SongOut(SongMetaOut):
 
     src: str  # 完整公网 URL
     lyric: str | None = None
+    # 以下两字段主要供管理页编辑回填(App 端契约未含,多余字段前端自动忽略)
+    sort_order: int = 0  # 同类内排序(小的在前) → sortOrder
+    original_path: str | None = None  # 原始来源路径(溯源用) → originalPath
 
 
 class SubCategoryOut(CamelModel):
@@ -110,7 +114,7 @@ class PageResult(CamelModel, Generic[T]):
 
 
 class SongUpdate(BaseModel):
-    """编辑歌曲元数据(全部可选)。"""
+    """编辑歌曲元数据(全部可选;文件类字段走各自的 /audio、/cover 接口)。"""
 
     name: str | None = None
     artist: str | None = None
@@ -118,6 +122,8 @@ class SongUpdate(BaseModel):
     category_id: str | None = None
     sub_category_id: str | None = None
     lyric: str | None = None
+    sort_order: int | None = None
+    original_path: str | None = None
 
 
 class CategoryCreate(BaseModel):
@@ -139,3 +145,74 @@ class SubCategoryCreate(BaseModel):
     name: str
     icon: str | None = None
     desc: str | None = None
+
+
+# ===== 成员 / 收藏 / 播放历史 =====
+
+
+class MemberOut(CamelModel):
+    """成员/账号信息(对齐前端 MemberInfo 契约)。不含密码散列。"""
+
+    id: str
+    name: str
+    username: str = ""  # 登录账号(小写;旧成员可能为空串)
+    avatar: str = ""
+    created_at: datetime  # → createdAt
+
+
+class MemberCreate(BaseModel):
+    """创建成员账号(内部模型;username 统一小写,密码明文仅出现在请求里)。"""
+
+    username: str
+    password: str
+    name: str
+    avatar: str = ""
+
+
+class MemberAdminCreate(BaseModel):
+    """后台创建账号(密码缺省时由后端自动生成,并随响应明文返回一次)。"""
+
+    username: str
+    name: str
+    password: str | None = None
+    avatar: str = ""
+
+
+class MemberPasswordReset(BaseModel):
+    """后台重置密码(缺省时自动生成)。"""
+
+    password: str | None = None
+
+
+class MemberAdminOut(CamelModel):
+    """后台账号创建/重置响应:在 MemberOut 字段上附本次下发的明文密码。
+
+    明文密码只在此响应里出现一次(服务端只存散列),由管理员转交给使用者。
+    """
+
+    id: str
+    name: str
+    username: str = ""
+    avatar: str = ""
+    created_at: datetime  # → createdAt
+    password: str
+
+
+class LoginIn(BaseModel):
+    """登录请求。"""
+
+    username: str
+    password: str
+
+
+class LoginOut(CamelModel):
+    """登录响应:会话令牌 + 账号信息。"""
+
+    token: str
+    member: MemberOut
+
+
+class SongIdsIn(CamelModel):
+    """收藏/历史全量同步请求体:客户端以完整 id 列表为数据源,整表回写。"""
+
+    song_ids: list[str] = Field(default_factory=list)  # → songIds

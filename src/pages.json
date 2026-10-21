@@ -26,6 +26,19 @@
 			}
 		},
 		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/member/index",
+			"style": {
+				"navigationBarTitleText": "成员账号"
+			}
+		},
+		{
 			"path": "pages/player/index",
 			"style": {
 				"navigationStyle": "custom",

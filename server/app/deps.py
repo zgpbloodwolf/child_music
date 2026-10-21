@@ -1,17 +1,47 @@
-"""FastAPI 依赖:数据库会话(get_db)、管理接口鉴权与内网访问控制。"""
+"""FastAPI 依赖:数据库会话(get_db)、登录态鉴权、管理接口鉴权与内网访问控制。"""
 import secrets
 from ipaddress import AddressValueError, ip_address
 
-from fastapi import Header, HTTPException, Request, status
+from fastapi import Depends, Header, HTTPException, Request, status
+from sqlalchemy.orm import Session
 
 from .config import settings
+from .models import Member
+from .security import parse_token
 
 # 复用 database.get_db 作为公开依赖(避免循环,直接 re-export)
 from .database import get_db  # noqa: F401
 
 
-def verify_admin_token(authorization: str = Header(default="", description="Bearer <ADMIN_TOKEN>")) -> None:
-    """管理接口鉴权:校验 Authorization: Bearer <token>。
+def optional_member(
+    x_auth_token: str = Header(default="", alias="X-Auth-Token"),
+    db: Session = Depends(get_db),
+):
+    """从 X-Auth-Token 解析登录态,返回 Member;未登录/令牌无效/账号已删 → None。
+
+    供「未登录也放行」的条件接口(如首个账号注册)使用;强制登录的接口
+    请用 require_member。
+    """
+    if not x_auth_token:
+        return None
+    member_id = parse_token(x_auth_token)
+    if not member_id:
+        return None
+    # 账号被其他端删除后,旧令牌即刻失效(签名虽对,人已不在)
+    return db.get(Member, member_id)
+
+
+def require_member(member=Depends(optional_member)):
+    """强制登录依赖:任何 /api 业务路由挂它即可,未登录统一 401。"""
+    if member is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="未登录或登录已过期"
+        )
+    return member
+
+
+def _admin_token_ok(authorization: str) -> bool:
+    """Authorization 头是否为有效的管理员 Bearer token。
 
     用 secrets.compare_digest 防时序攻击;token 存 .env,传输加密由 cpolar HTTPS 保障。
     未配置默认 token(change-me)时拒绝,避免误上线裸奔;
@@ -19,12 +49,33 @@ def verify_admin_token(authorization: str = Header(default="", description="Bear
     空串会导致 "Bearer "(空 token)通过校验)。
     """
     expected = f"Bearer {settings.admin_token}"
-    if (
-        not settings.admin_token
-        or settings.admin_token.startswith("change-me")
-        or not secrets.compare_digest(authorization or "", expected)
-    ):
+    return bool(
+        settings.admin_token
+        and not settings.admin_token.startswith("change-me")
+        and secrets.compare_digest(authorization or "", expected)
+    )
+
+
+def verify_admin_token(authorization: str = Header(default="", description="Bearer <ADMIN_TOKEN>")) -> None:
+    """管理接口鉴权:校验 Authorization: Bearer <token>(规则见 _admin_token_ok)。"""
+    if not _admin_token_ok(authorization):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="未授权:token 无效")
+
+
+def require_member_or_admin(
+    member=Depends(optional_member),
+    authorization: str = Header(default=""),
+):
+    """会员登录 或 管理员 token 二选一放行(曲库元数据读取用)。
+
+    管理页用管理员 Bearer token 维护曲库,但管理员不是会员、没有 X-Auth-Token,
+    若只挂 require_member 会把管理页挡在 /api/categories、/api/songs 之外。
+    挂在 router dependencies 上,返回值不被使用(各端点不依赖具体身份)。
+    """
+    if member is None and not _admin_token_ok(authorization):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="未登录或登录已过期"
+        )
 
 
 def _trusted_ip(ip_str: str) -> bool:

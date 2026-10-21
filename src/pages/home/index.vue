@@ -8,6 +8,7 @@ import SongItem from '@/components/SongItem/SongItem.vue';
 import MiniPlayer from '@/components/MiniPlayer/MiniPlayer.vue';
 import CoverImage from '@/components/CoverImage/CoverImage.vue';
 import CategoryPanel from '@/components/CategoryPanel/CategoryPanel.vue';
+import { RequestError } from '@/utils/request';
 import type { SongMeta } from '@/types/song';
 
 /**
@@ -43,6 +44,8 @@ onMounted(async () => {
       loadRecommend(cats[0].id);
     }
   } catch (err) {
+    // 401 = 未登录/令牌失效,request 层已统一踢回登录页,此处不再弹提示
+    if (err instanceof RequestError && err.statusCode === 401) return;
     console.warn('加载分类失败:', err);
     uni.showToast({ title: '分类加载失败,请检查网络', icon: 'none' });
   }

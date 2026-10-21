@@ -20,6 +20,14 @@ resource 的职责是**忠实保管原始数据**,不是"整理好的曲库":
 
 直接把新资源丢进来(压缩包请先解压)。按来源建个子目录便于自己区分也行,不建直接堆也行。**不需要**手动重命名 / 分类 / 去重 —— 那是 AI 整理步骤的事。
 
+### 子目录
+
+| 子目录 | 内容 | 说明 |
+| --- | --- | --- |
+| (根) | 原始音频源 | 约 727MB / 240 个文件,来自各网络合集 |
+| `song-covers-poetry/` | 古诗封面 **AI 生成母带**(PNG 1024²) | 299 张 / 533MB。AI 原图**不可复现**(同 prompt 再跑出的是另一张),所以母带必须留;`INDEX.json` 记 `song_id / 桶 / prompt / 归档文件名` |
+| `song-covers-poetry/INDEX.json` | 母带索引 | 唯一入库文件;PNG 本身不入库 |
+
 ## 资源如何进入 App(当前已落地的数据流)
 
 ```
@@ -52,10 +60,10 @@ App  (player / 各页面走 Repository 接口 = ApiCatalogRepository)
 
 | 层 | 位置 | 是否入库 | 维护方式 |
 | --- | --- | --- | --- |
-| **raw 档案层** | `resource/`(本目录) | 否,仅本 README | 只增、不改、不删;现有约 727MB / 240 个文件 |
+| **raw 档案层** | `resource/`(本目录) | 否,仅本 README 与 `song-covers-poetry/INDEX.json` | 只增、不改、不删;音频约 727MB / 240 个文件,封面母带 533MB / 299 张 |
 | **源数据** | `data/songs.json` | 是 | AI 整理产出,可人工微调;`originalPath` 回指 raw |
 | **后端库** | `server/data/music.db` | 否 | 迁移脚本全量重建;只存相对 storage 根的路径(如 `library/children/classic/cn002.mp3`) |
-| **分发资源** | `server/storage/library/{大类}/{子类}/` | 否 | 音频 `{id}.mp3`(现有 1119 个);封面 `{id}{ext}`,可缺,缺失时前端用色块占位 |
+| **分发资源** | `server/storage/library/{大类}/{子类}/` | 否 | 音频 `{id}.mp3`(现有 1119 个);封面 `{id}.jpg`(诗歌已 320/320,儿歌待补),缺失时前端用色块占位 |
 | **App 包** | 无曲库资源 | — | 元数据与音频全部在线获取,包体积不随曲库增长 |
 
 ## 演进路线(元数据 + 音频两条独立线)

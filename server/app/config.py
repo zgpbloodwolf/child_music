@@ -38,6 +38,17 @@ class Settings(BaseSettings):
     # 管理接口 token
     admin_token: str = "change-me-to-a-strong-random-string"
 
+    # 登录会话令牌的 HMAC 密钥(见 app/security.py)。留空回退用 ADMIN_TOKEN;
+    # 生产建议单独设一个强随机串,避免与管理 token 生命周期耦合。
+    auth_secret: str = ""
+
+    # 资源访问令牌:保护 /library 静态资源(音频/封面/APK)不被公网陌生人白嫖。
+    # 留空(默认)不启用 —— 保持旧行为,纯内网使用可不开;
+    # 启用后 /library/* 必须带 ?token=<ACCESS_TOKEN> 或 X-Access-Token 头,
+    # 且接口下发的 src/cover URL 由后端自动拼上 token(build_url),前端零改动。
+    # 注意:APP_DOWNLOAD_URL 若指向 /library/apk/*,需自行在 URL 里追加 ?token=。
+    access_token: str = ""
+
     # 管理页(/admin)与管理写接口(/api/admin/*)的内网访问白名单。
     # 逗号分隔的 CIDR/IP,默认放行全部私网段 + 回环;公网来源一律 403。
     # 额外放行网段(如办公网公网出口、VPN 段)在此追加。

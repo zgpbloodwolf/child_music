@@ -2,24 +2,42 @@
 import { storeToRefs } from 'pinia';
 import { useLibraryStore } from '@/store/library';
 import { usePlayerStore } from '@/store/player';
+import { currentMember } from '@/store/memberPrefs';
 import SongItem from '@/components/SongItem/SongItem.vue';
 import MiniPlayer from '@/components/MiniPlayer/MiniPlayer.vue';
 import type { SongMeta } from '@/types/song';
 import { checkAppUpdateManual } from '@/utils/appUpdate';
 
-/** 我的页:展示「我喜欢的音乐」(本地持久化收藏) */
+/** 我的页:展示「我喜欢的音乐」(按登录账号隔离;云端同步) */
 const library = useLibraryStore();
 const player = usePlayerStore();
 const { likedSongs } = storeToRefs(library);
+// 当前登录账号(登录后必有)
+const member = currentMember;
 
 /** 点击歌曲:以收藏列表为队列播放 */
 function play(song: SongMeta) {
   player.playSong(song.id, likedSongs.value.map((s) => s.id));
 }
+
+/** 前往成员账号管理页 */
+function goMember() {
+  uni.navigateTo({ url: '/pages/member/index' });
+}
 </script>
 
 <template>
   <view class="page">
+    <view class="member-entry" @click="goMember">
+      <text class="member-avatar">{{ member?.avatar || '👤' }}</text>
+      <view class="member-text">
+        <text class="member-name">{{ member?.name || '未登录' }}</text>
+        <text v-if="member?.username" class="member-account">账号:{{ member.username }}</text>
+      </view>
+      <text class="member-sub">账号管理</text>
+      <text class="update-arrow">›</text>
+    </view>
+
     <view class="header">
       <text class="title">我喜欢的</text>
       <text class="count">{{ likedSongs.length }} 首</text>
@@ -52,6 +70,45 @@ function play(song: SongMeta) {
 <style scoped lang="scss">
 .page {
   min-height: 100vh;
+}
+.member-entry {
+  margin: 24rpx 16rpx 0;
+  padding: 24rpx;
+  background: $bg-card;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: $shadow-card;
+
+  &:active {
+    background: $uni-bg-color-hover;
+  }
+}
+.member-avatar {
+  font-size: 44rpx;
+  width: 72rpx;
+  text-align: center;
+}
+.member-text {
+  margin-left: 16rpx;
+  display: flex;
+  flex-direction: column;
+}
+.member-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: $text-main;
+}
+.member-account {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: $text-disable;
+}
+.member-sub {
+  margin-left: auto;
+  margin-right: 12rpx;
+  font-size: 22rpx;
+  color: $text-disable;
 }
 .header {
   display: flex;

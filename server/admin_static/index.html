@@ -62,6 +62,12 @@
     .pager input { width: 64px; text-align: center; padding: 5px 6px; }
     .pager select { width: auto; padding: 5px 6px; }
     button:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
+    /* 编辑歌曲弹窗:分区布局 */
+    .modal.wide { width: 680px; }
+    .sec-title { font-size: 13px; color: #666; font-weight: 600; margin: 16px 0 8px; border-bottom: 1px dashed #e5e5e5; padding-bottom: 4px; }
+    .media-box { display: flex; align-items: center; gap: 12px; }
+    .media-box .cover { width: 56px; height: 56px; flex-shrink: 0; }
+    .media-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
   </style>
 </head>
 <body>
@@ -87,6 +93,7 @@
       <div class="tab active" data-pane="songs">歌曲管理</div>
       <div class="tab" data-pane="upload">上传歌曲</div>
       <div class="tab" data-pane="cats">分类管理</div>
+      <div class="tab" data-pane="members">账号管理</div>
     </div>
 
     <!-- 歌曲管理 -->
@@ -222,12 +229,59 @@
         <p class="muted" style="margin-top:8px">点击大类行(或 id 前的三角)可收起/展开其子类;大类行可编辑/删除/设封面,子类行(缩进灰底)仅支持删除。大类封面用作该大类歌单页的头部大图。</p>
       </div>
     </div>
+
+    <!-- 账号管理(成员即登录账号;登录页不开放注册)-->
+    <div id="pane-members" class="pane">
+      <div class="card">
+        <h2>新建账号</h2>
+        <div class="row3">
+          <div>
+            <label>登录账号(必填,2-24 位字母/数字/下划线/中文)</label>
+            <input id="memUser" placeholder="如 kid1" />
+          </div>
+          <div>
+            <label>昵称(必填,App 内显示)</label>
+            <input id="memName" placeholder="如 老大" />
+          </div>
+          <div>
+            <label>头像(可选,一个 emoji)</label>
+            <input id="memAvatar" placeholder="如 ⭐" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>初始密码(留空则自动生成 8 位无易混淆字符密码)</label>
+            <input id="memPass" placeholder="留空自动生成" autocomplete="off" />
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:8px">
+            <button id="addMemBtn">创建账号</button>
+            <button class="ghost" id="reloadMemBtn">刷新列表</button>
+          </div>
+        </div>
+        <div id="memMsg" class="msg"></div>
+        <div id="credBox" style="display:none;margin-top:10px;padding:10px 12px;background:#fff6ee;border:1px dashed #ff8c42;border-radius:6px;font-size:14px">
+          请把下面的账号密码转交给使用者(密码只显示这一次,服务端只存散列):
+          <div style="margin-top:6px"><b id="credText"></b> <button class="ghost sm" id="copyCredBtn" style="margin-left:8px">复制</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>账号列表<span class="muted" id="memCount" style="float:right;font-weight:normal"></span></h2>
+        <table>
+          <thead><tr><th>昵称</th><th>登录账号</th><th>头像</th><th>创建时间</th><th>操作</th></tr></thead>
+          <tbody id="memBody"></tbody>
+        </table>
+        <p class="muted" style="margin-top:8px">重置密码立即生效(旧密码失效),新密码同样只显示一次;删除账号会连同其收藏与播放记录一并删除。成员也可在 App 内登录后自行互加账号(成员页)。</p>
+      </div>
+    </div>
   </div>
 
-  <!-- 编辑歌曲弹窗 -->
+  <!-- 编辑歌曲弹窗(分区:基本信息 / 封面与音频 / 歌词)-->
   <div id="songModal" class="modal-mask">
-    <div class="modal">
+    <div class="modal wide">
       <h3>编辑歌曲 <span id="editIdLabel" class="muted"></span></h3>
+
+      <div class="sec-title">基本信息(点「保存」生效)</div>
       <div class="row3">
         <div><label>歌名</label><input id="editName" /></div>
         <div><label>作者</label><input id="editArtist" /></div>
@@ -237,8 +291,34 @@
         <div><label>大类</label><select id="editCategory"></select></div>
         <div><label>子类</label><select id="editSub"></select></div>
       </div>
-      <label>歌词(lrc)</label>
-      <textarea id="editLyric" style="min-height:90px"></textarea>
+      <div class="row">
+        <div><label>排序值(同类内小的在前,默认 0)</label><input id="editSort" type="number" step="1" /></div>
+        <div><label>原始来源路径(溯源用,可选)</label><input id="editOrigin" placeholder="如 D:\music\xxx.mp3" /></div>
+      </div>
+
+      <div class="sec-title">封面与音频(选文件后立即上传生效,无需点「保存」)</div>
+      <div class="row">
+        <div class="media-box">
+          <span id="editCoverBox"></span>
+          <div class="media-actions">
+            <button class="ghost sm" id="editCoverBtn">更换封面</button>
+            <button class="ghost sm" id="editCoverClearBtn">清除封面</button>
+          </div>
+        </div>
+        <div class="media-box">
+          <div style="flex:1">
+            <p class="muted" id="editAudioInfo" style="margin:0 0 8px">-</p>
+            <button class="ghost sm" id="editAudioBtn">替换音频</button>
+          </div>
+        </div>
+      </div>
+      <p class="muted" style="margin:6px 0 0">替换音频会生成新文件地址并自动重读时长(绕开客户端音频长缓存);封面替换同理即时生效。</p>
+
+      <div class="sec-title">歌词(lrc,点「保存」生效)</div>
+      <div style="margin-bottom:6px"><button class="ghost sm" id="importLrcBtn">导入 .lrc 文件</button></div>
+      <textarea id="editLyric" style="min-height:110px"></textarea>
+
+      <div id="editMsg" class="msg"></div>
       <div class="foot">
         <button class="ghost" id="editCancel">取消</button>
         <button id="editSave">保存</button>
@@ -309,6 +389,8 @@
       document.querySelectorAll(".pane").forEach(x => x.classList.remove("active"));
       t.classList.add("active");
       document.getElementById("pane-" + t.dataset.pane).classList.add("active");
+      // 账号列表每次进入页签都拉一次(其他端可能增删过)
+      if (t.dataset.pane === "members") loadMembers().catch(e => alert("加载账号失败:" + (e.detail || e.message)));
     };
   });
 
@@ -323,8 +405,8 @@
   }
 
   async function loadCategories() {
-    const res = await fetch(BASE + "/api/categories");
-    categories = await res.json();
+    // 曲库接口需登录态(会员或管理员),走 api() 带管理员 token
+    categories = await api("/api/categories");
     fillCategorySelects();
     renderCatTree();
   }
@@ -392,8 +474,7 @@
     if (missing) params.set("missing", missing); // 筛「资料缺失」:补歌词/补封面用
     if (sub) params.set("sub", sub);
     else if (cat) params.set("category", cat);
-    const res = await fetch(BASE + "/api/songs?" + params.toString());
-    const data = await res.json();
+    const data = await api("/api/songs?" + params.toString());
     const items = data.items || data; // 兼容裸数组
     const total = data.total !== undefined ? data.total : items.length;
     totalPages = Math.max(1, Math.ceil(total / size));
@@ -424,9 +505,8 @@
 
   // 各子类歌曲数:分页后列表只有当页数据,单独全量拉元数据推算
   async function loadSubCounts() {
-    const res = await fetch(BASE + "/api/songs");
-    const list = await res.json();
-    const items = list.items || list;
+    const list = await api("/api/songs");
+    const items = Array.isArray(list) ? list : (list.items || []);
     subSongCount = {};
     items.forEach(s => { subSongCount[s.subCategory] = (subSongCount[s.subCategory] || 0) + 1; });
     renderCatTree(); // 刷新子类歌曲数
@@ -458,16 +538,14 @@
         <td><button class="ghost sm" data-preview="${s.id}">试听</button></td>
         <td class="actions">
           <button class="ghost sm" data-edit="${s.id}">编辑</button>
-          <button class="ghost sm" data-cover="${s.id}">换封面</button>
           <button class="danger sm" data-del="${s.id}">删除</button>
         </td>
       </tr>`;
     }).join("");
-    // 绑定操作
+    // 绑定操作(换封面已并入编辑弹窗,不再单列入口)
     tb.querySelectorAll("button[data-del]").forEach(b => b.onclick = () => delSong(b.dataset.del));
     tb.querySelectorAll("button[data-edit]").forEach(b => b.onclick = () => openEditSong(b.dataset.edit));
     tb.querySelectorAll("button[data-preview]").forEach(b => b.onclick = () => previewSong(b.dataset.preview, b));
-    tb.querySelectorAll("button[data-cover]").forEach(b => b.onclick = () => replaceCover(b.dataset.cover));
   }
   document.getElementById("searchBtn").onclick = () => goPage(1); // 新条件从第一页开始
   // 下拉筛选选中即自动搜索(与换每页条数行为一致);关键词输入中途不自动搜,避免频繁请求
@@ -525,25 +603,6 @@
     } catch (e) { alert(e.detail || e.message); }
   }
 
-  // 替换歌曲封面
-  function replaceCover(songId) {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = async () => {
-      const file = input.files[0];
-      if (!file) return;
-      const fd = new FormData();
-      fd.append("cover", file);
-      try {
-        await api("/api/admin/songs/" + encodeURIComponent(songId) + "/cover", { method: "POST", body: fd });
-        markAuthed();
-        loadSongs();
-      } catch (e) { alert(e.detail || e.message); }
-    };
-    input.click();
-  }
-
   // 设置/替换大类合集封面(用作该大类歌单页的头部大图)
   function replaceCatCover(catId) {
     const input = document.createElement("input");
@@ -563,8 +622,47 @@
     input.click();
   }
 
-  // ===== 编辑歌曲弹窗 =====
+  // ===== 编辑歌曲弹窗(基本信息 + 封面/音频即时替换 + 歌词)=====
   let editingSong = null;
+  const editMsg = document.getElementById("editMsg");
+
+  // 弹出文件选择框,选中后回调 file(取消不回调);弹窗内各文件入口共用
+  function pickFile(accept, onPicked) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = accept;
+    input.onchange = () => { if (input.files[0]) onPicked(input.files[0]); };
+    input.click();
+  }
+
+  // 弹窗内封面预览。bust 为 true 时追加时间戳参数,避免浏览器 5 分钟缓存盖住刚换的封面
+  function renderEditCover(coverUrl, bust) {
+    const box = document.getElementById("editCoverBox");
+    document.getElementById("editCoverClearBtn").style.display = coverUrl ? "" : "none";
+    if (!coverUrl) {
+      box.innerHTML = `<span class="cover placeholder"></span>`;
+      return;
+    }
+    const src = coverUrl + (bust ? (coverUrl.includes("?") ? "&" : "?") + "t=" + Date.now() : "");
+    box.innerHTML = `<img class="cover" src="${src}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover placeholder'}))" />`;
+  }
+
+  // 弹窗内音频信息:文件名(取自 src 末段)+ 时长
+  function renderEditAudio(song) {
+    const file = decodeURIComponent((song.src || "").split("/").pop() || "-");
+    const dur = song.duration ? fmtDur(song.duration) : "未知";
+    document.getElementById("editAudioInfo").textContent = "文件:" + file + " · 时长 " + dur;
+  }
+
+  // 文件类操作(封面/音频)成功后的公共收尾:更新弹窗数据与展示、刷新列表行
+  function applySongFileResult(data, okText) {
+    editingSong = data; // 接口返回完整 SongOut,直接整体替换
+    renderEditCover(data.cover, true);
+    renderEditAudio(data);
+    loadSongs();
+    showMsg(editMsg, okText, true);
+  }
+
   async function openEditSong(songId) {
     try {
       const data = await api("/api/songs/" + encodeURIComponent(songId));
@@ -576,13 +674,71 @@
       document.getElementById("editCategory").value = data.category;
       renderSubSelect("editCategory", "editSub");
       document.getElementById("editSub").value = data.subCategory || "";
+      document.getElementById("editSort").value = data.sortOrder ?? 0;
+      document.getElementById("editOrigin").value = data.originalPath || "";
       document.getElementById("editLyric").value = data.lyric || "";
+      renderEditCover(data.cover);
+      renderEditAudio(data);
+      editMsg.textContent = "";
+      editMsg.className = "msg";
       document.getElementById("songModal").classList.add("show");
     } catch (e) { alert(e.detail || e.message); }
   }
   document.getElementById("editCancel").onclick = () => document.getElementById("songModal").classList.remove("show");
+
+  // 更换封面:选文件立即上传,成功后刷新弹窗预览与列表行
+  document.getElementById("editCoverBtn").onclick = () => {
+    if (!editingSong) return;
+    pickFile("image/*", async (file) => {
+      const fd = new FormData();
+      fd.append("cover", file);
+      try {
+        const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/cover", { method: "POST", body: fd });
+        markAuthed();
+        applySongFileResult(data, "封面已更新");
+      } catch (e) { showMsg(editMsg, e.detail || e.message, false); }
+    });
+  };
+
+  // 清除封面:删文件并置空,列表同步回落占位色块
+  document.getElementById("editCoverClearBtn").onclick = async () => {
+    if (!editingSong) return;
+    if (!confirm("确认清除该歌曲的封面文件?")) return;
+    try {
+      const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/cover", { method: "DELETE" });
+      markAuthed();
+      applySongFileResult(data, "封面已清除");
+    } catch (e) { showMsg(editMsg, e.detail || e.message, false); }
+  };
+
+  // 替换音频:选文件确认后立即上传,后端自动重读时长并换文件名(绕开长缓存)
+  document.getElementById("editAudioBtn").onclick = () => {
+    if (!editingSong) return;
+    pickFile("audio/*", async (file) => {
+      if (!confirm("确认用「" + file.name + "」替换当前音频?\n(旧音频文件将被删除,正在收旧的客户端可能需重启应用)")) return;
+      const fd = new FormData();
+      fd.append("audio", file);
+      try {
+        const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/audio", { method: "POST", body: fd });
+        markAuthed();
+        applySongFileResult(data, "音频已替换(时长 " + (data.duration ? fmtDur(data.duration) : "未知") + ")");
+      } catch (e) { showMsg(editMsg, e.detail || e.message, false); }
+    });
+  };
+
+  // 导入本地 .lrc 文件到歌词输入框(填入后仍需点「保存」提交)
+  document.getElementById("importLrcBtn").onclick = () => {
+    pickFile(".lrc,text/plain", (file) => {
+      const reader = new FileReader();
+      reader.onload = () => { document.getElementById("editLyric").value = String(reader.result || ""); };
+      reader.readAsText(file, "utf-8");
+    });
+  };
+
+  // 保存:提交元数据(name/artist/album/分类/排序/原始路径/歌词)
   document.getElementById("editSave").onclick = async () => {
     if (!editingSong) return;
+    const sortVal = parseInt(document.getElementById("editSort").value, 10);
     const body = {
       name: document.getElementById("editName").value.trim(),
       artist: document.getElementById("editArtist").value.trim(),
@@ -590,7 +746,10 @@
       category_id: document.getElementById("editCategory").value,
       sub_category_id: document.getElementById("editSub").value,
       lyric: document.getElementById("editLyric").value,
+      sort_order: isNaN(sortVal) ? 0 : sortVal,
+      original_path: document.getElementById("editOrigin").value.trim(),
     };
+    if (!body.name || !body.artist) return showMsg(editMsg, "歌名与作者必填", false);
     try {
       await api("/api/admin/songs/" + encodeURIComponent(editingSong.id), {
         method: "PUT",
@@ -603,7 +762,7 @@
       loadSongs();
       loadCategories();
       loadSubCounts(); // 改所属子类会影响歌曲数
-    } catch (e) { alert(e.detail || e.message); }
+    } catch (e) { showMsg(editMsg, e.detail || e.message, false); }
   };
 
   // ===== 大类管理 =====
@@ -784,6 +943,99 @@
       await api("/api/admin/subs/" + encodeURIComponent(subId), { method: "DELETE" });
       markAuthed();
       loadCategories();
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  // ===== 账号管理(成员即登录账号;登录页不开放注册,开号在此或由已登录成员在 App 内完成)=====
+  const memMsg = document.getElementById("memMsg");
+
+  function fmtTime(iso) {
+    return iso ? String(iso).replace("T", " ").slice(0, 16) : "-";
+  }
+
+  // 展示一次性下发的登录凭证(创建/重置密码后调用),附复制按钮
+  function showCred(username, password) {
+    document.getElementById("credBox").style.display = "";
+    document.getElementById("credText").textContent = "账号 " + username + "  密码 " + password;
+    const btn = document.getElementById("copyCredBtn");
+    btn.textContent = "复制";
+    btn.onclick = () => {
+      const text = "账号:" + username + "  密码:" + password;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          () => { btn.textContent = "已复制"; setTimeout(() => (btn.textContent = "复制"), 1500); },
+          () => alert("复制失败,请手动抄写:\n" + text),
+        );
+      } else {
+        alert("请手动抄写:\n" + text);
+      }
+    };
+    document.getElementById("credBox").scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  async function loadMembers() {
+    const data = await api("/api/admin/members");
+    const tb = document.getElementById("memBody");
+    document.getElementById("memCount").textContent = "共 " + data.length + " 个账号";
+    if (!data.length) {
+      tb.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:20px">还没有账号,先在上方创建一个</td></tr>`;
+      return;
+    }
+    tb.innerHTML = data.map(m => `
+      <tr>
+        <td>${m.name}</td>
+        <td>${m.username || "-"}</td>
+        <td>${m.avatar || "-"}</td>
+        <td class="muted">${fmtTime(m.createdAt)}</td>
+        <td class="actions">
+          <button class="ghost sm" data-mempwd="${m.id}" data-memname="${m.name}">重置密码</button>
+          <button class="danger sm" data-memdel="${m.id}" data-memname="${m.name}">删除</button>
+        </td>
+      </tr>`).join("");
+    tb.querySelectorAll("button[data-mempwd]").forEach(b => b.onclick = () => resetMemberPwd(b.dataset.memname, b.dataset.mempwd));
+    tb.querySelectorAll("button[data-memdel]").forEach(b => b.onclick = () => delMember(b.dataset.memname, b.dataset.memdel));
+  }
+
+  document.getElementById("reloadMemBtn").onclick = () => {
+    loadMembers().catch(e => alert("加载账号失败:" + (e.detail || e.message)));
+  };
+
+  document.getElementById("addMemBtn").onclick = async () => {
+    if (!token()) return showMsg(memMsg, "请先填写管理 token", false);
+    const username = document.getElementById("memUser").value.trim();
+    const name = document.getElementById("memName").value.trim();
+    if (!username || !name) return showMsg(memMsg, "登录账号与昵称必填", false);
+    const body = { username: username, name: name, avatar: document.getElementById("memAvatar").value.trim() };
+    const pass = document.getElementById("memPass").value;
+    if (pass) body.password = pass; // 留空则后端自动生成
+    try {
+      const data = await api("/api/admin/members", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      markAuthed();
+      showMsg(memMsg, "账号已创建", true);
+      ["memUser", "memName", "memAvatar", "memPass"].forEach(i => document.getElementById(i).value = "");
+      showCred(data.username, data.password);
+      loadMembers().catch(() => {});
+    } catch (e) { showMsg(memMsg, e.detail || e.message, false); }
+  };
+
+  async function resetMemberPwd(name, memberId) {
+    if (!confirm("重置「" + name + "」的密码?\n旧密码将立即失效,新密码只在本次显示一次。")) return;
+    try {
+      const data = await api("/api/admin/members/" + encodeURIComponent(memberId) + "/password", {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: "{}",
+      });
+      markAuthed();
+      showMsg(memMsg, "密码已重置", true);
+      showCred(data.username, data.password);
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  async function delMember(name, memberId) {
+    if (!confirm("确认删除账号「" + name + "」?\n其收藏与播放记录将一并删除,不可恢复。")) return;
+    try {
+      await api("/api/admin/members/" + encodeURIComponent(memberId), { method: "DELETE" });
+      markAuthed();
+      loadMembers().catch(() => {});
     } catch (e) { alert(e.detail || e.message); }
   }
 

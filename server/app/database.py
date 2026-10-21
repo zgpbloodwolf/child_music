@@ -93,10 +93,28 @@ def _ensure_columns() -> None:
         print(f"[db] 警告:非空且无默认值,需重建表才能补:{', '.join(skipped)}")
 
 
+def _ensure_indexes() -> None:
+    """补建索引:SQLite 老库上 unique 索引无法经 ALTER 补,只能手动 CREATE。
+
+    与 create_all 在新库上建的索引同名(ix_members_username),IF NOT EXISTS
+    保证两种来源幂等。
+    """
+    from sqlalchemy import text
+
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "CREATE UNIQUE INDEX IF NOT EXISTS "
+                "ix_members_username ON members (username)"
+            )
+        )
+
+
 def init_db() -> None:
-    """建表 + 补齐已存在表上缺失的列。应用启动与迁移脚本调用。"""
+    """建表 + 补齐已存在表上缺失的列/索引。应用启动与迁移脚本调用。"""
     # 确保模型已导入,Base.metadata 才有表定义
     from . import models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
     _ensure_columns()
+    _ensure_indexes()

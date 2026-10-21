@@ -15,10 +15,15 @@ def build_url(rel_path: str | None) -> str:
     """相对 storage 根的路径(如 library/.../cn002.mp3)→ 完整公网 URL。
 
     空路径返回空串(封面文件可能不存在,前端用色块兜底)。
+    启用 ACCESS_TOKEN 时自动拼上 ?token=:静态资源有令牌校验,下发的 URL
+    必须自带凭证,前端(含 audio/CoverImage/下载)才能直接使用,零改动。
     """
     if not rel_path:
         return ""
-    return f"{settings.public_base}/{rel_path.lstrip('/')}"
+    url = f"{settings.public_base}/{rel_path.lstrip('/')}"
+    if settings.access_token:
+        url += ("&" if "?" in url else "?") + f"token={settings.access_token}"
+    return url
 
 
 def song_to_meta(s: Song) -> SongMetaOut:
@@ -48,6 +53,8 @@ def song_to_out(s: Song) -> SongOut:
         sub_category=s.sub_category_id,
         src=build_url(s.audio_path),
         lyric=s.lyric,
+        sort_order=s.sort_order or 0,
+        original_path=s.original_path,
     )
 
 

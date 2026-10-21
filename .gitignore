@@ -25,10 +25,15 @@ dist
 *.njsproj
 *.sln
 *.sw?
-# resource/ 是原始资源档案层:只保留说明文件(约定要能被团队看到),
-# 里面的原始音频共约 727MB,整目录排除、切不可入库
+# resource/ 是原始资源档案层:只保留说明文件与母带索引(约定与「有什么」要能被团队看到),
+# 里面的原始音频与封面母带共约 1.26GB,整目录排除、切不可入库
 /resource/*
 !/resource/README.md
+# 注意:被 /resource/* 排除的「目录」git 不会进入,所以否定规则对目录内的文件无效 ——
+# 要把母带索引纳入版本管理,必须先把子目录本身放行,再单独放行该文件。
+!/resource/song-covers-poetry/
+/resource/song-covers-poetry/*
+!/resource/song-covers-poetry/INDEX.json
 src/static/library/
 .hbuilderx/launch.json
 
