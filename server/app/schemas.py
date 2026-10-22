@@ -212,6 +212,33 @@ class LoginOut(CamelModel):
     member: MemberOut
 
 
+class AdminLoginIn(BaseModel):
+    """管理员登录请求(管理页 /admin 用,账号密码配置在 .env)。"""
+
+    username: str
+    password: str
+
+
+class AdminSessionOut(CamelModel):
+    """管理员会话状态探测响应(前端据此决定进管理页还是回登录页)。
+
+    initialized:管理员账号是否已从 .env 同步(否 = .env 未配置,登录页提示不可用);
+    authed:本次携带的会话令牌是否有效;
+    username:authed 时的回显账号名。
+    """
+
+    initialized: bool
+    authed: bool = False
+    username: str = ""
+
+
+class AdminLoginOut(CamelModel):
+    """管理员登录响应:7 天会话令牌 + 账号名。"""
+
+    token: str
+    username: str
+
+
 class SongIdsIn(CamelModel):
     """收藏/历史全量同步请求体:客户端以完整 id 列表为数据源,整表回写。"""
 

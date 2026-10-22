@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     # 管理接口 token
     admin_token: str = "change-me-to-a-strong-random-string"
 
+    # 管理页登录账号/密码(.env 配置,启动时同步进数据库,改后重启生效)。
+    # 留空表示不启用账号密码登录(管理页将提示未配置,静态 token 通道不受影响)。
+    admin_name: str = ""
+    admin_password: str = ""
+
     # 登录会话令牌的 HMAC 密钥(见 app/security.py)。留空回退用 ADMIN_TOKEN;
     # 生产建议单独设一个强随机串,避免与管理 token 生命周期耦合。
     auth_secret: str = ""

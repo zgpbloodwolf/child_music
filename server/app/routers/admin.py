@@ -150,7 +150,7 @@ def admin_delete_member(member_id: str, db: Session = Depends(get_db)) -> None:
     member = db.get(Member, member_id)
     if not member:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "成员不存在")
-    # 与 /api/members/{id} 同口径:级联由外键 ON DELETE CASCADE 完成,此处显式删兜底
+    # 级联由数据库外键 ON DELETE CASCADE 完成(foreign_keys=ON),此处显式删兜底
     db.execute(delete(Favorite).where(Favorite.member_id == member_id))
     db.execute(delete(PlayHistory).where(PlayHistory.member_id == member_id))
     db.delete(member)

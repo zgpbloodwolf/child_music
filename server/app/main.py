@@ -16,9 +16,10 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import BASE_DIR, settings
-from .database import init_db
+from .database import SessionLocal, init_db
 from .deps import require_intranet
-from .routers import admin, auth, catalog, members, version
+from .routers import admin, admin_auth, auth, catalog, members, version
+from .routers.admin_auth import sync_admin_from_env
 
 # /library 的缓存策略(Starlette 默认只发 ETag / Last-Modified,不带 Cache-Control,
 # 导致每次播放都要回源做一次条件请求)。
@@ -147,6 +148,9 @@ def _ensure_mimetypes() -> None:
 def create_app() -> FastAPI:
     _ensure_mimetypes()
     init_db()
+    # .env 的管理员账号密码同步进 admin_users 表(规则见 admin_auth.sync_admin_from_env)
+    with SessionLocal() as db:
+        sync_admin_from_env(db)
 
     app = FastAPI(
         title="启蒙音频后端",
@@ -173,6 +177,9 @@ def create_app() -> FastAPI:
     app.include_router(catalog.router)
     app.include_router(auth.router)
     app.include_router(members.router)
+    # admin_auth(登录)须先于 admin(业务)注册:同为 /api/admin 前缀,
+    # 但路径不重叠(/session /login /password),先注册先匹配,语义也更直观
+    app.include_router(admin_auth.router)
     app.include_router(admin.router)
     app.include_router(version.router)
 
@@ -180,10 +187,16 @@ def create_app() -> FastAPI:
     app.mount("/library", LibraryStaticFiles(directory=settings.library_dir), name="library")
 
     admin_html = BASE_DIR / "admin_static" / "index.html"
+    login_html = BASE_DIR / "admin_static" / "login.html"
+
+    @app.get("/admin/login", include_in_schema=False)
+    def admin_login_page(_=Depends(require_intranet)) -> FileResponse:
+        """管理员登录页(独立完整页面,限内网访问)。"""
+        return FileResponse(login_html)
 
     @app.get("/admin", include_in_schema=False)
     def admin_page(_=Depends(require_intranet)) -> FileResponse:
-        """极简管理页:填 token → 上传/删除歌曲(限内网访问)。"""
+        """管理页:账号密码登录后进入(限内网访问)。"""
         return FileResponse(admin_html)
 
     @app.get("/health", include_in_schema=False)

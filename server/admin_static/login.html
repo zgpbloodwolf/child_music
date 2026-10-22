@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 · 启蒙音频后台管理</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(160deg, #ff8c42 0%, #f5f5f7 55%);
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .18);
+      width: 360px;
+      max-width: 92vw;
+      padding: 28px 26px;
+    }
+    .card h1 { font-size: 20px; margin-bottom: 4px; }
+    .card .sub { font-size: 13px; color: #999; margin-bottom: 20px; }
+    label { display: block; font-size: 13px; color: #666; margin: 12px 0 5px; }
+    input {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 9px 10px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus { border-color: #ff8c42; }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      background: #ff8c42;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover { background: #f07a2d; }
+    button:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
+    .msg { font-size: 13px; margin-top: 14px; min-height: 18px; }
+    .msg.err { color: #c0392f; }
+    .foot { margin-top: 18px; font-size: 12px; color: #bbb; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>启蒙音频 · 后台管理</h1>
+    <p class="sub">请输入管理员账号登录</p>
+    <label>账号</label>
+    <input id="user" autocomplete="username" autofocus />
+    <label>密码</label>
+    <input id="pass" type="password" autocomplete="current-password" />
+    <div id="msg" class="msg"></div>
+    <button id="btn">登 录</button>
+    <p class="foot">仅限内网访问 · 会话有效期 7 天</p>
+  </div>
+
+<script>
+  // 应用前缀(自动识别 /admin/login 子路径),与 index.html 的 BASE 规则一致
+  const BASE = location.pathname.replace(/\/admin\/login\/?$/, "") || "";
+  const SESSION_KEY = "admin_session";
+  const msgEl = document.getElementById("msg");
+  const btn = document.getElementById("btn");
+
+  // 已登录用户直接进管理页,不必再看登录表单
+  (async function checkSession() {
+    let token = "";
+    try { token = (JSON.parse(localStorage.getItem(SESSION_KEY)) || {}).token || ""; } catch (e) { /* 脏数据当未登录 */ }
+    const headers = token ? { Authorization: "Bearer " + token } : {};
+    try {
+      const res = await fetch(BASE + "/api/admin/session", { headers });
+      const s = await res.json();
+      if (s.authed) return location.replace(BASE + "/admin");
+      if (!s.initialized) {
+        msgEl.textContent = "服务端未配置 ADMIN_NAME/ADMIN_PASSWORD,账号密码登录不可用";
+        msgEl.className = "msg err";
+        btn.disabled = true;
+      }
+    } catch (e) { /* 服务探测失败不拦登录,提交时自然报错 */ }
+  })();
+
+  btn.onclick = async () => {
+    const username = document.getElementById("user").value.trim();
+    const password = document.getElementById("pass").value;
+    if (!username || !password) {
+      msgEl.textContent = "请输入账号和密码";
+      msgEl.className = "msg err";
+      return;
+    }
+    btn.disabled = true;
+    try {
+      const res = await fetch(BASE + "/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        msgEl.textContent = data.detail || ("登录失败(" + res.status + ")");
+        msgEl.className = "msg err";
+        btn.disabled = false;
+        return;
+      }
+      try { localStorage.setItem(SESSION_KEY, JSON.stringify({ token: data.token, username: data.username })); } catch (e) { /* 无痕模式:仅本次会话有效 */ }
+      location.replace(BASE + "/admin");
+    } catch (e) {
+      msgEl.textContent = "请求失败:" + (e.message || e);
+      msgEl.className = "msg err";
+      btn.disabled = false;
+    }
+  };
+
+  // 密码框回车即登录
+  document.getElementById("pass").addEventListener("keydown", e => {
+    if (e.key === "Enter") btn.click();
+  });
+</script>
+</body>
+</html>

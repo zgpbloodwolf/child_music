@@ -46,9 +46,7 @@
     .modal h3 { margin: 0 0 14px; font-size: 16px; border-left: 3px solid #ff8c42; padding-left: 8px; }
     .modal .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
     .badge { display: inline-block; background: #f0f0f0; color: #555; border-radius: 10px; padding: 1px 8px; font-size: 12px; }
-    .auth-status { font-size: 12px; margin-left: 8px; }
-    .auth-status.ok { color: #1f8a4c; }
-    .auth-status.no { color: #c0392b; }
+
     .actions { display: flex; gap: 6px; flex-wrap: wrap; }
     .sub-row td { background: #fafafa; color: #555; }
     .sub-row td:nth-child(2) { padding-left: 24px; }
@@ -68,26 +66,18 @@
     .media-box { display: flex; align-items: center; gap: 12px; }
     .media-box .cover { width: 56px; height: 56px; flex-shrink: 0; }
     .media-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+    .header-user { font-size: 13px; color: #fff3ea; margin-right: 10px; }
   </style>
 </head>
 <body>
-  <header>启蒙音频 · 后台管理</header>
+  <header>
+    启蒙音频 · 后台管理
+    <span id="headerOps" style="display:none;float:right">
+      <span id="whoami" class="header-user"></span>
+      <button class="ghost sm" id="logoutBtn">退出</button>
+    </span>
+  </header>
   <div class="wrap">
-    <!-- 鉴权 -->
-    <div class="card">
-      <h2>鉴权</h2>
-      <div class="row">
-        <div>
-          <label>管理 Token(对应 .env 的 ADMIN_TOKEN)</label>
-          <input id="token" type="password" placeholder="粘贴管理 token" />
-        </div>
-        <div>
-          <label>状态</label>
-          <p class="muted" style="margin-top:2px">token 仅存本浏览器 localStorage,所有写操作带 Authorization 头。<span id="authStatus" class="auth-status no">未验证</span></p>
-        </div>
-      </div>
-    </div>
-
     <!-- 标签页 -->
     <div class="tabs">
       <div class="tab active" data-pane="songs">歌曲管理</div>
@@ -340,29 +330,40 @@
     </div>
   </div>
 
+  <!-- 管理员账号密码配置在服务端 .env(ADMIN_NAME/ADMIN_PASSWORD),修改后重启服务生效 -->
 <script>
   // 应用前缀(自动识别 /admin 子路径),适配反代前缀部署
   const BASE = location.pathname.replace(/\/admin\/?$/, "") || "";
 
-  // ===== 鉴权 =====
-  const tokenEl = document.getElementById("token");
-  tokenEl.value = localStorage.getItem("admin_token") || "";
-  const token = () => tokenEl.value.trim();
-  const authStatusEl = document.getElementById("authStatus");
-  tokenEl.addEventListener("change", () => {
-    localStorage.setItem("admin_token", token());
-    authStatusEl.textContent = "未验证";
-    authStatusEl.className = "auth-status no";
-  });
+  // ===== 登录态 =====
+  // 登录在独立页面 /admin/login 完成;这里只负责:启动探测会话、
+  // 失效统一跳回登录页、退出。会话令牌存 localStorage,7 天有效。
+  const SESSION_KEY = "admin_session";
+  let adminToken = ""; // 空 = 未登录
+
+  function loadSession() {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch (e) { return null; }
+  }
+  function clearSession() {
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) { /* 忽略 */ }
+    adminToken = "";
+  }
+  function gotoLogin() {
+    location.replace(BASE + "/admin/login"); // replace:登录后不留下本页历史,后退不回到管理页
+  }
 
   // 带鉴权的请求;ok 返回解析后数据,失败抛 {detail}
   async function api(path, opts = {}) {
-    const res = await fetch(BASE + path, {
-      ...opts,
-      headers: { ...(opts.headers || {}), Authorization: "Bearer " + token() },
-    });
+    const headers = { ...(opts.headers || {}) };
+    if (adminToken) headers.Authorization = "Bearer " + adminToken;
+    const res = await fetch(BASE + path, { ...opts, headers });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
+      // 会话令牌失效(过期/服务端换账号密码)统一清态回登录页
+      if (res.status === 401 && adminToken) {
+        clearSession();
+        gotoLogin();
+      }
       const detail = (data && data.detail) || ("请求失败(" + res.status + ")");
       const err = new Error(detail);
       err.status = res.status;
@@ -372,11 +373,21 @@
     return data;
   }
 
-  // 标记鉴权状态:任意一次写操作成功即视为有效
-  function markAuthed() {
-    authStatusEl.textContent = "已验证";
-    authStatusEl.className = "auth-status ok";
+  // 已登录进入管理界面:显示 header 身份区并拉取首屏数据
+  function enterApp(name) {
+    document.getElementById("headerOps").style.display = "";
+    document.getElementById("whoami").textContent = name;
+    loadCategories().catch(e => alert("加载分类失败:" + (e.message || e)));
+    loadSubCounts().catch(e => alert("统计子类歌曲数失败:" + (e.message || e)));
+    loadSongs(1).catch(e => alert("加载歌曲失败:" + (e.message || e)));
   }
+
+  // ===== 退出 =====
+  document.getElementById("logoutBtn").onclick = () => {
+    if (!confirm("确定退出登录?")) return;
+    clearSession();
+    gotoLogin();
+  };
   function showMsg(el, text, ok) {
     el.textContent = text;
     el.className = "msg " + (ok ? "ok" : "err");
@@ -433,7 +444,6 @@
   // ===== 上传歌曲 =====
   document.getElementById("uploadBtn").onclick = async () => {
     const msg = document.getElementById("uploadMsg");
-    if (!token()) return showMsg(msg, "请先填写管理 token", false);
     const audio = document.getElementById("audio").files[0];
     if (!audio) return showMsg(msg, "请选择音频文件", false);
     const fd = new FormData();
@@ -449,7 +459,7 @@
     fd.append("lyric", document.getElementById("lyric").value);
     try {
       const data = await api("/api/admin/songs", { method: "POST", body: fd });
-      markAuthed();
+
       showMsg(msg, "上传成功:" + data.name + "  时长 " + (data.duration ? Math.round(data.duration) + "s" : "未知"), true);
       ["audio", "cover", "id", "name", "artist", "album", "lyric"].forEach(i => document.getElementById(i).value = "");
       loadSongs();
@@ -596,7 +606,7 @@
     if (!confirm("确认删除 " + songId + "?(含音频与封面文件,不可恢复)")) return;
     try {
       await api("/api/admin/songs/" + encodeURIComponent(songId), { method: "DELETE" });
-      markAuthed();
+
       loadSongs();
       loadCategories();
       loadSubCounts();
@@ -615,7 +625,7 @@
       fd.append("cover", file);
       try {
         await api("/api/admin/categories/" + encodeURIComponent(catId) + "/cover", { method: "POST", body: fd });
-        markAuthed();
+
         loadCategories(); // 内含 renderCatTree,刷新缩略图与按钮文案
       } catch (e) { alert(e.detail || e.message); }
     };
@@ -694,7 +704,7 @@
       fd.append("cover", file);
       try {
         const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/cover", { method: "POST", body: fd });
-        markAuthed();
+
         applySongFileResult(data, "封面已更新");
       } catch (e) { showMsg(editMsg, e.detail || e.message, false); }
     });
@@ -706,7 +716,7 @@
     if (!confirm("确认清除该歌曲的封面文件?")) return;
     try {
       const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/cover", { method: "DELETE" });
-      markAuthed();
+
       applySongFileResult(data, "封面已清除");
     } catch (e) { showMsg(editMsg, e.detail || e.message, false); }
   };
@@ -720,7 +730,7 @@
       fd.append("audio", file);
       try {
         const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/audio", { method: "POST", body: fd });
-        markAuthed();
+
         applySongFileResult(data, "音频已替换(时长 " + (data.duration ? fmtDur(data.duration) : "未知") + ")");
       } catch (e) { showMsg(editMsg, e.detail || e.message, false); }
     });
@@ -756,7 +766,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      markAuthed();
+
       document.getElementById("songModal").classList.remove("show");
       editingSong = null;
       loadSongs();
@@ -777,7 +787,7 @@
     if (!body.id || !body.name) return showMsg(msg, "id 与名称必填", false);
     try {
       await api("/api/admin/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-      markAuthed();
+
       showMsg(msg, "新增成功", true);
       ["catId", "catName", "catIcon", "catDesc"].forEach(i => document.getElementById(i).value = "");
       loadCategories();
@@ -882,7 +892,7 @@
     if (!confirm("确认删除大类 " + catId + "?(须无歌曲与子类)")) return;
     try {
       await api("/api/admin/categories/" + encodeURIComponent(catId), { method: "DELETE" });
-      markAuthed();
+
       loadCategories();
     } catch (e) { alert(e.detail || e.message); }
   }
@@ -911,7 +921,7 @@
       await api("/api/admin/categories/" + encodeURIComponent(editingCat.id), {
         method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
       });
-      markAuthed();
+
       document.getElementById("catModal").classList.remove("show");
       editingCat = null;
       loadCategories();
@@ -931,7 +941,7 @@
     if (!body.id || !body.name || !body.category_id) return showMsg(msg, "所属大类、id、名称必填", false);
     try {
       await api("/api/admin/subs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-      markAuthed();
+
       showMsg(msg, "新增成功", true);
       ["subId", "subName", "subIcon", "subDesc"].forEach(i => document.getElementById(i).value = "");
       loadCategories();
@@ -941,7 +951,7 @@
     if (!confirm("确认删除子类 " + subId + "?(须无歌曲)")) return;
     try {
       await api("/api/admin/subs/" + encodeURIComponent(subId), { method: "DELETE" });
-      markAuthed();
+
       loadCategories();
     } catch (e) { alert(e.detail || e.message); }
   }
@@ -1001,7 +1011,6 @@
   };
 
   document.getElementById("addMemBtn").onclick = async () => {
-    if (!token()) return showMsg(memMsg, "请先填写管理 token", false);
     const username = document.getElementById("memUser").value.trim();
     const name = document.getElementById("memName").value.trim();
     if (!username || !name) return showMsg(memMsg, "登录账号与昵称必填", false);
@@ -1010,7 +1019,7 @@
     if (pass) body.password = pass; // 留空则后端自动生成
     try {
       const data = await api("/api/admin/members", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-      markAuthed();
+
       showMsg(memMsg, "账号已创建", true);
       ["memUser", "memName", "memAvatar", "memPass"].forEach(i => document.getElementById(i).value = "");
       showCred(data.username, data.password);
@@ -1024,7 +1033,7 @@
       const data = await api("/api/admin/members/" + encodeURIComponent(memberId) + "/password", {
         method: "PUT", headers: { "Content-Type": "application/json" }, body: "{}",
       });
-      markAuthed();
+
       showMsg(memMsg, "密码已重置", true);
       showCred(data.username, data.password);
     } catch (e) { alert(e.detail || e.message); }
@@ -1034,15 +1043,22 @@
     if (!confirm("确认删除账号「" + name + "」?\n其收藏与播放记录将一并删除,不可恢复。")) return;
     try {
       await api("/api/admin/members/" + encodeURIComponent(memberId), { method: "DELETE" });
-      markAuthed();
+
       loadMembers().catch(() => {});
     } catch (e) { alert(e.detail || e.message); }
   }
 
-  // ===== 启动 =====
-  loadCategories().catch(e => alert("加载分类失败:" + (e.message || e)));
-  loadSubCounts().catch(e => alert("统计子类歌曲数失败:" + (e.message || e)));
-  loadSongs(1).catch(e => alert("加载歌曲失败:" + (e.message || e)));
+  // ===== 启动:探测会话,已登录进管理界面,未登录/失效跳登录页 =====
+  (async function boot() {
+    const saved = loadSession();
+    if (saved && saved.token) adminToken = saved.token;
+    try {
+      const s = await api("/api/admin/session"); // 该接口永不 401
+      if (s.authed && adminToken) return enterApp(s.username);
+    } catch (e) { /* 探测失败同样跳登录页,由登录页再探一次 */ }
+    if (saved) clearSession(); // 本地令牌已失效(过期/服务端已换账号密码)
+    gotoLogin();
+  })();
 </script>
 </body>
 </html>

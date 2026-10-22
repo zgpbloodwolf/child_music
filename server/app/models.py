@@ -105,6 +105,27 @@ class Member(Base):
     created_at = Column(DateTime, default=datetime.now, nullable=False)
 
 
+class AdminUser(Base):
+    """管理员账号:管理页(/admin)账号密码登录用,独立于 Member。
+
+    - username 唯一且小写,校验规则复用 members.py 的 check_username;
+    - pwd_version 是令牌世代:改密 +1,使改密前签发的所有会话令牌立即失效
+      (无状态令牌无法吊销,用世代比对实现「改密即踢全部旧会话」);
+    - 令牌主体用 id(uuid4().hex,恒为 ASCII)而非 username——username 允许中文,
+      非 ASCII 字符进 Authorization 头浏览器会直接拒绝发送。
+    """
+
+    __tablename__ = "admin_users"
+
+    id = Column(String(32), primary_key=True)  # uuid4().hex
+    username = Column(String(64), nullable=False, unique=True, index=True)  # 小写
+    # 格式:pbkdf2_sha256$<iterations>$<salt_hex>$<hash_hex>(见 app/security.py)
+    password_hash = Column(String(256), nullable=False)
+    # 令牌世代,改密 +1 → 旧会话全部失效
+    pwd_version = Column(Integer, default=0, nullable=False)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+
+
 class Favorite(Base):
     """收藏:member_id + song_id 联合主键;position 保留客户端提交的顺序。
 

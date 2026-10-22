@@ -6,8 +6,8 @@ from fastapi import Depends, Header, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from .config import settings
-from .models import Member
-from .security import parse_token
+from .models import AdminUser, Member
+from .security import parse_admin_token, parse_token
 
 # 复用 database.get_db 作为公开依赖(避免循环,直接 re-export)
 from .database import get_db  # noqa: F401
@@ -56,23 +56,50 @@ def _admin_token_ok(authorization: str) -> bool:
     )
 
 
-def verify_admin_token(authorization: str = Header(default="", description="Bearer <ADMIN_TOKEN>")) -> None:
-    """管理接口鉴权:校验 Authorization: Bearer <token>(规则见 _admin_token_ok)。"""
-    if not _admin_token_ok(authorization):
+def verify_admin_token(
+    authorization: str = Header(default="", description="Bearer <ADMIN_TOKEN 或 管理员会话令牌>"),
+    db: Session = Depends(get_db),
+) -> None:
+    """管理接口鉴权:静态 ADMIN_TOKEN(运维脚本通道)或 管理员会话令牌(管理页登录)任一通过。
+
+    静态通道规则见 _admin_token_ok;会话通道见 _admin_session_ok。
+    """
+    if not _admin_token_ok(authorization) and not _admin_session_ok(authorization, db):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="未授权:token 无效")
+
+
+def _admin_session_ok(authorization: str, db: Session) -> bool:
+    """管理员会话令牌校验:解析 admin: 前缀令牌并查行比对 pwd_version。
+
+    账号被删或已改密(世代 +1)的旧令牌即刻失效——无状态令牌没有吊销列表,
+    靠世代比对实现「改密即踢全部旧会话」。令牌格式见 security.parse_admin_token。
+    """
+    if not authorization.startswith("Bearer "):
+        return False
+    parsed = parse_admin_token(authorization[len("Bearer "):])
+    if not parsed:
+        return False
+    admin_id, version = parsed
+    row = db.get(AdminUser, admin_id)
+    return row is not None and row.pwd_version == version
 
 
 def require_member_or_admin(
     member=Depends(optional_member),
     authorization: str = Header(default=""),
+    db: Session = Depends(get_db),
 ):
-    """会员登录 或 管理员 token 二选一放行(曲库元数据读取用)。
+    """会员登录 或 管理员凭证(静态 token / 会话令牌)任一放行(曲库元数据读取用)。
 
-    管理页用管理员 Bearer token 维护曲库,但管理员不是会员、没有 X-Auth-Token,
+    管理页用管理员凭证维护曲库,但管理员不是会员、没有 X-Auth-Token,
     若只挂 require_member 会把管理页挡在 /api/categories、/api/songs 之外。
     挂在 router dependencies 上,返回值不被使用(各端点不依赖具体身份)。
     """
-    if member is None and not _admin_token_ok(authorization):
+    if (
+        member is None
+        and not _admin_token_ok(authorization)
+        and not _admin_session_ok(authorization, db)
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="未登录或登录已过期"
         )

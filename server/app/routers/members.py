@@ -1,10 +1,10 @@
-"""成员账号与云端收藏/播放历史路由。
+"""成员维度的云端收藏/播放历史路由。
 
 设计取舍:
-- 成员即账号:创建成员 = 开账号(用户名唯一 + PBKDF2 密码散列);
-  **开号入口有二**:后台管理 POST /api/admin/members(无需登录态,走内网
-  + 管理员 token,用于生成初始账号密码),以及已登录用户在 App 内互相开号
-  (POST /api/members 必须携带登录态;登录页不再开放注册);
+- 账号管理(列表/创建/删除)**只在管理后台**:POST /api/admin/members 等
+  (内网 + 管理员 token)。App 登录用户互相不可见、不可开号删号,本路由
+  不提供任何账号管理接口 —— 曾经的 GET/POST /api/members 与
+  DELETE /api/members/{id} 会把全部账号暴露给任意登录用户,已移除;
 - 数据隔离:收藏/播放历史只能读写**登录者本人**的(路径 member_id 必须
   等于令牌里的账号),其他账号 403;
 - 收藏与播放历史采用「客户端全量、服务端照单全收」的 PUT 替换 —— 客户端
@@ -12,11 +12,9 @@
   整表回写即可,无需逐条事件接口;冲突为「最后写入者胜出」,家庭场景可忽略;
 - 提交的 id 若在曲库中已不存在(如歌曲被删)会被静默忽略,不会因外键报 500。
 
-⚠️ 路由顺序:静态前缀本体(GET/POST /api/members)必须声明在
-/{member_id} 参数路由之前,否则 "members" 之外的段被误当参数。
+member_out / check_username / check_password 供管理路由(admin.py)复用。
 """
 import re
-import uuid
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -25,8 +23,7 @@ from sqlalchemy.orm import Session
 
 from ..deps import get_db, require_member
 from ..models import Favorite, Member, PlayHistory, Song
-from ..schemas import MemberCreate, MemberOut, SongIdsIn
-from ..security import hash_password
+from ..schemas import MemberOut, SongIdsIn
 
 router = APIRouter(prefix="/api/members", tags=["成员"])
 
@@ -76,69 +73,6 @@ def _existing_ids(db: Session, ids: list[str]) -> list[str]:
         return []
     have = set(db.scalars(select(Song.id).where(Song.id.in_(ids))).all())
     return [i for i in ids if i in have]
-
-
-@router.get("", response_model=list[MemberOut], summary="成员账号列表")
-def list_members(
-    db: Session = Depends(get_db), _current: Member = Depends(require_member)
-) -> list[MemberOut]:
-    """按创建时间返回全部成员账号(登录后的账号管理页用)。"""
-    rows = db.scalars(select(Member).order_by(Member.created_at, Member.id)).all()
-    return [member_out(m) for m in rows]
-
-
-@router.post(
-    "",
-    response_model=MemberOut,
-    status_code=status.HTTP_201_CREATED,
-    summary="创建成员账号(需已登录)",
-)
-def create_member(
-    payload: MemberCreate,
-    db: Session = Depends(get_db),
-    _current: Member = Depends(require_member),
-) -> MemberOut:
-    """开新账号。必须携带有效登录态(初始账号由后台管理创建,见 POST /api/admin/members)。"""
-    username = check_username(payload.username)
-    password = check_password(payload.password)
-    name = payload.name.strip()
-    if not name:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "昵称不能为空")
-    if db.scalar(select(Member).where(Member.username == username)):
-        raise HTTPException(status.HTTP_409_CONFLICT, "该账号已被使用")
-
-    member = Member(
-        id=uuid.uuid4().hex,
-        name=name[:64],
-        username=username,
-        password_hash=hash_password(password),
-        avatar=payload.avatar.strip()[:16],
-    )
-    db.add(member)
-    db.commit()
-    return member_out(member)
-
-
-@router.delete(
-    "/{member_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    summary="删除成员账号(其收藏/历史级联删除)",
-)
-def delete_member(
-    member_id: str,
-    db: Session = Depends(get_db),
-    current: Member = Depends(require_member),
-) -> None:
-    member = db.get(Member, member_id)
-    if not member:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "成员不存在")
-    if member_id == current.id:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "不能删除当前登录的账号")
-    # 未声明 ORM relationship,级联由数据库外键 ON DELETE CASCADE 完成(foreign_keys=ON)
-    db.execute(delete(Favorite).where(Favorite.member_id == member_id))
-    db.execute(delete(PlayHistory).where(PlayHistory.member_id == member_id))
-    db.delete(member)
-    db.commit()
 
 
 @router.get("/{member_id}/favorites", response_model=list[str], summary="某成员的收藏 id 列表")
