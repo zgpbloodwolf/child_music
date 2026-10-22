@@ -24,9 +24,6 @@ export const LIKE_KEY = 'music_liked_ids';
 /** 播放历史 ids 的本地存储 key 基名(同上) */
 export const HISTORY_KEY = 'music_history_ids';
 
-/** 可选头像(emoji:跨端渲染稳定,不引入图片资源与裁切链路) */
-export const MEMBER_AVATARS = ['⭐', '🐱', '🦊', '🐰', '🐻', '🌈', '🚗', '🌸'] as const;
-
 /** 读取当前成员(坏数据按未选处理) */
 function loadCurrentMember(): MemberInfo | null {
   try {

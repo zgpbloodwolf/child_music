@@ -20,7 +20,7 @@ function play(song: SongMeta) {
   player.playSong(song.id, likedSongs.value.map((s) => s.id));
 }
 
-/** 前往成员账号管理页 */
+/** 前往账号页(当前登录账号信息与退出登录) */
 function goMember() {
   uni.navigateTo({ url: '/pages/member/index' });
 }
@@ -34,7 +34,7 @@ function goMember() {
         <text class="member-name">{{ member?.name || '未登录' }}</text>
         <text v-if="member?.username" class="member-account">账号:{{ member.username }}</text>
       </view>
-      <text class="member-sub">账号管理</text>
+      <text class="member-sub">账号信息</text>
       <text class="update-arrow">›</text>
     </view>
 
