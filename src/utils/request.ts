@@ -110,7 +110,13 @@ export function request<T = unknown>(opts: RequestOptions): Promise<T> {
           handleUnauthorized();
         }
         console.error(`[request] ${method} ${url} 失败:`, status, extractDetail(res.data));
-        reject(new RequestError(status, `请求失败(${status})`));
+        // 后端 detail 是字符串(FastAPI HTTPException)时优先用作可读信息
+        // (如「旧密码不正确」),否则回退通用提示
+        const detail = extractDetail(res.data);
+        reject(new RequestError(
+          status,
+          typeof detail === 'string' && detail ? detail : `请求失败(${status})`,
+        ));
       },
       fail: (err) => {
         console.error(`[request] ${method} ${url} 网络错误:`, err);

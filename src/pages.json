@@ -35,7 +35,7 @@
 		{
 			"path": "pages/member/index",
 			"style": {
-				"navigationBarTitleText": "账号"
+				"navigationBarTitleText": "账号管理"
 			}
 		},
 		{
