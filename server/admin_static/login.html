@@ -81,7 +81,7 @@
     try {
       const res = await fetch(BASE + "/api/admin/session", { headers });
       const s = await res.json();
-      if (s.authed) return location.replace(BASE + "/admin");
+      if (s.authed) return location.replace(BASE + "/admin/songs");
       if (!s.initialized) {
         msgEl.textContent = "服务端未配置 ADMIN_NAME/ADMIN_PASSWORD,账号密码登录不可用";
         msgEl.className = "msg err";
@@ -113,7 +113,7 @@
         return;
       }
       try { localStorage.setItem(SESSION_KEY, JSON.stringify({ token: data.token, username: data.username })); } catch (e) { /* 无痕模式:仅本次会话有效 */ }
-      location.replace(BASE + "/admin");
+      location.replace(BASE + "/admin/songs"); // 登录成功直达歌曲管理(左侧导航栏可切其他模块)
     } catch (e) {
       msgEl.textContent = "请求失败:" + (e.message || e);
       msgEl.className = "msg err";

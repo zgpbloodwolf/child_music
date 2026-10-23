@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>歌曲管理 · 启蒙音频后台</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; background: #f5f5f7; color: #222; }
+    .wrap { max-width: 1200px; margin: 16px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    h2 { font-size: 16px; margin: 0 0 4px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    .desc { font-size: 12px; color: #999; margin: 0 0 12px; padding-left: 11px; }
+    label { display: block; font-size: 13px; color: #666; margin: 8px 0 4px; }
+    input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; background: #fff; }
+    input[type="file"] { font-size: 13px; padding: 6px 8px; }
+    textarea { min-height: 90px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #ff8c42; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    button { background: #ff8c42; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; cursor: pointer; }
+    button:hover { background: #f07a2d; }
+    button.ghost { background: #eee; color: #333; }
+    button.ghost:hover { background: #ddd; }
+    button.sm { padding: 5px 10px; font-size: 12px; }
+    button:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
+
+    .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    .toolbar input { width: 190px; }
+    .toolbar select { width: auto; min-width: 110px; }
+    .toolbar .spacer { flex: 1; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 8px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+    th { color: #888; font-weight: 600; background: #fafafa; }
+    tbody tr:hover td { background: #fffaf5; }
+    .mono { font-family: Consolas, Menlo, monospace; font-size: 12px; color: #999; }
+    .muted { color: #999; font-size: 12px; }
+    .cell-sub { margin-top: 2px; }
+
+    /* 封面缩略图(缺失时浅灰占位) */
+    .cover { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; background: #f0f0f0; display: block; }
+    .cover.placeholder { display: inline-block; }
+
+    /* 操作列:文字按钮 */
+    .op { background: none; border: none; color: #e8722a; padding: 2px 6px; font-size: 13px; cursor: pointer; }
+    .op:hover { background: none; color: #d46015; text-decoration: underline; }
+    .op.danger { color: #e0533d; }
+    .op.danger:hover { color: #c8442f; }
+    .empty { text-align: center; color: #bbb; padding: 32px 0 !important; }
+    audio { height: 28px; width: 190px; vertical-align: middle; }
+
+    /* 分页 */
+    .pager { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; font-size: 13px; color: #666; }
+    .pager input { width: 56px; text-align: center; padding: 5px 6px; }
+    .pager select { width: auto; padding: 5px 6px; }
+
+    .msg { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-top: 10px; display: none; }
+    .msg.ok { background: #e7f7ec; color: #1f8a4c; display: block; }
+    .msg.err { background: #fdecea; color: #c0392b; display: block; }
+
+    .modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; justify-content: center; align-items: flex-start; padding-top: 50px; }
+    .modal-mask.show { display: flex; }
+    .modal { background: #fff; border-radius: 10px; width: 560px; max-width: 94vw; padding: 18px 20px; box-shadow: 0 8px 30px rgba(0,0,0,.2); max-height: calc(100vh - 80px); overflow-y: auto; }
+    .modal.wide { width: 700px; }
+    .modal h3 { margin: 0 0 14px; font-size: 16px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    .modal .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+    /* 编辑歌曲弹窗:分区布局 */
+    .sec-title { font-size: 13px; color: #666; font-weight: 600; margin: 16px 0 8px; border-bottom: 1px dashed #e5e5e5; padding-bottom: 4px; }
+    .media-box { display: flex; align-items: center; gap: 12px; }
+    .media-box .cover { width: 56px; height: 56px; flex-shrink: 0; }
+    .media-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  </style>
+</head>
+<body>
+  <!-- 公共左侧导航栏(同步注入,含 whoami/logoutBtn 占位,见 common.js) -->
+  <script src="common.js"></script>
+
+  <div class="wrap">
+    <div class="card">
+      <h2>歌曲列表<span class="muted" id="songCountTop" style="float:right;font-weight:normal"></span></h2>
+      <p class="desc">按歌名/作者/专辑搜索,可叠加分类与「资料缺失」筛选;上传歌曲请点右上角按钮;编辑弹窗内可替换封面/音频与歌词。</p>
+      <div class="toolbar">
+        <input id="kw" placeholder="按歌名 / 作者 / 专辑搜索" />
+        <select id="filterCat"><option value="">全部分类</option></select>
+        <select id="filterSub"><option value="">全部子类</option></select>
+        <select id="filterMissing">
+          <option value="">资料不限</option>
+          <option value="lyric">无歌词</option>
+          <option value="cover">无封面</option>
+          <option value="any">无歌词或无封面</option>
+        </select>
+        <button class="ghost" id="searchBtn">搜索</button>
+        <button class="ghost" id="refreshBtn">重置</button>
+        <span class="spacer"></span>
+        <button id="uploadBtn2">+ 上传歌曲</button>
+      </div>
+      <table>
+        <thead><tr>
+          <th style="width:56px">封面</th><th>歌名</th><th style="width:110px">作者</th><th style="width:110px">专辑</th>
+          <th style="width:150px">分类</th><th style="width:54px">时长</th><th style="width:210px">试听</th><th style="width:110px">操作</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="pager">
+        <button class="ghost sm" id="firstBtn">« 首页</button>
+        <button class="ghost sm" id="prevBtn">‹ 上一页</button>
+        <span>第 <input id="pageInput" type="number" min="1" value="1" /> / <span id="totalPages">1</span> 页</span>
+        <button class="ghost sm" id="nextBtn">下一页 ›</button>
+        <button class="ghost sm" id="lastBtn">末页 »</button>
+        <label style="margin:0;font-size:13px;color:#666">每页
+          <select id="pageSize">
+            <option value="20">20 条</option>
+            <option value="50" selected>50 条</option>
+            <option value="100">100 条</option>
+          </select>
+        </label>
+        <span class="muted" id="songCount"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 上传歌曲弹窗 -->
+  <div id="uploadModal" class="modal-mask">
+    <div class="modal">
+      <h3>上传歌曲</h3>
+      <div class="row">
+        <div><label>音频文件(必填,mp3/m4a 等)</label><input id="audio" type="file" accept="audio/*" /></div>
+        <div><label>封面图(可选)</label><input id="cover" type="file" accept="image/*" /></div>
+      </div>
+      <div class="row3">
+        <div><label>歌曲 id(必填,字母数字下划线短横)</label><input id="songId" placeholder="如 gs999" autocomplete="off" /></div>
+        <div><label>歌名(必填)</label><input id="name" placeholder="如 小星星" autocomplete="off" /></div>
+        <div><label>作者/来源(必填)</label><input id="artist" placeholder="如 经典儿歌" autocomplete="off" /></div>
+      </div>
+      <div class="row3">
+        <div><label>专辑(可选)</label><input id="album" placeholder="可选" autocomplete="off" /></div>
+        <div><label>大类</label><select id="category"></select></div>
+        <div><label>子类</label><select id="sub"></select></div>
+      </div>
+      <label>歌词(lrc,可选)</label>
+      <textarea id="lyric" placeholder="[00:00.00] 歌词..."></textarea>
+      <div id="uploadMsg" class="msg"></div>
+      <div class="foot">
+        <button class="ghost" id="uploadCancel">取消</button>
+        <button id="uploadSave">上传</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑歌曲弹窗(分区:基本信息 / 封面与音频 / 歌词)-->
+  <div id="editModal" class="modal-mask">
+    <div class="modal wide">
+      <h3>编辑歌曲 <span class="muted" id="editIdLabel"></span></h3>
+
+      <div class="sec-title">基本信息(点「保存」生效)</div>
+      <div class="row3">
+        <div><label>歌名</label><input id="editName" autocomplete="off" /></div>
+        <div><label>作者</label><input id="editArtist" autocomplete="off" /></div>
+        <div><label>专辑</label><input id="editAlbum" autocomplete="off" /></div>
+      </div>
+      <div class="row">
+        <div><label>大类</label><select id="editCategory"></select></div>
+        <div><label>子类</label><select id="editSub"></select></div>
+      </div>
+      <div class="row">
+        <div><label>排序值(同类内小的在前,默认 0)</label><input id="editSort" type="number" step="1" /></div>
+        <div><label>原始来源路径(溯源用,可选)</label><input id="editOrigin" placeholder="如 D:\music\xxx.mp3" autocomplete="off" /></div>
+      </div>
+
+      <div class="sec-title">封面与音频(选文件后立即上传生效,无需点「保存」)</div>
+      <div class="row">
+        <div class="media-box">
+          <span id="editCoverBox"></span>
+          <div class="media-actions">
+            <button class="ghost sm" id="editCoverBtn">更换封面</button>
+            <button class="ghost sm" id="editCoverClearBtn">清除封面</button>
+          </div>
+        </div>
+        <div class="media-box">
+          <div style="flex:1">
+            <p class="muted" id="editAudioInfo" style="margin:0 0 8px">-</p>
+            <button class="ghost sm" id="editAudioBtn">替换音频</button>
+          </div>
+        </div>
+      </div>
+      <p class="muted" style="margin:6px 0 0">替换音频会生成新文件地址并自动重读时长(绕开客户端音频长缓存);封面替换同理即时生效。</p>
+
+      <div class="sec-title">歌词(lrc,点「保存」生效)</div>
+      <div style="margin-bottom:6px"><button class="ghost sm" id="importLrcBtn">导入 .lrc 文件</button></div>
+      <textarea id="editLyric" style="min-height:110px"></textarea>
+
+      <div id="editMsg" class="msg"></div>
+      <div class="foot">
+        <button class="ghost" id="editCancel">取消</button>
+        <button id="editSave">保存</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // 应用前缀(自动识别 /admin/songs 子路径),与 index.html 的 BASE 规则一致
+  const BASE = location.pathname.replace(/\/admin\/songs\/?$/, "") || "";
+
+  // ===== 登录态(与 index.html 一致:令牌存 localStorage,失效统一回登录页)=====
+  const SESSION_KEY = "admin_session";
+  let adminToken = "";
+
+  function loadSession() {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch (e) { return null; }
+  }
+  function clearSession() {
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) { /* 忽略 */ }
+    adminToken = "";
+  }
+  function gotoLogin() {
+    location.replace(BASE + "/admin/login");
+  }
+
+  async function api(path, opts = {}) {
+    const headers = { ...(opts.headers || {}) };
+    if (adminToken) headers.Authorization = "Bearer " + adminToken;
+    const res = await fetch(BASE + path, { ...opts, headers });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 401 && adminToken) {
+        clearSession();
+        gotoLogin();
+      }
+      const detail = (data && data.detail) || ("请求失败(" + res.status + ")");
+      const err = new Error(detail);
+      err.status = res.status;
+      err.detail = detail;
+      throw err;
+    }
+    return data;
+  }
+
+  // 退出(按钮在公共侧边栏底部,由 common.js 注入)
+  document.getElementById("logoutBtn").onclick = () => {
+    if (!confirm("确定退出登录?")) return;
+    clearSession();
+    gotoLogin();
+  };
+
+  // ===== 工具 =====
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function setMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = text ? "msg " + (ok ? "ok" : "err") : "msg";
+  }
+  function fmtDur(d) { return d ? Math.floor(d / 60) + ":" + String(Math.round(d % 60)).padStart(2, "0") : "-"; }
+
+  // ===== 分类数据(筛选/上传/编辑弹窗的下拉数据源)=====
+  let categories = [];
+  function subsOf(catId) {
+    const c = categories.find(c => c.id === catId);
+    return (c && c.subs) || [];
+  }
+  function subNameOf(subId) {
+    for (const c of categories) {
+      const s = (c.subs || []).find(x => x.id === subId);
+      if (s) return s.name;
+    }
+    return subId || "-";
+  }
+  async function loadCategories() {
+    // 曲库接口需登录态(会员或管理员),走 api() 带管理员 token
+    categories = await api("/api/categories");
+    fillSelects();
+  }
+  function fillSelects() {
+    const opts = categories.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
+    document.getElementById("filterCat").innerHTML = `<option value="">全部分类</option>` + opts;
+    document.getElementById("category").innerHTML = opts;
+    document.getElementById("editCategory").innerHTML = opts;
+    renderSubSelect("filterCat", "filterSub", true);
+    renderSubSelect("category", "sub", false);
+  }
+  function renderSubSelect(catSelId, subSelId, withAll) {
+    const catId = document.getElementById(catSelId).value;
+    const subs = subsOf(catId);
+    const allOpt = withAll ? `<option value="">全部子类</option>` : "";
+    document.getElementById(subSelId).innerHTML = allOpt + subs.map(s => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join("");
+  }
+  document.getElementById("filterCat").onchange = () => { renderSubSelect("filterCat", "filterSub", true); goPage(1); };
+  document.getElementById("category").onchange = () => renderSubSelect("category", "sub", false);
+  document.getElementById("editCategory").onchange = () => renderSubSelect("editCategory", "editSub", false);
+
+  // ===== 歌曲列表(搜索/过滤 + 分页)=====
+  let curPage = 1;    // 当前页码(从 1 起)
+  let totalPages = 1; // 总页数(随查询结果更新)
+
+  async function loadSongs(page) {
+    if (page !== undefined) curPage = Math.max(1, page);
+    const kw = document.getElementById("kw").value.trim();
+    const cat = document.getElementById("filterCat").value;
+    const sub = document.getElementById("filterSub").value;
+    const missing = document.getElementById("filterMissing").value;
+    const size = +document.getElementById("pageSize").value;
+    const params = new URLSearchParams({ page: curPage, size: size });
+    if (kw) params.set("keyword", kw);
+    if (missing) params.set("missing", missing); // 筛「资料缺失」:补歌词/补封面用
+    if (sub) params.set("sub", sub);
+    else if (cat) params.set("category", cat);
+    const data = await api("/api/songs?" + params.toString());
+    const items = data.items || data; // 兼容裸数组
+    const total = data.total !== undefined ? data.total : items.length;
+    totalPages = Math.max(1, Math.ceil(total / size));
+    if (curPage > totalPages) return loadSongs(totalPages); // 末页数据被删后回退
+    renderSongs(items);
+    renderPager(total);
+  }
+
+  function renderPager(total) {
+    document.getElementById("pageInput").value = curPage;
+    document.getElementById("totalPages").textContent = totalPages;
+    // 总数上(标题右侧)下(翻页栏旁)各显示一份,筛选后不必滚到底部看结果数
+    document.getElementById("songCountTop").textContent = "共 " + total + " 首";
+    document.getElementById("songCount").textContent = "共 " + total + " 首";
+    const first = curPage <= 1, last = curPage >= totalPages;
+    document.getElementById("firstBtn").disabled = first;
+    document.getElementById("prevBtn").disabled = first;
+    document.getElementById("nextBtn").disabled = last;
+    document.getElementById("lastBtn").disabled = last;
+  }
+
+  function goPage(p) {
+    const target = Math.max(1, Math.min(p, totalPages));
+    loadSongs(target).catch(e => alert("加载歌曲失败:" + (e.message || e)));
+  }
+
+  function renderSongs(items) {
+    const tb = document.getElementById("tbody");
+    if (!items.length) {
+      tb.innerHTML = `<tr><td colspan="8" class="empty">没有符合条件的歌曲</td></tr>`;
+      return;
+    }
+    tb.innerHTML = items.map(s => {
+      const coverCell = s.cover
+        ? `<img class="cover" src="${esc(s.cover)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover placeholder'}))" />`
+        : `<span class="cover placeholder"></span>`;
+      return `
+      <tr>
+        <td>${coverCell}</td>
+        <td>
+          <div>${esc(s.name)}</div>
+          <div class="mono cell-sub">${esc(s.id)}</div>
+        </td>
+        <td>${esc(s.artist || "-")}</td>
+        <td class="muted">${esc(s.album || "-")}</td>
+        <td>${esc(subNameOf(s.subCategory))}</td>
+        <td class="muted">${fmtDur(s.duration)}</td>
+        <td><button class="op" data-preview="${esc(s.id)}">试听</button></td>
+        <td>
+          <button class="op" data-edit="${esc(s.id)}">编辑</button>
+          <button class="op danger" data-del="${esc(s.id)}">删除</button>
+        </td>
+      </tr>`;
+    }).join("");
+    tb.querySelectorAll("button[data-del]").forEach(b => b.onclick = () => delSong(b.dataset.del));
+    tb.querySelectorAll("button[data-edit]").forEach(b => b.onclick = () => openEditSong(b.dataset.edit));
+    tb.querySelectorAll("button[data-preview]").forEach(b => b.onclick = () => previewSong(b.dataset.preview, b));
+  }
+
+  document.getElementById("searchBtn").onclick = () => goPage(1); // 新条件从第一页开始
+  // 下拉筛选选中即自动搜索(与换每页条数行为一致);关键词输入中途不自动搜,避免频繁请求
+  ["filterSub", "filterMissing", "pageSize"].forEach(id => {
+    document.getElementById(id).onchange = () => goPage(1);
+  });
+  document.getElementById("kw").onkeydown = (e) => { if (e.key === "Enter") goPage(1); }; // 回车即搜
+  document.getElementById("refreshBtn").onclick = () => {
+    document.getElementById("kw").value = "";
+    document.getElementById("filterCat").value = "";
+    document.getElementById("filterMissing").value = "";
+    renderSubSelect("filterCat", "filterSub", true);
+    goPage(1);
+  };
+  document.getElementById("firstBtn").onclick = () => goPage(1);
+  document.getElementById("prevBtn").onclick = () => goPage(curPage - 1);
+  document.getElementById("nextBtn").onclick = () => goPage(curPage + 1);
+  document.getElementById("lastBtn").onclick = () => goPage(totalPages);
+  document.getElementById("pageInput").onchange = () => {
+    const v = parseInt(document.getElementById("pageInput").value, 10);
+    goPage(isNaN(v) ? curPage : v);
+  };
+
+  // 试听:列表不返回 src,按需取详情拿播放地址
+  async function previewSong(songId, btn) {
+    btn.disabled = true;
+    btn.textContent = "加载中…";
+    try {
+      const data = await api("/api/songs/" + encodeURIComponent(songId));
+      if (!data.src) { btn.textContent = "无音频"; return; }
+      const audio = document.createElement("audio");
+      audio.src = data.src;
+      audio.controls = true;
+      btn.replaceWith(audio);
+    } catch (e) {
+      btn.textContent = "失败";
+      alert(e.detail || e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // 删除歌曲
+  async function delSong(songId) {
+    if (!confirm("确认删除 " + songId + "?(含音频与封面文件,不可恢复)")) return;
+    try {
+      await api("/api/admin/songs/" + encodeURIComponent(songId), { method: "DELETE" });
+      loadSongs().catch(() => {});
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  // ===== 上传歌曲弹窗 =====
+  const uploadModal = document.getElementById("uploadModal");
+  const uploadMsg = document.getElementById("uploadMsg");
+  function openUpload() {
+    ["audio", "cover", "songId", "name", "artist", "album", "lyric"].forEach(i => document.getElementById(i).value = "");
+    setMsg(uploadMsg, "", true);
+    uploadModal.classList.add("show");
+  }
+  document.getElementById("uploadBtn2").onclick = openUpload;
+  document.getElementById("uploadCancel").onclick = () => uploadModal.classList.remove("show");
+  uploadModal.onclick = (e) => { if (e.target === uploadModal) uploadModal.classList.remove("show"); };
+
+  document.getElementById("uploadSave").onclick = async () => {
+    const audio = document.getElementById("audio").files[0];
+    if (!audio) return setMsg(uploadMsg, "请选择音频文件", false);
+    const fd = new FormData();
+    fd.append("audio", audio);
+    const cover = document.getElementById("cover").files[0];
+    if (cover) fd.append("cover", cover);
+    fd.append("id", document.getElementById("songId").value.trim());
+    fd.append("name", document.getElementById("name").value.trim());
+    fd.append("artist", document.getElementById("artist").value.trim());
+    fd.append("album", document.getElementById("album").value.trim());
+    fd.append("category_id", document.getElementById("category").value);
+    fd.append("sub_category_id", document.getElementById("sub").value);
+    fd.append("lyric", document.getElementById("lyric").value);
+    try {
+      const data = await api("/api/admin/songs", { method: "POST", body: fd });
+      uploadModal.classList.remove("show");
+      alert("上传成功:" + data.name + "  时长 " + (data.duration ? Math.round(data.duration) + "s" : "未知"));
+      loadSongs(1).catch(() => {});
+    } catch (e) { setMsg(uploadMsg, e.detail || e.message, false); }
+  };
+
+  // ===== 编辑歌曲弹窗(基本信息 + 封面/音频即时替换 + 歌词)=====
+  let editingSong = null;
+  const editModal = document.getElementById("editModal");
+  const editMsg = document.getElementById("editMsg");
+
+  // 弹出文件选择框,选中后回调 file(取消不回调);弹窗内各文件入口共用
+  function pickFile(accept, onPicked) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = accept;
+    input.onchange = () => { if (input.files[0]) onPicked(input.files[0]); };
+    input.click();
+  }
+
+  // 弹窗内封面预览。bust 为 true 时追加时间戳参数,避免浏览器 5 分钟缓存盖住刚换的封面
+  function renderEditCover(coverUrl, bust) {
+    const box = document.getElementById("editCoverBox");
+    document.getElementById("editCoverClearBtn").style.display = coverUrl ? "" : "none";
+    if (!coverUrl) {
+      box.innerHTML = `<span class="cover placeholder"></span>`;
+      return;
+    }
+    const src = coverUrl + (bust ? (coverUrl.includes("?") ? "&" : "?") + "t=" + Date.now() : "");
+    box.innerHTML = `<img class="cover" src="${esc(src)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover placeholder'}))" />`;
+  }
+
+  // 弹窗内音频信息:文件名(取自 src 末段)+ 时长
+  function renderEditAudio(song) {
+    const file = decodeURIComponent((song.src || "").split("/").pop() || "-");
+    const dur = song.duration ? fmtDur(song.duration) : "未知";
+    document.getElementById("editAudioInfo").textContent = "文件:" + file + " · 时长 " + dur;
+  }
+
+  // 文件类操作(封面/音频)成功后的公共收尾:更新弹窗数据与展示、刷新列表行
+  function applySongFileResult(data, okText) {
+    editingSong = data; // 接口返回完整 SongOut,直接整体替换
+    renderEditCover(data.cover, true);
+    renderEditAudio(data);
+    loadSongs().catch(() => {});
+    setMsg(editMsg, okText, true);
+  }
+
+  async function openEditSong(songId) {
+    try {
+      const data = await api("/api/songs/" + encodeURIComponent(songId));
+      editingSong = data;
+      document.getElementById("editIdLabel").textContent = "(" + data.id + ")";
+      document.getElementById("editName").value = data.name || "";
+      document.getElementById("editArtist").value = data.artist || "";
+      document.getElementById("editAlbum").value = data.album || "";
+      document.getElementById("editCategory").value = data.category;
+      renderSubSelect("editCategory", "editSub", false);
+      document.getElementById("editSub").value = data.subCategory || "";
+      document.getElementById("editSort").value = data.sortOrder ?? 0;
+      document.getElementById("editOrigin").value = data.originalPath || "";
+      document.getElementById("editLyric").value = data.lyric || "";
+      renderEditCover(data.cover);
+      renderEditAudio(data);
+      setMsg(editMsg, "", true);
+      editModal.classList.add("show");
+    } catch (e) { alert(e.detail || e.message); }
+  }
+  document.getElementById("editCancel").onclick = () => editModal.classList.remove("show");
+
+  // 更换封面:选文件立即上传,成功后刷新弹窗预览与列表行
+  document.getElementById("editCoverBtn").onclick = () => {
+    if (!editingSong) return;
+    pickFile("image/*", async (file) => {
+      const fd = new FormData();
+      fd.append("cover", file);
+      try {
+        const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/cover", { method: "POST", body: fd });
+        applySongFileResult(data, "封面已更新");
+      } catch (e) { setMsg(editMsg, e.detail || e.message, false); }
+    });
+  };
+
+  // 清除封面:删文件并置空,列表同步回落占位色块
+  document.getElementById("editCoverClearBtn").onclick = async () => {
+    if (!editingSong) return;
+    if (!confirm("确认清除该歌曲的封面文件?")) return;
+    try {
+      const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/cover", { method: "DELETE" });
+      applySongFileResult(data, "封面已清除");
+    } catch (e) { setMsg(editMsg, e.detail || e.message, false); }
+  };
+
+  // 替换音频:选文件确认后立即上传,后端自动重读时长并换文件名(绕开长缓存)
+  document.getElementById("editAudioBtn").onclick = () => {
+    if (!editingSong) return;
+    pickFile("audio/*", async (file) => {
+      if (!confirm("确认用「" + file.name + "」替换当前音频?\n(旧音频文件将被删除,正在听旧文件的客户端可能需重启应用)")) return;
+      const fd = new FormData();
+      fd.append("audio", file);
+      try {
+        const data = await api("/api/admin/songs/" + encodeURIComponent(editingSong.id) + "/audio", { method: "POST", body: fd });
+        applySongFileResult(data, "音频已替换(时长 " + (data.duration ? fmtDur(data.duration) : "未知") + ")");
+      } catch (e) { setMsg(editMsg, e.detail || e.message, false); }
+    });
+  };
+
+  // 导入本地 .lrc 文件到歌词输入框(填入后仍需点「保存」提交)
+  document.getElementById("importLrcBtn").onclick = () => {
+    pickFile(".lrc,text/plain", (file) => {
+      const reader = new FileReader();
+      reader.onload = () => { document.getElementById("editLyric").value = String(reader.result || ""); };
+      reader.readAsText(file, "utf-8");
+    });
+  };
+
+  // 保存:提交元数据(name/artist/album/分类/排序/原始路径/歌词)
+  document.getElementById("editSave").onclick = async () => {
+    if (!editingSong) return;
+    const sortVal = parseInt(document.getElementById("editSort").value, 10);
+    const body = {
+      name: document.getElementById("editName").value.trim(),
+      artist: document.getElementById("editArtist").value.trim(),
+      album: document.getElementById("editAlbum").value.trim(),
+      category_id: document.getElementById("editCategory").value,
+      sub_category_id: document.getElementById("editSub").value,
+      lyric: document.getElementById("editLyric").value,
+      sort_order: isNaN(sortVal) ? 0 : sortVal,
+      original_path: document.getElementById("editOrigin").value.trim(),
+    };
+    if (!body.name || !body.artist) return setMsg(editMsg, "歌名与作者必填", false);
+    try {
+      await api("/api/admin/songs/" + encodeURIComponent(editingSong.id), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      editModal.classList.remove("show");
+      editingSong = null;
+      loadSongs().catch(() => {});
+    } catch (e) { setMsg(editMsg, e.detail || e.message, false); }
+  };
+
+  // ===== 启动:探测会话,已登录进入本页,未登录/失效跳登录页(与 index.html 一致)=====
+  (async function boot() {
+    const saved = loadSession();
+    if (saved && saved.token) adminToken = saved.token;
+    try {
+      const s = await api("/api/admin/session"); // 该接口永不 401
+      if (s.authed && adminToken) {
+        document.getElementById("whoami").textContent = s.username;
+        // 首屏并行拉分类与歌曲;?upload=1 时自动打开上传弹窗(供导航页快捷入口)
+        loadCategories().catch(e => alert("加载分类失败:" + (e.message || e)));
+        loadSongs(1).catch(e => alert("加载歌曲失败:" + (e.message || e)));
+        if (new URLSearchParams(location.search).get("upload") === "1") openUpload();
+        return;
+      }
+    } catch (e) { /* 探测失败同样跳登录页,由登录页再探一次 */ }
+    if (saved) clearSession();
+    gotoLogin();
+  })();
+</script>
+</body>
+</html>

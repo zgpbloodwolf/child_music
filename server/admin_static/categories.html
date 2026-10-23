@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分类管理 · 启蒙音频后台</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; background: #f5f5f7; color: #222; }
+    .wrap { max-width: 1100px; margin: 16px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    h2 { font-size: 16px; margin: 0 0 4px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    .desc { font-size: 12px; color: #999; margin: 0 0 12px; padding-left: 11px; }
+    label { display: block; font-size: 13px; color: #666; margin: 8px 0 4px; }
+    input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; background: #fff; }
+    textarea { min-height: 64px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #ff8c42; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    button { background: #ff8c42; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; cursor: pointer; }
+    button:hover { background: #f07a2d; }
+    button.ghost { background: #eee; color: #333; }
+    button.ghost:hover { background: #ddd; }
+    button.sm { padding: 5px 10px; font-size: 12px; }
+
+    .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    .toolbar input { width: 200px; }
+    .toolbar .spacer { flex: 1; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+    th { color: #888; font-weight: 600; background: #fafafa; }
+    .mono { font-family: Consolas, Menlo, monospace; font-size: 12px; color: #888; }
+    .muted { color: #999; font-size: 12px; }
+
+    /* 树形结构:大类行可点折叠,子类行缩进浅底 */
+    tr.cat-row { cursor: pointer; }
+    tr.cat-row:hover td { background: #fffaf5; }
+    .twisty { display: inline-block; width: 16px; color: #ff8c42; font-size: 11px; user-select: none; }
+    .twisty.empty { visibility: hidden; }
+    .cat-name b { margin-left: 6px; font-size: 14px; }
+    .icon { margin-left: 6px; font-size: 16px; }
+    tr.sub-row td { background: #fafafa; color: #555; }
+    tr.sub-row:hover td { background: #f5f0ea; }
+    .sub-name { padding-left: 38px !important; }
+    tr.hidden { display: none; }
+
+    /* 封面缩略图(未设置时浅灰占位) */
+    .cover { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; background: #f0f0f0; display: block; }
+    .cover.placeholder { display: inline-block; }
+
+    /* 统计列:数字为主,弱化修饰 */
+    .num { font-size: 14px; color: #333; }
+    .num-sub { font-size: 11px; color: #aaa; margin-left: 2px; }
+
+    /* 描述列截断,避免长描述撑高行 */
+    .desc-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* 操作列:文字按钮 */
+    .op { background: none; border: none; color: #e8722a; padding: 2px 6px; font-size: 13px; cursor: pointer; }
+    .op:hover { background: none; color: #d46015; text-decoration: underline; }
+    .op.danger { color: #e0533d; }
+    .op.danger:hover { color: #c8442f; }
+    .empty { text-align: center; color: #bbb; padding: 32px 0 !important; }
+
+    .msg { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-top: 10px; display: none; }
+    .msg.ok { background: #e7f7ec; color: #1f8a4c; display: block; }
+    .msg.err { background: #fdecea; color: #c0392b; display: block; }
+
+    .modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; justify-content: center; align-items: flex-start; padding-top: 60px; }
+    .modal-mask.show { display: flex; }
+    .modal { background: #fff; border-radius: 10px; width: 480px; max-width: 92vw; padding: 18px 20px; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
+    .modal h3 { margin: 0 0 14px; font-size: 16px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    .modal .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <!-- 公共左侧导航栏(同步注入,含 whoami/logoutBtn 占位,见 common.js) -->
+  <script src="common.js"></script>
+
+  <div class="wrap">
+    <div class="card">
+      <h2>分类列表<span class="muted" id="catCount" style="float:right;font-weight:normal"></span></h2>
+      <p class="desc">大类与子类两级结构;点击大类行可收起/展开其子类。大类封面用作 App 内该大类歌单页的头部大图;删除大类须先清空其歌曲与子类,删除子类须先移走其歌曲。</p>
+      <div class="toolbar">
+        <input id="kw" placeholder="搜索名称 / id" />
+        <button class="ghost" id="toggleAllBtn">全部收起</button>
+        <button class="ghost" id="reloadBtn">刷新</button>
+        <span class="spacer"></span>
+        <button class="ghost" id="newSubBtn">+ 新增子类</button>
+        <button id="newCatBtn">+ 新增大类</button>
+      </div>
+      <table>
+        <thead><tr><th style="width:230px">名称</th><th style="width:170px">id</th><th style="width:56px">封面</th><th style="width:110px">歌曲</th><th>描述</th><th style="width:170px">操作</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 新增大类弹窗 -->
+  <div id="catModal" class="modal-mask">
+    <div class="modal">
+      <h3>新增大类</h3>
+      <div class="row">
+        <div><label>id(必填,如 children)</label><input id="catId" placeholder="英文 id" autocomplete="off" /></div>
+        <div><label>名称(必填)</label><input id="catName" placeholder="如 儿歌" autocomplete="off" /></div>
+      </div>
+      <div class="row">
+        <div><label>图标(可选,emoji)</label><input id="catIcon" placeholder="如 🎵" maxlength="4" autocomplete="off" /></div>
+        <div><label>描述(可选)</label><input id="catDesc" placeholder="大类简介" autocomplete="off" /></div>
+      </div>
+      <div id="catMsg" class="msg"></div>
+      <div class="foot">
+        <button class="ghost" id="catCancel">取消</button>
+        <button id="catSave">新增大类</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增子类弹窗 -->
+  <div id="subModal" class="modal-mask">
+    <div class="modal">
+      <h3>新增子类</h3>
+      <div class="row">
+        <div><label>所属大类(必填)</label><select id="subParent"></select></div>
+        <div><label>id(必填,如 children-classic)</label><input id="subId" placeholder="英文 id" autocomplete="off" /></div>
+      </div>
+      <div class="row">
+        <div><label>名称(必填)</label><input id="subName" placeholder="如 经典儿歌" autocomplete="off" /></div>
+        <div><label>图标(可选,emoji)</label><input id="subIcon" placeholder="如 ⭐" maxlength="4" autocomplete="off" /></div>
+      </div>
+      <div><label>描述(可选)</label><input id="subDesc" placeholder="子类简介" autocomplete="off" /></div>
+      <div id="subMsg" class="msg"></div>
+      <div class="foot">
+        <button class="ghost" id="subCancel">取消</button>
+        <button id="subSave">新增子类</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑大类弹窗(id 不可改) -->
+  <div id="editModal" class="modal-mask">
+    <div class="modal">
+      <h3>编辑大类 <span class="muted" id="editIdLabel"></span></h3>
+      <div class="row">
+        <div><label>名称</label><input id="editName" autocomplete="off" /></div>
+        <div><label>图标(emoji)</label><input id="editIcon" maxlength="4" autocomplete="off" /></div>
+      </div>
+      <div><label>描述</label><textarea id="editDesc"></textarea></div>
+      <div class="foot">
+        <button class="ghost" id="editCancel">取消</button>
+        <button id="editSave">保存</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // 应用前缀(自动识别 /admin/categories 子路径),与 index.html 的 BASE 规则一致
+  const BASE = location.pathname.replace(/\/admin\/categories\/?$/, "") || "";
+
+  // ===== 登录态(与 index.html 一致:令牌存 localStorage,失效统一回登录页)=====
+  const SESSION_KEY = "admin_session";
+  let adminToken = "";
+
+  function loadSession() {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch (e) { return null; }
+  }
+  function clearSession() {
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) { /* 忽略 */ }
+    adminToken = "";
+  }
+  function gotoLogin() {
+    location.replace(BASE + "/admin/login");
+  }
+
+  async function api(path, opts = {}) {
+    const headers = { ...(opts.headers || {}) };
+    if (adminToken) headers.Authorization = "Bearer " + adminToken;
+    const res = await fetch(BASE + path, { ...opts, headers });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 401 && adminToken) {
+        clearSession();
+        gotoLogin();
+      }
+      const detail = (data && data.detail) || ("请求失败(" + res.status + ")");
+      const err = new Error(detail);
+      err.status = res.status;
+      err.detail = detail;
+      throw err;
+    }
+    return data;
+  }
+
+  // 退出(按钮在公共侧边栏底部,由 common.js 注入)
+  document.getElementById("logoutBtn").onclick = () => {
+    if (!confirm("确定退出登录?")) return;
+    clearSession();
+    gotoLogin();
+  };
+
+  // ===== 工具 =====
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function setMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = text ? "msg " + (ok ? "ok" : "err") : "msg";
+  }
+
+  // ===== 数据 =====
+  let categories = [];   // GET /api/categories:大类数组,含 subs 子数组、cover 完整 URL
+  let subSongCount = {}; // 子类 id → 歌曲数(从全量歌曲元数据推算)
+
+  async function load() {
+    const [cats, songs] = await Promise.all([
+      api("/api/categories"),
+      api("/api/songs"), // 全量元数据,仅取 subCategory 计数
+    ]);
+    categories = cats;
+    const items = Array.isArray(songs) ? songs : (songs.items || []);
+    subSongCount = {};
+    items.forEach(s => { subSongCount[s.subCategory] = (subSongCount[s.subCategory] || 0) + 1; });
+    render();
+    fillParentSelect();
+  }
+
+  // 新增子类弹窗的所属大类下拉
+  function fillParentSelect() {
+    document.getElementById("subParent").innerHTML =
+      categories.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
+  }
+
+  // ===== 折叠状态(localStorage 持久化,沿用 index.html 时代的 key 以保留用户习惯)=====
+  const COLLAPSE_KEY = "admin_collapsed_cats";
+  const collapsedCats = new Set();
+  try {
+    JSON.parse(localStorage.getItem(COLLAPSE_KEY) || "[]").forEach(id => collapsedCats.add(id));
+  } catch (e) { /* 无痕模式/脏数据:当作全部展开 */ }
+  function persistCollapsed() {
+    try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify([...collapsedCats])); } catch (e) { /* 忽略 */ }
+  }
+  function toggleCat(catId) {
+    if (!(categories.find(c => c.id === catId)?.subs || []).length) return;
+    if (collapsedCats.has(catId)) collapsedCats.delete(catId); else collapsedCats.add(catId);
+    persistCollapsed();
+    render();
+  }
+  document.getElementById("toggleAllBtn").onclick = () => {
+    const foldable = categories.filter(c => (c.subs || []).length).map(c => c.id);
+    const anyOpen = foldable.some(id => !collapsedCats.has(id));
+    collapsedCats.clear();
+    if (anyOpen) foldable.forEach(id => collapsedCats.add(id));
+    persistCollapsed();
+    render();
+  };
+
+  // ===== 渲染:大类行 + 缩进子类行;搜索时大类/子类按名称或 id 匹配 =====
+  function render() {
+    const kw = document.getElementById("kw").value.trim().toLowerCase();
+    const hit = (x) => !kw || (x.name || "").toLowerCase().includes(kw) || (x.id || "").toLowerCase().includes(kw);
+    // 子类命中的大类也要显示
+    const shown = categories
+      .map(c => ({ c, subs: (c.subs || []).filter(hit) }))
+      .filter(({ c, subs }) => hit(c) || subs.length);
+
+    document.getElementById("catCount").textContent = "共 " + categories.length + " 个大类";
+    document.getElementById("toggleAllBtn").textContent =
+      categories.some(c => (c.subs || []).length && !collapsedCats.has(c.id)) ? "全部收起" : "全部展开";
+
+    const tb = document.getElementById("tbody");
+    if (!shown.length) {
+      tb.innerHTML = `<tr><td colspan="6" class="empty">${categories.length ? "没有符合搜索条件的分类" : "还没有分类,点右上角「+ 新增大类」创建"}</td></tr>`;
+      return;
+    }
+    let html = "";
+    shown.forEach(({ c, subs }) => {
+      const allSubs = c.subs || [];
+      const foldable = allSubs.length > 0;
+      const folded = foldable && collapsedCats.has(c.id) && !kw; // 搜索时强制展开,便于核对
+      const total = allSubs.reduce((n, s) => n + (subSongCount[s.id] || 0), 0);
+      const coverCell = c.cover
+        ? `<img class="cover" src="${esc(c.cover)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover placeholder'}))" />`
+        : `<span class="cover placeholder"></span>`;
+      html += `
+      <tr class="cat-row">
+        <td class="cat-name"><span class="twisty${foldable ? "" : " empty"}">${folded ? "▸" : "▾"}</span><span class="icon">${esc(c.icon || "")}</span><b>${esc(c.name)}</b></td>
+        <td class="mono">${esc(c.id)}</td>
+        <td>${coverCell}</td>
+        <td><span class="num">${total}</span><span class="num-sub">/ ${allSubs.length} 子类</span></td>
+        <td class="muted desc-cell" title="${esc(c.desc || "")}">${esc(c.desc || "-")}</td>
+        <td>
+          <button class="op" data-cover="${esc(c.id)}">${c.cover ? "换封面" : "设封面"}</button>
+          <button class="op" data-edit="${esc(c.id)}">编辑</button>
+          <button class="op danger" data-delcat="${esc(c.id)}">删除</button>
+        </td>
+      </tr>`;
+      (kw ? subs : allSubs).forEach(s => {
+        html += `
+      <tr class="sub-row${folded ? " hidden" : ""}">
+        <td class="sub-name">${esc(s.icon || "")} ${esc(s.name)}</td>
+        <td class="mono">${esc(s.id)}</td>
+        <td></td>
+        <td><span class="num">${subSongCount[s.id] || 0}</span></td>
+        <td class="muted desc-cell" title="${esc(s.desc || "")}">${esc(s.desc || "-")}</td>
+        <td><button class="op danger" data-delsub="${esc(s.id)}">删除</button></td>
+      </tr>`;
+      });
+    });
+    tb.innerHTML = html;
+
+    tb.querySelectorAll("button[data-cover]").forEach(b => b.onclick = (e) => { e.stopPropagation(); replaceCover(b.dataset.cover); });
+    tb.querySelectorAll("button[data-edit]").forEach(b => b.onclick = (e) => { e.stopPropagation(); openEdit(b.dataset.edit); });
+    tb.querySelectorAll("button[data-delcat]").forEach(b => b.onclick = (e) => { e.stopPropagation(); delCat(b.dataset.delcat); });
+    tb.querySelectorAll("button[data-delsub]").forEach(b => b.onclick = (e) => { e.stopPropagation(); delSub(b.dataset.delsub); });
+    // 点大类行折叠(操作按钮已 stopPropagation,不会误触)
+    tb.querySelectorAll("tr.cat-row").forEach(tr => {
+      tr.onclick = () => toggleCat(tr.querySelector("button[data-delcat]").dataset.delcat);
+    });
+  }
+
+  document.getElementById("kw").oninput = render;
+  document.getElementById("reloadBtn").onclick = () => {
+    load().catch(e => alert("加载分类失败:" + (e.detail || e.message)));
+  };
+
+  // ===== 新增大类 =====
+  const catModal = document.getElementById("catModal");
+  const catMsg = document.getElementById("catMsg");
+  document.getElementById("newCatBtn").onclick = () => {
+    ["catId", "catName", "catIcon", "catDesc"].forEach(i => document.getElementById(i).value = "");
+    setMsg(catMsg, "", true);
+    catModal.classList.add("show");
+    document.getElementById("catId").focus();
+  };
+  document.getElementById("catCancel").onclick = () => catModal.classList.remove("show");
+  catModal.onclick = (e) => { if (e.target === catModal) catModal.classList.remove("show"); };
+  catModal.querySelectorAll("input").forEach(i => {
+    i.onkeydown = (e) => { if (e.key === "Enter") document.getElementById("catSave").click(); };
+  });
+  document.getElementById("catSave").onclick = async () => {
+    const body = {
+      id: document.getElementById("catId").value.trim(),
+      name: document.getElementById("catName").value.trim(),
+      icon: document.getElementById("catIcon").value.trim(),
+      desc: document.getElementById("catDesc").value.trim(),
+    };
+    if (!body.id || !body.name) return setMsg(catMsg, "id 与名称必填", false);
+    try {
+      await api("/api/admin/categories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      catModal.classList.remove("show");
+      load().catch(() => {});
+    } catch (e) { setMsg(catMsg, e.detail || e.message, false); }
+  };
+
+  // ===== 新增子类 =====
+  const subModal = document.getElementById("subModal");
+  const subMsg = document.getElementById("subMsg");
+  document.getElementById("newSubBtn").onclick = () => {
+    if (!categories.length) return alert("请先创建大类");
+    ["subId", "subName", "subIcon", "subDesc"].forEach(i => document.getElementById(i).value = "");
+    setMsg(subMsg, "", true);
+    subModal.classList.add("show");
+    document.getElementById("subId").focus();
+  };
+  document.getElementById("subCancel").onclick = () => subModal.classList.remove("show");
+  subModal.onclick = (e) => { if (e.target === subModal) subModal.classList.remove("show"); };
+  document.getElementById("subSave").onclick = async () => {
+    const body = {
+      id: document.getElementById("subId").value.trim(),
+      category_id: document.getElementById("subParent").value,
+      name: document.getElementById("subName").value.trim(),
+      icon: document.getElementById("subIcon").value.trim(),
+      desc: document.getElementById("subDesc").value.trim(),
+    };
+    if (!body.id || !body.name || !body.category_id) return setMsg(subMsg, "所属大类、id、名称必填", false);
+    try {
+      await api("/api/admin/subs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      subModal.classList.remove("show");
+      load().catch(() => {});
+    } catch (e) { setMsg(subMsg, e.detail || e.message, false); }
+  };
+
+  // ===== 编辑大类(id 不可改)=====
+  const editModal = document.getElementById("editModal");
+  let editingCat = null;
+  function openEdit(catId) {
+    const c = categories.find(x => x.id === catId);
+    if (!c) return;
+    editingCat = c;
+    document.getElementById("editIdLabel").textContent = "(" + c.id + ")";
+    document.getElementById("editName").value = c.name || "";
+    document.getElementById("editIcon").value = c.icon || "";
+    document.getElementById("editDesc").value = c.desc || "";
+    editModal.classList.add("show");
+  }
+  document.getElementById("editCancel").onclick = () => editModal.classList.remove("show");
+  editModal.onclick = (e) => { if (e.target === editModal) editModal.classList.remove("show"); };
+  document.getElementById("editSave").onclick = async () => {
+    if (!editingCat) return;
+    const body = {
+      name: document.getElementById("editName").value.trim(),
+      icon: document.getElementById("editIcon").value.trim(),
+      desc: document.getElementById("editDesc").value.trim(),
+    };
+    if (!body.name) return alert("名称不能为空");
+    try {
+      await api("/api/admin/categories/" + encodeURIComponent(editingCat.id), {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+      });
+      editModal.classList.remove("show");
+      editingCat = null;
+      load().catch(() => {});
+    } catch (e) { alert(e.detail || e.message); }
+  };
+
+  // ===== 大类封面(上传后立即生效,刷新缩略图)=====
+  function replaceCover(catId) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append("cover", file);
+      try {
+        await api("/api/admin/categories/" + encodeURIComponent(catId) + "/cover", { method: "POST", body: fd });
+        load().catch(() => {});
+      } catch (e) { alert(e.detail || e.message); }
+    };
+    input.click();
+  }
+
+  // ===== 删除 =====
+  async function delCat(catId) {
+    if (!confirm("确认删除大类 " + catId + "?(须无歌曲与子类)")) return;
+    try {
+      await api("/api/admin/categories/" + encodeURIComponent(catId), { method: "DELETE" });
+      load().catch(() => {});
+    } catch (e) { alert(e.detail || e.message); }
+  }
+  async function delSub(subId) {
+    if (!confirm("确认删除子类 " + subId + "?(须无歌曲)")) return;
+    try {
+      await api("/api/admin/subs/" + encodeURIComponent(subId), { method: "DELETE" });
+      load().catch(() => {});
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  // ===== 启动:探测会话,已登录进入本页,未登录/失效跳登录页(与 index.html 一致)=====
+  (async function boot() {
+    const saved = loadSession();
+    if (saved && saved.token) adminToken = saved.token;
+    try {
+      const s = await api("/api/admin/session"); // 该接口永不 401
+      if (s.authed && adminToken) {
+        document.getElementById("whoami").textContent = s.username;
+        return load().catch(e => alert("加载分类失败:" + (e.detail || e.message)));
+      }
+    } catch (e) { /* 探测失败同样跳登录页,由登录页再探一次 */ }
+    if (saved) clearSession();
+    gotoLogin();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>账号管理 · 启蒙音频后台</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; background: #f5f5f7; color: #222; }
+    .wrap { max-width: 1000px; margin: 16px auto; padding: 0 16px; }
+    .card { background: #fff; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    h2 { font-size: 16px; margin: 0 0 4px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    .desc { font-size: 12px; color: #999; margin: 0 0 12px; padding-left: 11px; }
+    label { display: block; font-size: 13px; color: #666; margin: 8px 0 4px; }
+    input { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; }
+    input:focus { outline: none; border-color: #ff8c42; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    button { background: #ff8c42; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 14px; cursor: pointer; }
+    button:hover { background: #f07a2d; }
+    button.ghost { background: #eee; color: #333; }
+    button.ghost:hover { background: #ddd; }
+    button.sm { padding: 5px 10px; font-size: 12px; }
+
+    .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+    .toolbar input { width: 220px; }
+    .toolbar .spacer { flex: 1; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+    th { color: #888; font-weight: 600; background: #fafafa; }
+    tbody tr:hover td { background: #fffaf5; }
+    td.ava { font-size: 20px; text-align: center; }
+    .mono { font-family: Consolas, Menlo, monospace; }
+    .muted { color: #999; font-size: 12px; }
+    td.muted { font-size: 13px; }
+
+    /* 操作列:文字按钮(管理端惯例,紧凑不抢视线) */
+    .op { background: none; border: none; color: #e8722a; padding: 2px 6px; font-size: 13px; cursor: pointer; }
+    .op:hover { background: none; color: #d46015; text-decoration: underline; }
+    .op.danger { color: #e0533d; }
+    .op.danger:hover { color: #c8442f; }
+    .empty { text-align: center; color: #bbb; padding: 32px 0 !important; }
+
+    .msg { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-top: 10px; display: none; }
+    .msg.ok { background: #e7f7ec; color: #1f8a4c; display: block; }
+    .msg.err { background: #fdecea; color: #c0392b; display: block; }
+
+    .modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; justify-content: center; align-items: flex-start; padding-top: 60px; }
+    .modal-mask.show { display: flex; }
+    .modal { background: #fff; border-radius: 10px; width: 480px; max-width: 92vw; padding: 18px 20px; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
+    .modal h3 { margin: 0 0 14px; font-size: 16px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    .modal .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+    /* 一次性凭证:两行键值,等宽字体方便抄录 */
+    .cred-box { border: 1px solid #eee; border-radius: 8px; margin-top: 10px; }
+    .cred-row { display: flex; align-items: center; padding: 9px 12px; }
+    .cred-row + .cred-row { border-top: 1px solid #f0f0f0; }
+    .cred-row span { width: 88px; color: #999; font-size: 13px; flex-shrink: 0; }
+    .cred-row b { font-family: Consolas, Menlo, monospace; font-size: 15px; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <!-- 公共左侧导航栏(同步注入,含 whoami/logoutBtn 占位,见 common.js) -->
+  <script src="common.js"></script>
+
+  <div class="wrap">
+    <div class="card">
+      <h2>账号列表<span class="muted" id="memCount" style="float:right;font-weight:normal"></span></h2>
+      <p class="desc">成员即登录账号,App 登录页不开放注册;可在本页创建,或由已登录成员在 App 内互加。重置密码立即生效,新密码只显示一次;删除账号会连同其收藏与播放记录一并删除。</p>
+      <div class="toolbar">
+        <input id="kw" placeholder="搜索昵称 / 登录账号" />
+        <button class="ghost" id="reloadBtn">刷新</button>
+        <span class="spacer"></span>
+        <button id="newBtn">+ 新建账号</button>
+      </div>
+      <table>
+        <thead><tr><th style="width:48px">头像</th><th>昵称</th><th>登录账号</th><th style="width:150px">创建时间</th><th style="width:140px">操作</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 新建账号弹窗 -->
+  <div id="memModal" class="modal-mask">
+    <div class="modal">
+      <h3>新建账号</h3>
+      <div class="row">
+        <div><label>登录账号(必填,2-24 位字母/数字/下划线/中文)</label><input id="memUser" placeholder="如 kid1" autocomplete="off" /></div>
+        <div><label>初始密码(留空自动生成 8 位无易混淆字符)</label><input id="memPass" placeholder="留空自动生成" autocomplete="off" /></div>
+      </div>
+      <p class="muted" style="margin:8px 0 0">昵称默认与登录账号相同;昵称与头像均可在 App 内「我的 → 账号管理」自行修改。</p>
+      <div id="memMsg" class="msg"></div>
+      <div class="foot">
+        <button class="ghost" id="memCancel">取消</button>
+        <button id="memSave">创建账号</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 一次性凭证弹窗(创建/重置密码后显示;不可点遮罩关闭,防误触丢失) -->
+  <div id="credModal" class="modal-mask">
+    <div class="modal">
+      <h3 id="credTitle">账号已创建</h3>
+      <p class="muted" style="font-size:13px;margin:0">密码只显示这一次(服务端只存散列),请立即复制并转交给使用者。</p>
+      <div class="cred-box">
+        <div class="cred-row"><span>登录账号</span><b id="credUser"></b></div>
+        <div class="cred-row"><span>密码</span><b id="credPass"></b></div>
+      </div>
+      <div class="foot">
+        <button class="ghost" id="credCopyBtn">复制账号密码</button>
+        <button id="credCloseBtn">我已保存,关闭</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // 应用前缀(自动识别 /admin/members 子路径),与 index.html 的 BASE 规则一致
+  const BASE = location.pathname.replace(/\/admin\/members\/?$/, "") || "";
+
+  // ===== 登录态(与 index.html 一致:令牌存 localStorage,失效统一回登录页)=====
+  const SESSION_KEY = "admin_session";
+  let adminToken = "";
+
+  function loadSession() {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)) || null; } catch (e) { return null; }
+  }
+  function clearSession() {
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) { /* 忽略 */ }
+    adminToken = "";
+  }
+  function gotoLogin() {
+    location.replace(BASE + "/admin/login");
+  }
+
+  // 带鉴权的请求;ok 返回解析后数据,失败抛 {detail}
+  async function api(path, opts = {}) {
+    const headers = { ...(opts.headers || {}) };
+    if (adminToken) headers.Authorization = "Bearer " + adminToken;
+    const res = await fetch(BASE + path, { ...opts, headers });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 401 && adminToken) {
+        clearSession();
+        gotoLogin();
+      }
+      const detail = (data && data.detail) || ("请求失败(" + res.status + ")");
+      const err = new Error(detail);
+      err.status = res.status;
+      err.detail = detail;
+      throw err;
+    }
+    return data;
+  }
+
+  // 退出(按钮在公共侧边栏底部,由 common.js 注入)
+  document.getElementById("logoutBtn").onclick = () => {
+    if (!confirm("确定退出登录?")) return;
+    clearSession();
+    gotoLogin();
+  };
+
+  // ===== 工具 =====
+  // HTML 转义:昵称/账号是自由输入,防止破坏表格结构
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function fmtTime(iso) {
+    return iso ? String(iso).replace("T", " ").slice(0, 16) : "-";
+  }
+  function setMsg(el, text, ok) {
+    el.textContent = text;
+    el.className = text ? "msg " + (ok ? "ok" : "err") : "msg";
+  }
+
+  // ===== 账号列表(全量拉取,搜索为前端过滤,不发请求)=====
+  let members = [];
+
+  function render() {
+    const kw = document.getElementById("kw").value.trim().toLowerCase();
+    const list = members.filter(m =>
+      !kw || (m.name || "").toLowerCase().includes(kw) || (m.username || "").toLowerCase().includes(kw));
+    document.getElementById("memCount").textContent = "共 " + members.length + " 个账号";
+    const tb = document.getElementById("tbody");
+    if (!list.length) {
+      tb.innerHTML = `<tr><td colspan="5" class="empty">${members.length ? "没有符合搜索条件的账号" : "还没有账号,点右上角「新建账号」创建"}</td></tr>`;
+      return;
+    }
+    tb.innerHTML = list.map(m => `
+      <tr>
+        <td class="ava">${esc(m.avatar || "·")}</td>
+        <td>${esc(m.name)}</td>
+        <td class="mono">${esc(m.username || "-")}</td>
+        <td class="muted">${fmtTime(m.createdAt)}</td>
+        <td>
+          <button class="op" data-mempwd="${m.id}" data-memname="${esc(m.name)}">重置密码</button>
+          <button class="op danger" data-memdel="${m.id}" data-memname="${esc(m.name)}">删除</button>
+        </td>
+      </tr>`).join("");
+    tb.querySelectorAll("button[data-mempwd]").forEach(b => b.onclick = () => resetPwd(b.dataset.memname, b.dataset.mempwd));
+    tb.querySelectorAll("button[data-memdel]").forEach(b => b.onclick = () => delMember(b.dataset.memname, b.dataset.memdel));
+  }
+
+  async function load() {
+    members = await api("/api/admin/members");
+    render();
+  }
+  document.getElementById("reloadBtn").onclick = () => {
+    load().catch(e => alert("加载账号失败:" + (e.detail || e.message)));
+  };
+  document.getElementById("kw").oninput = render;
+  document.getElementById("kw").onkeydown = (e) => { if (e.key === "Enter") render(); };
+
+  // ===== 新建账号弹窗 =====
+  const memModal = document.getElementById("memModal");
+  const memMsg = document.getElementById("memMsg");
+  document.getElementById("newBtn").onclick = () => {
+    ["memUser", "memPass"].forEach(i => document.getElementById(i).value = "");
+    setMsg(memMsg, "", true);
+    memModal.classList.add("show");
+    document.getElementById("memUser").focus();
+  };
+  document.getElementById("memCancel").onclick = () => memModal.classList.remove("show");
+  // 点遮罩关闭(仅新建弹窗;凭证弹窗不响应,防误触丢失密码)
+  memModal.onclick = (e) => { if (e.target === memModal) memModal.classList.remove("show"); };
+  // 弹窗内回车即提交
+  memModal.querySelectorAll("input").forEach(i => {
+    i.onkeydown = (e) => { if (e.key === "Enter") document.getElementById("memSave").click(); };
+  });
+
+  document.getElementById("memSave").onclick = async () => {
+    const username = document.getElementById("memUser").value.trim();
+    if (!username) return setMsg(memMsg, "请填写登录账号", false);
+    // 昵称/头像都不传:昵称由后端取登录账号,头像留空,均可在 App 内自行修改
+    const body = { username: username };
+    const pass = document.getElementById("memPass").value;
+    if (pass) body.password = pass; // 留空则后端自动生成
+    try {
+      const data = await api("/api/admin/members", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      memModal.classList.remove("show");
+      showCred("账号已创建", data.username, data.password);
+      load().catch(() => {});
+    } catch (e) { setMsg(memMsg, e.detail || e.message, false); }
+  };
+
+  // ===== 一次性凭证弹窗(创建/重置密码后显示)=====
+  function showCred(title, username, password) {
+    document.getElementById("credTitle").textContent = title;
+    document.getElementById("credUser").textContent = username;
+    document.getElementById("credPass").textContent = password;
+    document.getElementById("credModal").classList.add("show");
+  }
+  document.getElementById("credCloseBtn").onclick = () => document.getElementById("credModal").classList.remove("show");
+  document.getElementById("credCopyBtn").onclick = () => {
+    const text = "账号:" + document.getElementById("credUser").textContent
+      + "  密码:" + document.getElementById("credPass").textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        () => alert("已复制:\n" + text),
+        () => alert("复制失败,请手动抄写:\n" + text),
+      );
+    } else {
+      alert("请手动抄写:\n" + text);
+    }
+  };
+
+  // ===== 重置密码 / 删除 =====
+  async function resetPwd(name, memberId) {
+    if (!confirm("重置「" + name + "」的密码?\n旧密码将立即失效,新密码只在本次显示一次。")) return;
+    try {
+      const data = await api("/api/admin/members/" + encodeURIComponent(memberId) + "/password", {
+        method: "PUT", headers: { "Content-Type": "application/json" }, body: "{}",
+      });
+      showCred("密码已重置", data.username, data.password);
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  async function delMember(name, memberId) {
+    if (!confirm("确认删除账号「" + name + "」?\n其收藏与播放记录将一并删除,不可恢复。")) return;
+    try {
+      await api("/api/admin/members/" + encodeURIComponent(memberId), { method: "DELETE" });
+      load().catch(() => {});
+    } catch (e) { alert(e.detail || e.message); }
+  }
+
+  // ===== 启动:探测会话,已登录进入本页,未登录/失效跳登录页(与 index.html 一致)=====
+  (async function boot() {
+    const saved = loadSession();
+    if (saved && saved.token) adminToken = saved.token;
+    try {
+      const s = await api("/api/admin/session"); // 该接口永不 401
+      if (s.authed && adminToken) {
+        document.getElementById("whoami").textContent = s.username;
+        return load().catch(e => alert("加载账号失败:" + (e.detail || e.message)));
+      }
+    } catch (e) { /* 探测失败同样跳登录页,由登录页再探一次 */ }
+    if (saved) clearSession();
+    gotoLogin();
+  })();
+</script>
+</body>
+</html>
