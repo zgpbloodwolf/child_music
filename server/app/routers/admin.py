@@ -210,12 +210,23 @@ def _cat_out(db: Session, c: Category) -> CategoryOut:
 # ===== 歌曲 =====
 
 
+def _gen_song_id(db: Session) -> str:
+    """自动生成歌曲 id:gs + 6 位随机十六进制(与种子数据 gs 前缀风格一致)。
+
+    1600 万组合对几百首的曲库碰撞概率极低,仍查重兜底,撞了就重试。
+    """
+    while True:
+        cand = "gs" + uuid.uuid4().hex[:6]
+        if not db.get(Song, cand):
+            return cand
+
+
 @router.post("/songs", response_model=SongOut, summary="上传新歌曲")
 def upload_song(
     db: Session = Depends(get_db),
     audio: UploadFile = File(..., description="音频文件"),
     cover: UploadFile | None = File(None, description="封面图(可选)"),
-    id: str = Form(..., description="歌曲 id"),
+    id: str | None = Form(None, description="歌曲 id(可选,缺省自动生成;保留参数兼容种子脚本等调用方)"),
     name: str = Form(...),
     artist: str = Form(...),
     album: str | None = Form(None),
@@ -223,7 +234,12 @@ def upload_song(
     sub_category_id: str = Form(..., description="子类 id"),
     lyric: str | None = Form(None, description="lrc 歌词文本"),
 ) -> SongOut:
-    """multipart 上传:音频(必填)+ 可选封面 + 元数据字段。duration 自动读取。"""
+    """multipart 上传:音频(必填)+ 可选封面 + 元数据字段。duration 自动读取。
+
+    id 缺省时自动生成(gs+随机码),管理页不再让管理员手填;显式传入时仍走
+    原有校验(格式 + 唯一),兼容种子脚本等历史调用方。
+    """
+    id = (id or "").strip() or _gen_song_id(db)
     if not storage.valid_id(id):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "id 非法:仅允许字母数字下划线短横")
     if db.get(Song, id):

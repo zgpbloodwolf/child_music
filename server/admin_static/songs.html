@@ -61,15 +61,70 @@
     .modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; justify-content: center; align-items: flex-start; padding-top: 50px; }
     .modal-mask.show { display: flex; }
     .modal { background: #fff; border-radius: 10px; width: 560px; max-width: 94vw; padding: 18px 20px; box-shadow: 0 8px 30px rgba(0,0,0,.2); max-height: calc(100vh - 80px); overflow-y: auto; }
-    .modal.wide { width: 700px; }
+    .modal.wide { width: 720px; }
     .modal h3 { margin: 0 0 14px; font-size: 16px; border-left: 3px solid #ff8c42; padding-left: 8px; }
     .modal .foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+    /* 上传弹窗:文件选择卡(隐藏原生 input,点击整卡选择;选中后实线橙框反馈) */
+    .file-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .file-card { display: flex; align-items: center; gap: 10px; border: 1.5px dashed #d9d9d9; border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+    .file-card:hover { border-color: #ff8c42; background: #fffaf5; }
+    .file-card.picked { border-style: solid; border-color: #ff8c42; background: #fffaf5; }
+    .fc-thumb { width: 40px; height: 40px; border-radius: 6px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; overflow: hidden; }
+    .fc-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .fc-info { flex: 1; min-width: 0; }
+    .fc-info b { display: block; font-size: 13px; color: #333; }
+    .fc-meta { display: block; font-size: 12px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 640px) { .file-grid { grid-template-columns: 1fr; } }
 
     /* 编辑歌曲弹窗:分区布局 */
     .sec-title { font-size: 13px; color: #666; font-weight: 600; margin: 16px 0 8px; border-bottom: 1px dashed #e5e5e5; padding-bottom: 4px; }
     .media-box { display: flex; align-items: center; gap: 12px; }
     .media-box .cover { width: 56px; height: 56px; flex-shrink: 0; }
     .media-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+
+    /* 编辑歌曲:右侧滑入抽屉(歌词工作台需要大空间,居中弹窗施展不开) */
+    .drawer-mask { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 100; visibility: hidden; opacity: 0; transition: opacity .2s ease, visibility .2s ease; }
+    .drawer-mask.show { visibility: visible; opacity: 1; }
+    .drawer { position: absolute; right: 0; top: 0; bottom: 0; width: 920px; max-width: 96vw; background: #fff; border-radius: 10px 0 0 10px; box-shadow: -6px 0 24px rgba(0,0,0,.15); display: flex; flex-direction: column; transform: translateX(100%); transition: transform .25s ease; }
+    .drawer-mask.show .drawer { transform: translateX(0); }
+    .dw-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 10px; border-bottom: 1px solid #f0f0f0; }
+    .dw-head h3 { margin: 0; font-size: 16px; border-left: 3px solid #ff8c42; padding-left: 8px; }
+    .dw-close { background: none; border: none; font-size: 22px; line-height: 1; color: #999; padding: 4px 8px; cursor: pointer; }
+    .dw-close:hover { color: #222; }
+    .dw-body { flex: 1; display: flex; min-height: 0; }
+    .dw-left { width: 300px; flex-shrink: 0; border-right: 1px solid #f0f0f0; padding: 12px 16px; overflow-y: auto; }
+    .dw-right { flex: 1; min-width: 0; padding: 12px 16px 10px; display: flex; flex-direction: column; }
+    .dw-foot { display: flex; align-items: center; gap: 8px; border-top: 1px solid #f0f0f0; padding: 12px 18px; }
+    .dw-foot .spacer { flex: 1; }
+    .dirty { color: #e8722a; font-size: 12px; visibility: hidden; }
+    .msg.edit-float { position: absolute; left: 18px; bottom: 58px; margin: 0; max-width: calc(100% - 36px); box-shadow: 0 2px 12px rgba(0,0,0,.15); z-index: 5; }
+
+    /* 歌词工作台:编辑/对照预览页签 + 大等宽编辑区 + 校验状态区 */
+    .ly-tabs { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .ly-tabs .spacer { flex: 1; }
+    .ly-tab.on { background: #fff1e3; color: #e8722a; }
+    .ly-player { margin-bottom: 8px; }
+    .ly-player audio { width: 100%; height: 36px; }
+    .ly-editor { flex: 1; min-height: 180px; resize: none; font-family: Consolas, Menlo, monospace; font-size: 13px; line-height: 1.8; }
+    .ly-view { flex: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; }
+    .ly-row { display: flex; gap: 12px; padding: 5px 12px; font-size: 13px; }
+    .ly-row.timed { cursor: pointer; }
+    .ly-row.timed:hover { background: #fffaf5; }
+    .ly-row .t { color: #e8722a; font-family: Consolas, Menlo, monospace; font-size: 12px; flex-shrink: 0; padding-top: 1px; }
+    .ly-row .t.none { color: #ccc; }
+    .ly-row.bad { background: #fdecea; color: #c0392b; }
+    .ly-stat { margin-top: 8px; border-top: 1px dashed #eee; padding-top: 8px; font-size: 12px; color: #888; line-height: 1.7; }
+    .ly-stat .warn { color: #c47b16; }
+    .ly-stat .err { color: #c0392b; }
+    .ly-stat .ok { color: #1f8a4c; }
+
+    /* 窄屏:抽屉几乎全屏,左右栏退化为上下两段 */
+    @media (max-width: 860px) {
+      .dw-body { flex-direction: column; overflow-y: auto; }
+      .dw-left { width: auto; border-right: none; border-bottom: 1px solid #f0f0f0; }
+      .dw-right { min-height: 460px; }
+    }
   </style>
 </head>
 <body>
@@ -79,7 +134,7 @@
   <div class="wrap">
     <div class="card">
       <h2>歌曲列表<span class="muted" id="songCountTop" style="float:right;font-weight:normal"></span></h2>
-      <p class="desc">按歌名/作者/专辑搜索,可叠加分类与「资料缺失」筛选;上传歌曲请点右上角按钮;编辑弹窗内可替换封面/音频与歌词。</p>
+      <p class="desc">按歌名/作者/专辑搜索,可叠加分类与「资料缺失」筛选;上传歌曲请点右上角按钮;编辑抽屉内可修正歌词与信息、替换封面/音频。</p>
       <div class="toolbar">
         <input id="kw" placeholder="按歌名 / 作者 / 专辑搜索" />
         <select id="filterCat"><option value="">全部分类</option></select>
@@ -120,26 +175,54 @@
     </div>
   </div>
 
-  <!-- 上传歌曲弹窗 -->
+  <!-- 上传歌曲弹窗(文件卡 + 分区表单 + 歌词轻校验) -->
   <div id="uploadModal" class="modal-mask">
-    <div class="modal">
+    <div class="modal wide">
       <h3>上传歌曲</h3>
-      <div class="row">
-        <div><label>音频文件(必填,mp3/m4a 等)</label><input id="audio" type="file" accept="audio/*" /></div>
-        <div><label>封面图(可选)</label><input id="cover" type="file" accept="image/*" /></div>
+
+      <div class="sec-title">文件</div>
+      <div class="file-grid">
+        <label class="file-card" id="audioCard" title="点击选择音频文件">
+          <input id="audio" type="file" accept="audio/*" hidden />
+          <span class="fc-thumb">🎵</span>
+          <span class="fc-info">
+            <b>音频文件</b>
+            <span class="fc-meta" id="audioMeta">必填 · mp3 / m4a / flac 等</span>
+          </span>
+        </label>
+        <label class="file-card" id="coverCard" title="点击选择封面图">
+          <input id="cover" type="file" accept="image/*" hidden />
+          <span class="fc-thumb" id="coverThumb">🖼️</span>
+          <span class="fc-info">
+            <b>封面图</b>
+            <span class="fc-meta" id="coverMeta">可选 · 方形图更美观</span>
+          </span>
+        </label>
       </div>
+
+      <div class="sec-title">基本信息</div>
       <div class="row3">
-        <div><label>歌曲 id(必填,字母数字下划线短横)</label><input id="songId" placeholder="如 gs999" autocomplete="off" /></div>
         <div><label>歌名(必填)</label><input id="name" placeholder="如 小星星" autocomplete="off" /></div>
         <div><label>作者/来源(必填)</label><input id="artist" placeholder="如 经典儿歌" autocomplete="off" /></div>
-      </div>
-      <div class="row3">
         <div><label>专辑(可选)</label><input id="album" placeholder="可选" autocomplete="off" /></div>
+      </div>
+
+      <div class="sec-title">归类</div>
+      <div class="row">
         <div><label>大类</label><select id="category"></select></div>
         <div><label>子类</label><select id="sub"></select></div>
       </div>
-      <label>歌词(lrc,可选)</label>
-      <textarea id="lyric" placeholder="[00:00.00] 歌词..."></textarea>
+
+      <div class="sec-title">歌词(LRC,可选)</div>
+      <div class="ly-tabs">
+        <span class="muted" style="font-size:12px">上传后也可在「编辑」抽屉中补充与核对</span>
+        <span class="spacer"></span>
+        <button class="ghost sm" id="uploadImportLrc" type="button">导入 .lrc</button>
+        <button class="ghost sm" id="uploadNormLrc" type="button">规整时间戳</button>
+      </div>
+      <textarea id="lyric" class="ly-editor" style="min-height:120px;resize:vertical" spellcheck="false" placeholder="[00:00.00] 前奏…&#10;[00:12.30] 一闪一闪亮晶晶"></textarea>
+      <div id="uploadLyricStat" class="ly-stat">-</div>
+
       <div id="uploadMsg" class="msg"></div>
       <div class="foot">
         <button class="ghost" id="uploadCancel">取消</button>
@@ -148,52 +231,64 @@
     </div>
   </div>
 
-  <!-- 编辑歌曲弹窗(分区:基本信息 / 封面与音频 / 歌词)-->
-  <div id="editModal" class="modal-mask">
-    <div class="modal wide">
-      <h3>编辑歌曲 <span class="muted" id="editIdLabel"></span></h3>
+  <!-- 编辑歌曲抽屉(侧滑大面板:左侧基本信息/封面/音频,右侧歌词工作台;修正歌词等信息错误的主入口) -->
+  <div id="editDrawer" class="drawer-mask">
+    <div class="drawer">
+      <div class="dw-head">
+        <h3>编辑歌曲 <span class="muted" id="editIdLabel"></span></h3>
+        <button id="editClose" class="dw-close" title="关闭(Esc)">×</button>
+      </div>
+      <div class="dw-body">
+        <div class="dw-left">
+          <div class="sec-title">基本信息 <span class="muted" style="font-weight:400">(点「保存修改」生效)</span></div>
+          <label>歌名(必填)</label><input id="editName" autocomplete="off" />
+          <label>作者(必填)</label><input id="editArtist" autocomplete="off" />
+          <label>专辑(可选)</label><input id="editAlbum" autocomplete="off" />
+          <div class="row">
+            <div><label>大类</label><select id="editCategory"></select></div>
+            <div><label>子类</label><select id="editSub"></select></div>
+          </div>
+          <label>排序值(同类内小的在前,默认 0)</label><input id="editSort" type="number" step="1" />
+          <label>原始来源路径(溯源用,可选)</label><input id="editOrigin" placeholder="如 D:\music\xxx.mp3" autocomplete="off" />
 
-      <div class="sec-title">基本信息(点「保存」生效)</div>
-      <div class="row3">
-        <div><label>歌名</label><input id="editName" autocomplete="off" /></div>
-        <div><label>作者</label><input id="editArtist" autocomplete="off" /></div>
-        <div><label>专辑</label><input id="editAlbum" autocomplete="off" /></div>
-      </div>
-      <div class="row">
-        <div><label>大类</label><select id="editCategory"></select></div>
-        <div><label>子类</label><select id="editSub"></select></div>
-      </div>
-      <div class="row">
-        <div><label>排序值(同类内小的在前,默认 0)</label><input id="editSort" type="number" step="1" /></div>
-        <div><label>原始来源路径(溯源用,可选)</label><input id="editOrigin" placeholder="如 D:\music\xxx.mp3" autocomplete="off" /></div>
-      </div>
-
-      <div class="sec-title">封面与音频(选文件后立即上传生效,无需点「保存」)</div>
-      <div class="row">
-        <div class="media-box">
-          <span id="editCoverBox"></span>
-          <div class="media-actions">
-            <button class="ghost sm" id="editCoverBtn">更换封面</button>
-            <button class="ghost sm" id="editCoverClearBtn">清除封面</button>
+          <div class="sec-title">封面与音频 <span class="muted" style="font-weight:400">(即时生效,无需保存)</span></div>
+          <div class="media-box">
+            <span id="editCoverBox"></span>
+            <div class="media-actions">
+              <button class="ghost sm" id="editCoverBtn">更换封面</button>
+              <button class="ghost sm" id="editCoverClearBtn">清除封面</button>
+            </div>
+          </div>
+          <div class="media-box" style="margin-top:14px">
+            <div style="flex:1">
+              <p class="muted" id="editAudioInfo" style="margin:0 0 8px">-</p>
+              <button class="ghost sm" id="editAudioBtn">替换音频</button>
+              <p class="muted" style="margin:8px 0 0">替换音频将删除旧文件、生成新地址并重读时长(绕开客户端长缓存)。</p>
+            </div>
           </div>
         </div>
-        <div class="media-box">
-          <div style="flex:1">
-            <p class="muted" id="editAudioInfo" style="margin:0 0 8px">-</p>
-            <button class="ghost sm" id="editAudioBtn">替换音频</button>
+        <div class="dw-right">
+          <div class="sec-title">歌词(LRC) <span class="muted" style="font-weight:400">(文本修改需点「保存修改」)</span></div>
+          <div class="ly-tabs">
+            <button class="ghost sm ly-tab on" id="lyTabEdit">编辑</button>
+            <button class="ghost sm ly-tab" id="lyTabView">对照预览</button>
+            <span class="spacer"></span>
+            <button class="ghost sm" id="importLrcBtn">导入 .lrc</button>
+            <button class="ghost sm" id="normLrcBtn">规整时间戳</button>
+            <button class="ghost sm" id="clearLrcBtn">清空</button>
           </div>
+          <div id="editPlayerBox" class="ly-player"></div>
+          <textarea id="editLyric" class="ly-editor" spellcheck="false" placeholder="[00:00.00] 前奏…&#10;[00:12.30] 一闪一闪亮晶晶"></textarea>
+          <div id="editLyricView" class="ly-view" style="display:none"></div>
+          <div id="editLyricStat" class="ly-stat">-</div>
         </div>
       </div>
-      <p class="muted" style="margin:6px 0 0">替换音频会生成新文件地址并自动重读时长(绕开客户端音频长缓存);封面替换同理即时生效。</p>
-
-      <div class="sec-title">歌词(lrc,点「保存」生效)</div>
-      <div style="margin-bottom:6px"><button class="ghost sm" id="importLrcBtn">导入 .lrc 文件</button></div>
-      <textarea id="editLyric" style="min-height:110px"></textarea>
-
-      <div id="editMsg" class="msg"></div>
-      <div class="foot">
-        <button class="ghost" id="editCancel">取消</button>
-        <button id="editSave">保存</button>
+      <div id="editMsg" class="msg edit-float"></div>
+      <div class="dw-foot">
+        <span id="editDirty" class="dirty">● 有未保存修改</span>
+        <span class="spacer"></span>
+        <button class="ghost" id="editCancel">关闭</button>
+        <button id="editSave">保存修改</button>
       </div>
     </div>
   </div>
@@ -415,46 +510,160 @@
     } catch (e) { alert(e.detail || e.message); }
   }
 
-  // ===== 上传歌曲弹窗 =====
+  // ===== 上传歌曲弹窗(文件卡 + 分区表单 + 歌词轻校验)=====
   const uploadModal = document.getElementById("uploadModal");
   const uploadMsg = document.getElementById("uploadMsg");
+  const uploadAudioInput = document.getElementById("audio");
+  const uploadCoverInput = document.getElementById("cover");
+  let coverObjectUrl = ""; // 封面卡缩略图的本地预览地址,换图/关窗时释放
+
+  function fmtSize(bytes) {
+    if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + " MB";
+    if (bytes >= 1024) return Math.round(bytes / 1024) + " KB";
+    return bytes + " B";
+  }
+  function releaseCoverUrl() {
+    if (coverObjectUrl) { URL.revokeObjectURL(coverObjectUrl); coverObjectUrl = ""; }
+  }
+
+  // 音频卡:选中后显示文件名与大小;歌名还空着时用文件名预填(可改),少敲一次字
+  function renderAudioCard() {
+    const f = uploadAudioInput.files[0];
+    document.getElementById("audioCard").classList.toggle("picked", !!f);
+    document.getElementById("audioMeta").textContent = f
+      ? f.name + " · " + fmtSize(f.size)
+      : "必填 · mp3 / m4a / flac 等";
+    if (f && !document.getElementById("name").value) {
+      document.getElementById("name").value = f.name.replace(/\.[^.]+$/, "");
+    }
+  }
+
+  // 封面卡:选中后显示缩略图(本地预览,不占上传流量)与文件信息
+  function renderCoverCard() {
+    const f = uploadCoverInput.files[0];
+    document.getElementById("coverCard").classList.toggle("picked", !!f);
+    releaseCoverUrl();
+    const thumb = document.getElementById("coverThumb");
+    if (f) {
+      coverObjectUrl = URL.createObjectURL(f);
+      thumb.innerHTML = `<img src="${esc(coverObjectUrl)}" alt="封面预览" />`;
+      document.getElementById("coverMeta").textContent = f.name + " · " + fmtSize(f.size);
+    } else {
+      thumb.textContent = "🖼️";
+      document.getElementById("coverMeta").textContent = "可选 · 方形图更美观";
+    }
+  }
+  uploadAudioInput.onchange = renderAudioCard;
+  uploadCoverInput.onchange = renderCoverCard;
+
   function openUpload() {
-    ["audio", "cover", "songId", "name", "artist", "album", "lyric"].forEach(i => document.getElementById(i).value = "");
+    uploadAudioInput.value = "";
+    uploadCoverInput.value = "";
+    ["name", "artist", "album", "lyric"].forEach(i => document.getElementById(i).value = "");
+    renderAudioCard();
+    renderCoverCard();
+    updateUploadLyricStat();
     setMsg(uploadMsg, "", true);
     uploadModal.classList.add("show");
+    document.getElementById("name").focus();
   }
   document.getElementById("uploadBtn2").onclick = openUpload;
-  document.getElementById("uploadCancel").onclick = () => uploadModal.classList.remove("show");
-  uploadModal.onclick = (e) => { if (e.target === uploadModal) uploadModal.classList.remove("show"); };
+
+  function closeUpload() {
+    uploadModal.classList.remove("show");
+    releaseCoverUrl();
+    const btn = document.getElementById("uploadSave");
+    btn.disabled = false;
+    btn.textContent = "上传";
+  }
+  document.getElementById("uploadCancel").onclick = closeUpload;
+  uploadModal.onclick = (e) => { if (e.target === uploadModal) closeUpload(); };
+
+  // 上传弹窗歌词轻校验:复用编辑抽屉的解析,统计+格式提示(音频尚未上传,不做时长对照)
+  function updateUploadLyricStat() {
+    const box = document.getElementById("uploadLyricStat");
+    const p = parseLrc(document.getElementById("lyric").value);
+    const parts = [];
+    if (!p.rows.length) {
+      box.innerHTML = `<span class="muted">可留空;上传后可在「编辑」抽屉的对照预览中核对时间</span>`;
+      return;
+    }
+    parts.push(`共 ${p.rows.length} 行,带时间戳 ${p.timed.length} 行`
+      + (p.timed.length ? `,时间跨度 ${fmtTs(p.first)} – ${fmtTs(p.last)}` : ""));
+    if (!p.timed.length) parts.push(`<span class="warn">⚠ 没有任何时间戳,App 将无法随播放滚动歌词</span>`);
+    if (p.bad.length) {
+      const at = p.bad.slice(0, 3).map(r => "第 " + r.line + " 行").join("、") + (p.bad.length > 3 ? " 等" : "");
+      parts.push(`<span class="err">✕ ${p.bad.length} 行解析不出时间戳(${at}),可点「规整时间戳」尝试修复</span>`);
+    } else if (p.timed.length) {
+      parts.push(`<span class="ok">✓ 格式正常</span>`);
+    }
+    box.innerHTML = parts.join("<br>");
+  }
+  let uploadLyricTimer = null;
+  document.getElementById("lyric").addEventListener("input", () => {
+    clearTimeout(uploadLyricTimer);
+    uploadLyricTimer = setTimeout(updateUploadLyricStat, 400);
+  });
+
+  // 导入 .lrc / 规整时间戳(与编辑抽屉共用解析与规整逻辑)
+  document.getElementById("uploadImportLrc").onclick = () => {
+    pickFile(".lrc,text/plain", (file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("lyric").value = String(reader.result || "");
+        updateUploadLyricStat();
+      };
+      reader.readAsText(file, "utf-8");
+    });
+  };
+  document.getElementById("uploadNormLrc").onclick = () => {
+    const ta = document.getElementById("lyric");
+    const after = normalizeLrcText(ta.value);
+    if (after === ta.value) return; // 已是规范格式,静默
+    ta.value = after;
+    updateUploadLyricStat();
+  };
 
   document.getElementById("uploadSave").onclick = async () => {
-    const audio = document.getElementById("audio").files[0];
+    const audio = uploadAudioInput.files[0];
     if (!audio) return setMsg(uploadMsg, "请选择音频文件", false);
+    const name = document.getElementById("name").value.trim();
+    const artist = document.getElementById("artist").value.trim();
+    if (!name) return setMsg(uploadMsg, "请填写歌名", false);
+    if (!artist) return setMsg(uploadMsg, "请填写作者/来源", false);
     const fd = new FormData();
     fd.append("audio", audio);
-    const cover = document.getElementById("cover").files[0];
+    const cover = uploadCoverInput.files[0];
     if (cover) fd.append("cover", cover);
-    fd.append("id", document.getElementById("songId").value.trim());
-    fd.append("name", document.getElementById("name").value.trim());
-    fd.append("artist", document.getElementById("artist").value.trim());
+    fd.append("name", name);
+    fd.append("artist", artist);
     fd.append("album", document.getElementById("album").value.trim());
     fd.append("category_id", document.getElementById("category").value);
     fd.append("sub_category_id", document.getElementById("sub").value);
     fd.append("lyric", document.getElementById("lyric").value);
+    const btn = document.getElementById("uploadSave");
+    btn.disabled = true;
+    btn.textContent = "上传中…";
     try {
       const data = await api("/api/admin/songs", { method: "POST", body: fd });
-      uploadModal.classList.remove("show");
-      alert("上传成功:" + data.name + "  时长 " + (data.duration ? Math.round(data.duration) + "s" : "未知"));
-      loadSongs(1).catch(() => {});
-    } catch (e) { setMsg(uploadMsg, e.detail || e.message, false); }
+      setMsg(uploadMsg, "✓ 上传成功:" + data.name + "(id " + data.id + (data.duration ? ",时长 " + fmtDur(data.duration) : "") + ")", true);
+      setTimeout(() => {
+        closeUpload();
+        loadSongs(1).catch(() => {});
+      }, 900);
+    } catch (e) {
+      setMsg(uploadMsg, e.detail || e.message, false);
+      btn.disabled = false;
+      btn.textContent = "上传";
+    }
   };
 
-  // ===== 编辑歌曲弹窗(基本信息 + 封面/音频即时替换 + 歌词)=====
+  // ===== 编辑歌曲抽屉(左侧:基本信息/封面/音频;右侧:歌词工作台——修正歌词等错误的主入口)=====
   let editingSong = null;
-  const editModal = document.getElementById("editModal");
+  const editDrawer = document.getElementById("editDrawer");
   const editMsg = document.getElementById("editMsg");
 
-  // 弹出文件选择框,选中后回调 file(取消不回调);弹窗内各文件入口共用
+  // 弹出文件选择框,选中后回调 file(取消不回调);抽屉内各文件入口共用
   function pickFile(accept, onPicked) {
     const input = document.createElement("input");
     input.type = "file";
@@ -463,7 +672,30 @@
     input.click();
   }
 
-  // 弹窗内封面预览。bust 为 true 时追加时间戳参数,避免浏览器 5 分钟缓存盖住刚换的封面
+  // ===== 未保存修改跟踪:任何字段改动即置脏,关闭抽屉前拦截确认 =====
+  let editDirty = false;
+  const EDIT_FIELD_IDS = ["editName", "editArtist", "editAlbum", "editSort", "editOrigin", "editLyric"];
+  function markDirty() {
+    if (!editingSong || editDirty) return;
+    editDirty = true;
+    document.getElementById("editDirty").style.visibility = "visible";
+  }
+  function resetDirty() {
+    editDirty = false;
+    document.getElementById("editDirty").style.visibility = "hidden";
+  }
+  EDIT_FIELD_IDS.forEach(id => document.getElementById(id).addEventListener("input", markDirty));
+  ["editCategory", "editSub"].forEach(id => document.getElementById(id).addEventListener("change", markDirty));
+
+  // 成功类反馈数秒后自动消失,免得一直悬在底部;错误常驻,由下次操作覆盖
+  let editMsgTimer = null;
+  function editOk(text) {
+    setMsg(editMsg, text, true);
+    clearTimeout(editMsgTimer);
+    editMsgTimer = setTimeout(() => setMsg(editMsg, "", true), 3500);
+  }
+
+  // 抽屉内封面预览。bust 为 true 时追加时间戳参数,避免浏览器 5 分钟缓存盖住刚换的封面
   function renderEditCover(coverUrl, bust) {
     const box = document.getElementById("editCoverBox");
     document.getElementById("editCoverClearBtn").style.display = coverUrl ? "" : "none";
@@ -475,21 +707,155 @@
     box.innerHTML = `<img class="cover" src="${esc(src)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cover placeholder'}))" />`;
   }
 
-  // 弹窗内音频信息:文件名(取自 src 末段)+ 时长
+  // 抽屉内音频信息:文件名(取自 src 末段)+ 时长
   function renderEditAudio(song) {
     const file = decodeURIComponent((song.src || "").split("/").pop() || "-");
     const dur = song.duration ? fmtDur(song.duration) : "未知";
     document.getElementById("editAudioInfo").textContent = "文件:" + file + " · 时长 " + dur;
   }
 
-  // 文件类操作(封面/音频)成功后的公共收尾:更新弹窗数据与展示、刷新列表行
+  // 试听播放器:核对歌词时间用(「对照预览」中点击歌词行可跳到该时间)
+  function renderEditPlayer(song) {
+    const box = document.getElementById("editPlayerBox");
+    if (!song.src) {
+      box.innerHTML = `<p class="muted" style="margin:0;font-size:12px">该歌曲暂无音频文件,无法试听</p>`;
+      return;
+    }
+    // 追加时间戳参数防缓存;preload=none,打开抽屉不预拉音频
+    const src = song.src + (song.src.includes("?") ? "&" : "?") + "t=" + Date.now();
+    box.innerHTML = `<audio controls preload="none" src="${esc(src)}"></audio>`
+      + `<p class="muted" style="margin:4px 0 0;font-size:12px">切到「对照预览」后,点击歌词行可跳到该时间核对。</p>`;
+  }
+
+  // 文件类操作(封面/音频)成功后的公共收尾:更新抽屉数据与展示、刷新列表行
   function applySongFileResult(data, okText) {
+    const audioChanged = !!editingSong && data.src !== editingSong.src;
     editingSong = data; // 接口返回完整 SongOut,直接整体替换
     renderEditCover(data.cover, true);
     renderEditAudio(data);
+    if (audioChanged) renderEditPlayer(data); // 音频换了新地址,重挂播放器
+    updateLyricStat(); // 时长可能变化,「歌词超出时长」校验要跟着刷新
+    if (document.getElementById("editLyricView").style.display !== "none") renderLyricView();
     loadSongs().catch(() => {});
-    setMsg(editMsg, okText, true);
+    editOk(okText);
   }
+
+  // ===== LRC 解析与校验(宽松:容忍 1 位分钟 / 1-3 位毫秒 / 点分隔毫秒;可疑行只提示,不阻断保存)=====
+  const LRC_TAG_RE = /^\s*\[[a-zA-Z]+:.*\]\s*$/;      // [ti:..] [offset:..] 等元数据标签行,合法
+  const LRC_TIME_RE = /\[(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?\]/g;
+  // 返回 rows(逐行:t=秒,null=无时间戳;bad=含「[ ]」却解析不出时间)、timed、first/last(秒)
+  function parseLrc(text) {
+    const rows = [];
+    String(text || "").split(/\r?\n/).forEach((raw, i) => {
+      const line = raw.trim();
+      if (!line) return;
+      if (LRC_TAG_RE.test(line)) { rows.push({ line: i + 1, t: null, text: line, tag: true }); return; }
+      LRC_TIME_RE.lastIndex = 0; // 全局正则复用,先复位
+      let first = null, m;
+      while ((m = LRC_TIME_RE.exec(line))) {
+        const t = (+m[1]) * 60 + (+m[2]) + (m[3] ? +("0." + m[3]) : 0);
+        if (first === null || t < first) first = t; // 同行多时间戳取最早
+      }
+      const body = line.replace(LRC_TIME_RE, "").trim();
+      if (first !== null) rows.push({ line: i + 1, t: first, text: body || "(无文字)" });
+      else if (line.includes("[")) rows.push({ line: i + 1, t: null, text: line, bad: true });
+      else rows.push({ line: i + 1, t: null, text: line }); // 无时间戳的纯文本行,不判错
+    });
+    const timed = rows.filter(r => r.t !== null);
+    return {
+      rows, timed, bad: rows.filter(r => r.bad),
+      first: timed.length ? Math.min(...timed.map(r => r.t)) : null,
+      last: timed.length ? Math.max(...timed.map(r => r.t)) : null,
+    };
+  }
+  function fmtTs(sec) { return Math.floor(sec / 60) + ":" + String(Math.floor(sec % 60)).padStart(2, "0"); }
+
+  // 歌词状态区:行数统计 + 格式校验 + 与音频时长对照(识别错版歌词)
+  function updateLyricStat() {
+    const box = document.getElementById("editLyricStat");
+    if (!editingSong) { box.textContent = "-"; return; }
+    const p = parseLrc(document.getElementById("editLyric").value);
+    const parts = [];
+    if (!p.rows.length) {
+      parts.push(`<span class="muted">暂无歌词;可「导入 .lrc」或直接粘贴,保存后 App 端即可显示</span>`);
+    } else {
+      parts.push(`共 ${p.rows.length} 行,带时间戳 ${p.timed.length} 行`
+        + (p.timed.length ? `,时间跨度 ${fmtTs(p.first)} – ${fmtTs(p.last)}` : ""));
+      if (!p.timed.length) parts.push(`<span class="warn">⚠ 没有任何时间戳,App 将无法随播放滚动歌词</span>`);
+      if (p.bad.length) {
+        const at = p.bad.slice(0, 3).map(r => "第 " + r.line + " 行").join("、") + (p.bad.length > 3 ? " 等" : "");
+        parts.push(`<span class="err">✕ ${p.bad.length} 行含「[ ]」但解析不出时间戳(${at}),多为手误,可点「规整时间戳」尝试修复</span>`);
+      }
+      if (p.timed.length && editingSong.duration && p.last > editingSong.duration + 3)
+        parts.push(`<span class="warn">⚠ 末行时间 ${fmtTs(p.last)} 已超出音频时长 ${fmtDur(editingSong.duration)},疑似错版歌词</span>`);
+      if (p.timed.length && !p.bad.length) parts.push(`<span class="ok">✓ 格式正常</span>`);
+    }
+    box.innerHTML = parts.join("<br>");
+  }
+
+  // 对照预览:按解析结果逐行展示,带时间戳的行可点击试听定位
+  function renderLyricView() {
+    const view = document.getElementById("editLyricView");
+    const p = parseLrc(document.getElementById("editLyric").value);
+    if (!p.rows.length) {
+      view.innerHTML = `<p class="muted" style="padding:14px 12px;margin:0">暂无歌词内容</p>`;
+      return;
+    }
+    view.innerHTML = p.rows.map(r => `
+      <div class="ly-row${r.t !== null ? " timed" : ""}${r.bad ? " bad" : ""}"${r.t !== null ? ` data-t="${r.t}"` : ""}>
+        <span class="t${r.t === null ? " none" : ""}">${r.t !== null ? fmtTs(r.t) : "--:--"}</span>
+        <span>${esc(r.text)}</span>
+      </div>`).join("");
+    view.querySelectorAll(".ly-row.timed").forEach(el => {
+      el.onclick = () => {
+        const au = document.getElementById("editPlayerBox").querySelector("audio");
+        if (!au) { setMsg(editMsg, "该歌曲暂无音频,无法定位时间", false); return; }
+        au.currentTime = +el.dataset.t;
+        au.play().catch(() => {});
+      };
+    });
+  }
+
+  // 规整时间戳(纯文本变换,上传/编辑两处共用):[1:2.3] → [01:02.30](毫秒截取两位);元数据标签行不动
+  function normalizeLrcText(text) {
+    return String(text || "").split(/\r?\n/).map(line => {
+      if (LRC_TAG_RE.test(line.trim())) return line;
+      return line.replace(LRC_TIME_RE, (m, mm, ss, ms) =>
+        "[" + mm.padStart(2, "0") + ":" + ss.padStart(2, "0") + "." + ((ms || "0") + "00").slice(0, 2) + "]");
+    }).join("\n");
+  }
+
+  // 编辑抽屉的规整入口:改写歌词框并提示核对;规整后需人工确认再保存
+  function normalizeLrcTimes() {
+    const ta = document.getElementById("editLyric");
+    const after = normalizeLrcText(ta.value);
+    if (after === ta.value) { editOk("时间戳已是规范格式 [mm:ss.xx]"); return; }
+    ta.value = after;
+    markDirty();
+    updateLyricStat();
+    setMsg(editMsg, "已规整为 [mm:ss.xx] 格式,请核对后点「保存修改」", true);
+  }
+
+  // 歌词区「编辑 / 对照预览」页签
+  function setLyTab(view) {
+    document.getElementById("lyTabEdit").classList.toggle("on", !view);
+    document.getElementById("lyTabView").classList.toggle("on", !!view);
+    document.getElementById("editLyric").style.display = view ? "none" : "";
+    document.getElementById("editLyricView").style.display = view ? "" : "none";
+    if (view) renderLyricView();
+  }
+  document.getElementById("lyTabEdit").onclick = () => setLyTab(false);
+  document.getElementById("lyTabView").onclick = () => setLyTab(true);
+
+  // 输入停顿后再校验,避免每敲一个字符都重算
+  let lyricCheckTimer = null;
+  document.getElementById("editLyric").addEventListener("input", () => {
+    clearTimeout(lyricCheckTimer);
+    lyricCheckTimer = setTimeout(() => {
+      updateLyricStat();
+      if (document.getElementById("editLyricView").style.display !== "none") renderLyricView();
+    }, 400);
+  });
 
   async function openEditSong(songId) {
     try {
@@ -507,11 +873,37 @@
       document.getElementById("editLyric").value = data.lyric || "";
       renderEditCover(data.cover);
       renderEditAudio(data);
+      renderEditPlayer(data);
+      setLyTab(false); // 打开时回到「编辑」页签
       setMsg(editMsg, "", true);
-      editModal.classList.add("show");
+      resetDirty();
+      updateLyricStat();
+      editDrawer.classList.add("show");
+      document.getElementById("editName").focus();
     } catch (e) { alert(e.detail || e.message); }
   }
-  document.getElementById("editCancel").onclick = () => editModal.classList.remove("show");
+
+  // 关闭抽屉:有未保存修改时先确认;force=已保存/程序内部关闭
+  function closeEdit(force) {
+    if (!force && editDirty && !confirm("有未保存的修改,确定关闭?")) return;
+    editDrawer.classList.remove("show");
+    document.getElementById("editPlayerBox").innerHTML = ""; // 停止播放
+    document.getElementById("editLyricView").innerHTML = "";
+    editingSong = null;
+    resetDirty();
+    setMsg(editMsg, "", true);
+    const saveBtn = document.getElementById("editSave");
+    saveBtn.disabled = false;
+    saveBtn.textContent = "保存修改";
+  }
+  document.getElementById("editCancel").onclick = () => closeEdit();
+  document.getElementById("editClose").onclick = () => closeEdit();
+  editDrawer.onclick = (e) => { if (e.target === editDrawer) closeEdit(); };
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (editDrawer.classList.contains("show")) closeEdit();
+    else if (uploadModal.classList.contains("show")) closeUpload();
+  });
 
   // 更换封面:选文件立即上传,成功后刷新弹窗预览与列表行
   document.getElementById("editCoverBtn").onclick = () => {
@@ -550,16 +942,33 @@
     });
   };
 
-  // 导入本地 .lrc 文件到歌词输入框(填入后仍需点「保存」提交)
+  // 导入本地 .lrc 文件到歌词编辑区(填入后仍需点「保存修改」提交)
   document.getElementById("importLrcBtn").onclick = () => {
     pickFile(".lrc,text/plain", (file) => {
       const reader = new FileReader();
-      reader.onload = () => { document.getElementById("editLyric").value = String(reader.result || ""); };
+      reader.onload = () => {
+        document.getElementById("editLyric").value = String(reader.result || "");
+        setLyTab(false);
+        markDirty();
+        updateLyricStat();
+      };
       reader.readAsText(file, "utf-8");
     });
   };
 
-  // 保存:提交元数据(name/artist/album/分类/排序/原始路径/歌词)
+  // 一键规整 / 清空歌词
+  document.getElementById("normLrcBtn").onclick = () => { if (editingSong) normalizeLrcTimes(); };
+  document.getElementById("clearLrcBtn").onclick = () => {
+    if (!editingSong) return;
+    const ta = document.getElementById("editLyric");
+    if (!ta.value) return;
+    if (!confirm("清空歌词内容?(保存前若反悔,关闭抽屉时选「确定」即可丢弃本次清空)")) return;
+    ta.value = "";
+    markDirty();
+    updateLyricStat();
+  };
+
+  // 保存:提交元数据(name/artist/album/分类/排序/原始路径/歌词);期间禁用防重复提交
   document.getElementById("editSave").onclick = async () => {
     if (!editingSong) return;
     const sortVal = parseInt(document.getElementById("editSort").value, 10);
@@ -574,17 +983,26 @@
       original_path: document.getElementById("editOrigin").value.trim(),
     };
     if (!body.name || !body.artist) return setMsg(editMsg, "歌名与作者必填", false);
+    const btn = document.getElementById("editSave");
+    btn.disabled = true;
+    btn.textContent = "保存中…";
     try {
       await api("/api/admin/songs/" + encodeURIComponent(editingSong.id), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-
-      editModal.classList.remove("show");
-      editingSong = null;
-      loadSongs().catch(() => {});
-    } catch (e) { setMsg(editMsg, e.detail || e.message, false); }
+      setMsg(editMsg, "✓ 已保存", true);
+      // 稍作停留给出确认感,再关闭并刷新列表(内容已落库,强制关闭不再拦截)
+      setTimeout(() => {
+        closeEdit(true);
+        loadSongs().catch(() => {});
+      }, 600);
+    } catch (e) {
+      setMsg(editMsg, e.detail || e.message, false);
+      btn.disabled = false;
+      btn.textContent = "保存修改";
+    }
   };
 
   // ===== 启动:探测会话,已登录进入本页,未登录/失效跳登录页(与 index.html 一致)=====
