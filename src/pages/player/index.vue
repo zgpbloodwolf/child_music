@@ -93,6 +93,8 @@ function openTimer() {
 const showQueue = ref(false);
 /** 当前队列对应的歌曲元数据(仅展示用) */
 const queueSongs = ref<SongMeta[]>([]);
+/** 队列元数据加载中(弹层内展示加载态,与「列表为空」区分) */
+const queueLoading = ref(false);
 /** 已拉取元数据的 playlist 引用(标记用,非响应式);playlist 整体更换时复位 */
 let queueLoadedFor: readonly string[] | null = null;
 /**
@@ -103,14 +105,45 @@ let queueLoadedFor: readonly string[] | null = null;
 async function ensureQueueLoaded(): Promise<void> {
   const ids = playlist.value;
   if (queueLoadedFor === ids) return;
-  queueLoadedFor = ids;
-  queueSongs.value = ids.length ? await repo.listByIds(ids) : [];
+  queueLoading.value = true;
+  queueSongs.value = []; // 清掉旧歌单残留,避免在途/失败期间显示错位数据
+  try {
+    const songs = ids.length ? await repo.listByIds(ids) : [];
+    if (playlist.value !== ids) return; // 期间队列已整体更换,本结果过期丢弃
+    queueLoadedFor = ids; // 成功才置标记,失败时再展开弹层可自动重试
+    queueSongs.value = songs;
+  } catch (err) {
+    console.warn('加载播放列表元数据失败:', err);
+    uni.showToast({ title: '播放列表加载失败,重新打开可重试', icon: 'none' });
+  } finally {
+    queueLoading.value = false;
+  }
 }
 /** 打开弹层并按需拉取队列元数据 */
+// ===== 弹层列表分批渲染(队列可达全曲库规模,一次挂载上千节点会卡顿) =====
+/** 每批渲染条数 */
+const QUEUE_STEP = 60;
+/** 当前已渲染条数(始终为 queueSongs 的前缀切片,切片内下标与全量下标一致) */
+const queueShown = ref(QUEUE_STEP);
+/** 实际渲染的队列切片 */
+const visibleQueue = computed(() => queueSongs.value.slice(0, queueShown.value));
+
+/** 打开弹层:按需拉取元数据;渲染窗口先覆盖当前播放项(scroll-into-view 需目标存在) */
 function openQueue() {
+  queueShown.value = Math.max(QUEUE_STEP, currentIndex.value + QUEUE_STEP);
   showQueue.value = true;
   void ensureQueueLoaded();
 }
+/** 弹层列表触底:扩大渲染窗口 */
+function loadMoreQueue() {
+  if (queueShown.value < queueSongs.value.length) {
+    queueShown.value = Math.min(queueShown.value + QUEUE_STEP, queueSongs.value.length);
+  }
+}
+/** 自动播放推进到未渲染区时扩窗,保证当前项高亮与滚动定位有效 */
+watch(currentIndex, (i) => {
+  if (showQueue.value && i >= queueShown.value) queueShown.value = i + QUEUE_STEP;
+});
 /** 弹层展开时自动滚到当前播放项 */
 const queueScrollInto = computed(() =>
   showQueue.value && currentIndex.value >= 0 ? `queue-${currentIndex.value}` : '',
@@ -211,9 +244,9 @@ function playQueueAt(i: number) {
           <text class="queue-count">{{ queueSongs.length }} 首</text>
           <text class="queue-close" @click="showQueue = false">✕</text>
         </view>
-        <scroll-view scroll-y class="queue-scroll" :scroll-into-view="queueScrollInto" scroll-with-animation>
+        <scroll-view scroll-y class="queue-scroll" :scroll-into-view="queueScrollInto" scroll-with-animation @scrolltolower="loadMoreQueue">
           <view
-            v-for="(s, i) in queueSongs"
+            v-for="(s, i) in visibleQueue"
             :id="`queue-${i}`"
             :key="s.id"
             class="queue-item"
@@ -226,7 +259,9 @@ function playQueueAt(i: number) {
               <text class="queue-sub">{{ s.artist }}</text>
             </view>
           </view>
-          <view v-if="!queueSongs.length" class="queue-empty"><text>播放列表为空</text></view>
+          <view v-if="queueLoading" class="queue-empty"><text>加载中...</text></view>
+          <view v-else-if="!queueSongs.length" class="queue-empty"><text>播放列表为空</text></view>
+          <view v-else-if="queueShown < queueSongs.length" class="queue-empty"><text>上拉加载更多</text></view>
         </scroll-view>
       </view>
     </view>
