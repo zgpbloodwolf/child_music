@@ -170,10 +170,13 @@ class MemberCreate(BaseModel):
 
 
 class MemberAdminCreate(BaseModel):
-    """后台创建账号(密码缺省时由后端自动生成,并随响应明文返回一次)。"""
+    """后台创建账号(密码缺省时由后端自动生成,并随响应明文返回一次)。
+
+    name(昵称)缺省时自动取登录账号,用户可在 App 内自行修改。
+    """
 
     username: str
-    name: str
+    name: str | None = None
     password: str | None = None
     avatar: str = ""
 
@@ -210,6 +213,23 @@ class LoginOut(CamelModel):
 
     token: str
     member: MemberOut
+
+
+class ProfileUpdate(CamelModel):
+    """App 端自助修改资料(仅昵称与头像;登录账号不开放自改,仍由管理员管理)。
+
+    App 请求体,故用 CamelModel 接受 camelCase(populate_by_name 同时兼容 snake_case)。
+    """
+
+    name: str
+    avatar: str = ""
+
+
+class PasswordChange(CamelModel):
+    """App 端自助修改密码:需携带旧密码验证身份。→ oldPassword / newPassword"""
+
+    old_password: str
+    new_password: str
 
 
 class AdminLoginIn(BaseModel):

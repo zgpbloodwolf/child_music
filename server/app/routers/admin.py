@@ -99,14 +99,14 @@ def admin_list_members(db: Session = Depends(get_db)) -> list[MemberOut]:
 def admin_create_member(body: MemberAdminCreate, db: Session = Depends(get_db)) -> MemberAdminOut:
     """开账号并下发凭证:响应里的明文密码只出现这一次,服务端只存散列。
 
-    password 不传时自动生成 8 位无易混淆字符的密码,由管理员转交给使用者。
+    password 不传时自动生成 8 位无易混淆字符的密码,由管理员转交给使用者;
+    name(昵称)不传时取登录账号,用户可在 App 内「账号管理」自行修改。
     """
     username = check_username(body.username)
     if db.scalar(select(Member).where(Member.username == username)):
         raise HTTPException(status.HTTP_409_CONFLICT, "该账号已被使用")
-    name = body.name.strip()
-    if not name:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "昵称不能为空")
+    # 昵称缺省取登录账号:后台只管开号,起名交给使用者本人
+    name = (body.name or "").strip() or username
     password = check_password(body.password) if body.password is not None else _gen_password()
 
     member = Member(
