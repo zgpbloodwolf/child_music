@@ -20,6 +20,8 @@ import { ref, computed, watch } from 'vue';
 /**
  * 封面图组件:有图显示图片,无图或加载失败时用渐变色块 + 文字兜底。
  * 尺寸由父级容器控制,本组件填满父级。
+ * lazy-load:page / scroll-view 滚动到可视区才加载图片(小程序端生效,
+ * 长列表省流量省渲染;H5/App 端忽略该属性,行为不变)。已验证:微信小程序文档;H5/App 未验证(属性被忽略)。
  * - variant: 兜底色块风格(默认 primary 暖橙;古诗类型卡用 warm 暖褐、作者卡用 seal 朱砂)
  * - placeholder: 显式指定兜底文字,优先于 name 首字
  */
@@ -55,6 +57,7 @@ watch(() => props.src, () => { failed.value = false; });
       class="cover-img"
       :src="src"
       mode="aspectFill"
+      lazy-load
       @error="onError"
     />
     <view v-else class="cover-fallback">{{ initial }}</view>

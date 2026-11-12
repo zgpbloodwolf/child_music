@@ -118,7 +118,7 @@ async function doLogin() {
 }
 .submit {
   margin-top: 16rpx;
-  background: #ff8c42;
+  background: $primary;
   color: #ffffff;
   font-size: 32rpx;
   border-radius: 16rpx;
