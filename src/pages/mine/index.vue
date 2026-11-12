@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
+import { onReachBottom } from '@dcloudio/uni-app';
 import { storeToRefs } from 'pinia';
 import { useLibraryStore } from '@/store/library';
 import { useHistoryStore } from '@/store/history';
@@ -19,6 +21,20 @@ const history = useHistoryStore();
 const player = usePlayerStore();
 const { likedIds, likedSongs } = storeToRefs(library);
 const { recent } = storeToRefs(history);
+
+// ===== 「我喜欢的」分批渲染:收藏量大(数百首)时一次挂载全部会卡,触底续展 =====
+/** 每批渲染条数(与歌单页 PAGE_SIZE 一致) */
+const LIKED_STEP = 30;
+/** 当前已渲染条数(likedSongs 的前缀切片) */
+const likedShown = ref(LIKED_STEP);
+/** 实际渲染的收藏切片 */
+const shownLikedSongs = computed(() => likedSongs.value.slice(0, likedShown.value));
+
+onReachBottom(() => {
+  if (likedShown.value < likedSongs.value.length) {
+    likedShown.value = Math.min(likedShown.value + LIKED_STEP, likedSongs.value.length);
+  }
+});
 // 当前登录账号(登录后必有)
 const member = currentMember;
 
@@ -76,11 +92,13 @@ function getAppVersion(): string {
 }
 
 /** 关于弹窗:应用名 + 版本 */
+/** 版本号只求值一次(关于弹窗与设置行副标题共用) */
+const APP_VERSION = getAppVersion();
+
 function showAbout() {
-  const v = getAppVersion();
   uni.showModal({
     title: '启蒙音频',
-    content: v ? `当前版本:v${v}` : '当前为开发版本',
+    content: APP_VERSION ? `当前版本:v${APP_VERSION}` : '当前为开发版本',
     showCancel: false,
     confirmText: '知道了',
   });
@@ -96,14 +114,8 @@ interface SettingItem {
 const settings: SettingItem[] = [
   { icon: '👤', label: '账号管理', sub: '昵称 · 头像 · 密码', run: goAccount },
   { icon: '🔄', label: '检查更新', sub: '检测新版本', run: checkAppUpdateManual },
-  { icon: 'ℹ️', label: '关于启蒙音频', sub: versionLabel(), run: showAbout },
+  { icon: 'ℹ️', label: '关于启蒙音频', sub: APP_VERSION ? `v${APP_VERSION}` : '开发版', run: showAbout },
 ];
-
-/** 设置行右侧的版本短文案 */
-function versionLabel(): string {
-  const v = getAppVersion();
-  return v ? `v${v}` : '开发版';
-}
 </script>
 
 <template>
@@ -171,7 +183,7 @@ function versionLabel(): string {
       </view>
       <view v-if="likedSongs.length" class="song-list">
         <SongItem
-          v-for="song in likedSongs"
+          v-for="song in shownLikedSongs"
           :key="song.id"
           :song="song"
           @play="playLiked(song)"
@@ -182,6 +194,9 @@ function versionLabel(): string {
             </view>
           </template>
         </SongItem>
+        <view v-if="likedShown < likedSongs.length" class="more-hint">
+          <text>上拉显示更多(已显示 {{ likedShown }} / {{ likedSongs.length }} 首)</text>
+        </view>
       </view>
       <view v-else class="empty">
         <view class="empty-icon">
@@ -422,6 +437,12 @@ function versionLabel(): string {
   font-size: 34rpx;
   color: $primary;
   transition: transform 0.12s ease, opacity 0.12s ease;
+}
+.more-hint {
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 22rpx;
+  color: $text-disable;
 }
 .empty {
   padding: 100rpx 0 60rpx;

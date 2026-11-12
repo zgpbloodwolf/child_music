@@ -14,8 +14,8 @@ import { HISTORY_KEY, currentMember, scopedKey } from '@/store/memberPrefs';
  * recent 为 id 对应的轻量元数据,增量补全逻辑见 useIdMetaList。
  */
 
-/** 最多保留多少条历史 */
-const MAX_HISTORY = 20;
+/** 最多保留多少条历史(与服务端截断上限保持一致:云端拉回的列表最多 50 条,两端口径统一) */
+const MAX_HISTORY = 50;
 
 export const useHistoryStore = defineStore('history', () => {
   const { ids, songs, persist, resetKey } = useIdMetaList(
