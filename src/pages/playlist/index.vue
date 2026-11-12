@@ -58,6 +58,8 @@ const loadedPage = ref(0);
 const loadingMore = ref(false);
 /** 是否还有更多数据 */
 const hasMore = ref(true);
+/** 加载更多失败标记(列表尾渲染「点击重试」) */
+const loadMoreError = ref(false);
 
 /** 加载分类元数据(sub + theme);loadIds 依赖 sub,需先完成 */
 async function loadMeta(): Promise<void> {
@@ -126,12 +128,17 @@ async function loadMore(): Promise<void> {
   if (loadingMore.value || !hasMore.value) return;
 
   loadingMore.value = true;
+  loadMoreError.value = false;
   try {
     const res = await loadPage(loadedPage.value + 1);
     listSongs.value = [...listSongs.value, ...res.items];
     loadedPage.value += 1;
     // 以服务端 total 判定是否还有下一页,不再依赖本地 id 数组的切片长度
     hasMore.value = listSongs.value.length < res.total;
+  } catch (err) {
+    // 翻页失败不吞:置错误态供列表尾「点击重试」,不再静默成为未处理 rejection
+    console.warn('加载更多失败:', err);
+    loadMoreError.value = true;
   } finally {
     loadingMore.value = false;
   }
@@ -267,6 +274,9 @@ function playAll() {
     <!-- 加载状态 -->
     <view v-if="loadingMore" class="loading-more">
       <text>加载中...</text>
+    </view>
+    <view v-else-if="loadMoreError" class="loading-more" @click="loadMore()">
+      <text>加载失败,点击重试</text>
     </view>
     <view v-else-if="!hasMore && listSongs.length > 0" class="no-more">
       <text>已加载全部 {{ listSongs.length }} 首</text>
