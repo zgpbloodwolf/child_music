@@ -136,7 +136,13 @@ export const usePlayerStore = defineStore('player', () => {
       if (autoSkipCount < MAX_AUTO_SKIP) {
         autoSkipCount += 1;
         error.value = '当前音频加载失败,自动切换下一首';
-        setTimeout(() => { void playNext(true); }, 800);
+        // 记录错误时刻的装载号:延时窗口内用户手动切歌/重播(号已变)则放弃自动跳,
+        // 避免刚切到目标歌又被顶到下一首
+        const seq = loadSeq;
+        setTimeout(() => {
+          if (seq !== loadSeq) return;
+          void playNext(true);
+        }, 800);
       } else {
         error.value = '连续多首音频加载失败,已停止播放';
       }
