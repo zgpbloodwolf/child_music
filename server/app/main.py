@@ -188,16 +188,46 @@ def create_app() -> FastAPI:
 
     admin_html = BASE_DIR / "admin_static" / "index.html"
     login_html = BASE_DIR / "admin_static" / "login.html"
+    members_html = BASE_DIR / "admin_static" / "members.html"
+    categories_html = BASE_DIR / "admin_static" / "categories.html"
+    songs_html = BASE_DIR / "admin_static" / "songs.html"
+    common_js = BASE_DIR / "admin_static" / "common.js"
+
+    def admin_page_file(path: Path, media_type: str | None = None) -> FileResponse:
+        """后台页面统一 no-cache:文件直读、改版即生效,但浏览器对无缓存头的 200 会
+        启发式缓存,点击侧边栏导航可能直接复用旧页面(出现侧边栏消失等新旧混用问题)。
+        no-cache = 每次使用前回源验证,未变则 304,开销极小。"""
+        return FileResponse(path, media_type=media_type, headers={"Cache-Control": "no-cache"})
 
     @app.get("/admin/login", include_in_schema=False)
     def admin_login_page(_=Depends(require_intranet)) -> FileResponse:
         """管理员登录页(独立完整页面,限内网访问)。"""
-        return FileResponse(login_html)
+        return admin_page_file(login_html)
+
+    @app.get("/admin/common.js", include_in_schema=False)
+    def admin_common_js(_=Depends(require_intranet)) -> FileResponse:
+        """后台公共脚本(侧边栏注入)。"""
+        return admin_page_file(common_js, media_type="text/javascript")
+
+    @app.get("/admin/songs", include_in_schema=False)
+    def admin_songs_page(_=Depends(require_intranet)) -> FileResponse:
+        """歌曲管理页(从管理页拆出的独立页面,限内网访问)。"""
+        return admin_page_file(songs_html)
+
+    @app.get("/admin/members", include_in_schema=False)
+    def admin_members_page(_=Depends(require_intranet)) -> FileResponse:
+        """账号管理页(从管理页拆出的独立页面,限内网访问)。"""
+        return admin_page_file(members_html)
+
+    @app.get("/admin/categories", include_in_schema=False)
+    def admin_categories_page(_=Depends(require_intranet)) -> FileResponse:
+        """分类管理页(从管理页拆出的独立页面,限内网访问)。"""
+        return admin_page_file(categories_html)
 
     @app.get("/admin", include_in_schema=False)
     def admin_page(_=Depends(require_intranet)) -> FileResponse:
         """管理页:账号密码登录后进入(限内网访问)。"""
-        return FileResponse(admin_html)
+        return admin_page_file(admin_html)
 
     @app.get("/health", include_in_schema=False)
     def health() -> dict[str, str]:
