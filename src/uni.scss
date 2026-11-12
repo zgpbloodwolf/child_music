@@ -60,12 +60,14 @@ $uni-opacity-disabled: 0.3;
  */
 $primary: #ff8c42;          // 主色(暖橙):播放/选中/强调
 $primary-light: #ffb780;    // 主色浅色
+$primary-soft: rgba(255, 140, 66, 0.10);  // 主色浅底(图标容器/按压反馈)
 $bg-page: #f5f5f7;          // 页面背景
 $bg-card: #ffffff;          // 卡片/列表项背景
 $text-main: #1a1a1a;        // 主文字
 $text-sub: #999999;         // 次要文字
 $text-disable: #cccccc;     // 禁用文字
 $divider: #ececec;          // 分割线
+$danger: #e64340;           // 危险色(退出登录/清空等破坏性操作)
 $player-bg: #2c2c3a;        // 播放页深色背景
 $shadow-card: 0 4rpx 20rpx rgba(0, 0, 0, 0.12);  // 卡片阴影
 

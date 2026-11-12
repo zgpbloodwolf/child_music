@@ -84,6 +84,7 @@ function logout() {
   uni.showModal({
     title: '退出登录?',
     content: '退出后需用账号密码重新登录',
+    confirmColor: '#e64340',
     success: (res) => {
       if (res.confirm) auth.logout();
     },
@@ -93,48 +94,59 @@ function logout() {
 
 <template>
   <view class="page">
+    <!-- 渐变账号卡(与「我的」页头部同风格) -->
     <view v-if="current" class="member-card">
-      <text class="avatar">{{ current.avatar || '⭐' }}</text>
+      <view class="avatar-ring">
+        <text class="avatar">{{ current.avatar || '⭐' }}</text>
+      </view>
       <view class="member-info">
         <text class="name">{{ current.name }}</text>
-        <text class="username">账号:{{ current.username || '未设置' }}</text>
+        <text class="username">{{ current.username ? `账号 ${current.username}` : '未设置账号' }}</text>
       </view>
-      <text class="check">当前</text>
+      <view class="now-badge">
+        <text class="now-text">当前</text>
+      </view>
     </view>
 
     <!-- 编辑资料 -->
-    <view class="form-card">
-      <text class="form-title">编辑资料</text>
+    <view class="card">
+      <text class="card-title">编辑资料</text>
       <view class="field">
         <text class="field-label">头像</text>
-        <view class="avatar-row">
-          <text
+        <view class="avatar-grid">
+          <view
             v-for="a in AVATAR_CHOICES"
             :key="a"
             class="avatar-option"
             :class="{ active: a === profileForm.avatar }"
             @click="profileForm.avatar = a"
-          >{{ a }}</text>
+          >
+            <text class="avatar-option-text">{{ a }}</text>
+          </view>
         </view>
       </view>
       <view class="field">
-        <text class="field-label">昵称</text>
+        <view class="field-head">
+          <text class="field-label">昵称</text>
+          <text class="field-tip">{{ profileForm.name.length }}/64</text>
+        </view>
         <input
           v-model="profileForm.name"
           class="input"
           type="text"
           placeholder="请输入昵称"
+          placeholder-class="input-placeholder"
           :maxlength="64"
         >
       </view>
-      <view class="save-btn" :class="{ disabled: profileSaving }" @click="saveProfile">
-        <text class="save-text">{{ profileSaving ? '保存中…' : '保存' }}</text>
+      <view class="btn" :class="{ disabled: profileSaving }" @click="saveProfile">
+        <text class="btn-text">{{ profileSaving ? '保存中…' : '保存修改' }}</text>
       </view>
     </view>
 
     <!-- 修改密码 -->
-    <view class="form-card">
-      <text class="form-title">修改密码</text>
+    <view class="card">
+      <text class="card-title">修改密码</text>
       <view class="field">
         <text class="field-label">旧密码</text>
         <input
@@ -142,6 +154,7 @@ function logout() {
           class="input"
           password
           placeholder="请输入旧密码"
+          placeholder-class="input-placeholder"
         >
       </view>
       <view class="field">
@@ -151,6 +164,7 @@ function logout() {
           class="input"
           password
           :placeholder="`请输入新密码(${PASSWORD_MIN}-${PASSWORD_MAX} 位)`"
+          placeholder-class="input-placeholder"
         >
       </view>
       <view class="field">
@@ -160,10 +174,11 @@ function logout() {
           class="input"
           password
           placeholder="请再次输入新密码"
+          placeholder-class="input-placeholder"
         >
       </view>
-      <view class="save-btn" :class="{ disabled: pwdSaving }" @click="savePassword">
-        <text class="save-text">{{ pwdSaving ? '提交中…' : '修改密码' }}</text>
+      <view class="btn" :class="{ disabled: pwdSaving }" @click="savePassword">
+        <text class="btn-text">{{ pwdSaving ? '提交中…' : '修改密码' }}</text>
       </view>
     </view>
 
@@ -185,125 +200,175 @@ function logout() {
 <style scoped lang="scss">
 .page {
   min-height: 100vh;
-  padding: 24rpx 16rpx;
+  padding: 24rpx 24rpx 60rpx;
 }
+/* ===== 渐变账号卡 ===== */
 .member-card {
   display: flex;
   align-items: center;
-  padding: 32rpx 24rpx;
-  background: $bg-card;
-  border-radius: 16rpx;
+  padding: 36rpx 32rpx;
+  background: linear-gradient(135deg, $primary-light, $primary);
+  border-radius: 28rpx;
   box-shadow: $shadow-card;
 }
-.avatar {
-  width: 80rpx;
-  font-size: 48rpx;
-  text-align: center;
+.avatar-ring {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
+.avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  font-size: 52rpx;
+  text-align: center;
+  line-height: 96rpx;
+}
 .member-info {
-  margin-left: 20rpx;
+  flex: 1;
+  min-width: 0;
+  margin-left: 24rpx;
   display: flex;
   flex-direction: column;
 }
 .name {
-  font-size: 30rpx;
-  color: $text-main;
+  font-size: 34rpx;
   font-weight: bold;
+  color: #ffffff;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .username {
-  margin-top: 4rpx;
+  margin-top: 8rpx;
   font-size: 22rpx;
-  color: $text-disable;
+  color: rgba(255, 255, 255, 0.82);
 }
-.check {
-  margin-left: auto;
-  color: $primary;
-  font-size: 24rpx;
+.now-badge {
+  margin-left: 16rpx;
+  padding: 8rpx 20rpx;
+  background: rgba(255, 255, 255, 0.24);
+  border-radius: 999rpx;
+  flex-shrink: 0;
+}
+.now-text {
+  font-size: 22rpx;
+  color: #ffffff;
 }
 /* ===== 表单卡片(编辑资料 / 修改密码共用) ===== */
-.form-card {
+.card {
   margin-top: 24rpx;
-  padding: 28rpx 24rpx;
+  padding: 32rpx 28rpx;
   background: $bg-card;
-  border-radius: 16rpx;
+  border-radius: 28rpx;
   box-shadow: $shadow-card;
 }
-.form-title {
+.card-title {
   display: block;
   font-size: 30rpx;
   font-weight: bold;
   color: $text-main;
 }
 .field {
-  margin-top: 24rpx;
+  margin-top: 32rpx;
+}
+.field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .field-label {
   display: block;
   font-size: 24rpx;
   color: $text-sub;
 }
-.avatar-row {
-  margin-top: 16rpx;
+.field-tip {
+  font-size: 22rpx;
+  color: $text-disable;
+}
+.avatar-grid {
+  margin-top: 20rpx;
+  margin-right: -20rpx; /* 抵消末列多余间距,保持网格对齐 */
   display: flex;
   flex-wrap: wrap;
 }
 .avatar-option {
-  width: 88rpx;
-  height: 88rpx;
-  margin: 0 16rpx 16rpx 0;
-  border: 3rpx solid transparent;
-  border-radius: 16rpx;
-  font-size: 44rpx;
-  text-align: center;
-  line-height: 88rpx;
+  width: 96rpx;
+  height: 96rpx;
+  margin: 0 20rpx 20rpx 0;
+  border: 2rpx solid transparent;
+  border-radius: 22rpx;
   background: $uni-bg-color-grey;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease;
 
   &.active {
     border-color: $primary;
     background: #ffffff;
+    box-shadow: 0 0 0 6rpx $primary-soft;
+    transform: scale(1.05);
   }
 }
+.avatar-option-text {
+  font-size: 44rpx;
+}
 .input {
-  margin-top: 12rpx;
-  padding: 16rpx 20rpx;
-  background: $uni-bg-color-grey;
-  border-radius: 12rpx;
+  margin-top: 16rpx;
+  padding: 22rpx 24rpx;
+  background: #ffffff;
+  border: 2rpx solid $divider;
+  border-radius: 18rpx;
   font-size: 28rpx;
   color: $text-main;
 }
-.save-btn {
-  margin-top: 32rpx;
-  background: $primary;
-  border-radius: 12rpx;
-  text-align: center;
-  padding: 20rpx 0;
+.input-placeholder {
+  color: $text-disable;
+}
+.btn {
+  margin-top: 40rpx;
+  height: 88rpx;
+  background: linear-gradient(135deg, $primary-light, $primary);
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(255, 140, 66, 0.32);
 
   &:active {
-    background: $primary-light;
+    opacity: 0.85;
   }
   &.disabled {
-    opacity: 0.6;
+    opacity: 0.5;
   }
 }
-.save-text {
+.btn-text {
   color: #ffffff;
-  font-size: 28rpx;
+  font-size: 30rpx;
+  font-weight: bold;
 }
+/* ===== 提示与退出 ===== */
 .tip {
-  margin-top: 24rpx;
-  padding: 0 8rpx;
+  margin-top: 28rpx;
+  padding: 0 12rpx;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  gap: 10rpx;
   font-size: 24rpx;
   color: $text-sub;
 }
 .logout-entry {
   margin-top: 40rpx;
-  padding: 28rpx 24rpx;
+  padding: 30rpx 0;
   background: $bg-card;
-  border-radius: 16rpx;
+  border-radius: 28rpx;
   text-align: center;
   box-shadow: $shadow-card;
 
@@ -312,11 +377,11 @@ function logout() {
   }
 }
 .logout-text {
-  color: #e64340;
+  color: $danger;
   font-size: 30rpx;
 }
 .foot-tip {
-  margin-top: 40rpx;
+  margin-top: 36rpx;
   text-align: center;
   font-size: 22rpx;
   color: $text-disable;
