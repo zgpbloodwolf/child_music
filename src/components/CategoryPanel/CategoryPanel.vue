@@ -29,6 +29,10 @@ const repo = getRepository();
 const viewMode = ref<PoetryViewMode>(PoetryViewMode.BY_TYPE);
 
 const cat = ref<Category | null>(null);
+/** 分类树加载中(面板初始态,渲染「加载中」而非整块空白) */
+const loading = ref(true);
+/** 加载失败(点击重试);401 由 request 层统一踢回登录页,不在此处理 */
+const failed = ref(false);
 const isPoetry = computed(() => props.catId === 'poetry');
 
 /** poetry 作者列表(异步,作品数由后端聚合) */
@@ -46,13 +50,27 @@ const subCounts = computed<Record<string, number>>(() => {
 /** 加载某大类:分类树(含各级 songCount)+ poetry 作者。
  * 计数随分类树一次取回,不再为了「N 首」去拉该大类的歌曲列表。 */
 async function loadCat(catId: string): Promise<void> {
-  const cats = await repo.getCategories();
-  cat.value = cats.find((x) => x.id === catId) ?? null;
-  if (!cat.value) return;
-  if (catId === 'poetry') {
-    authors.value = await listPoetryAuthors();
-    dynasties.value = dynastiesOf(authors.value);
+  loading.value = true;
+  failed.value = false;
+  try {
+    const cats = await repo.getCategories();
+    cat.value = cats.find((x) => x.id === catId) ?? null;
+    if (!cat.value) return;
+    if (catId === 'poetry') {
+      authors.value = await listPoetryAuthors();
+      dynasties.value = dynastiesOf(authors.value);
+    }
+  } catch (err) {
+    console.warn('分类加载失败:', err);
+    failed.value = true;
+  } finally {
+    loading.value = false;
   }
+}
+
+/** 失败重试(沿用当前分类) */
+function retryLoad(): void {
+  void loadCat(props.catId);
 }
 
 watch(() => props.catId, (id) => { void loadCat(id); }, { immediate: true });
@@ -87,8 +105,12 @@ function goCat() {
 </script>
 
 <template>
+  <!-- 加载中 / 失败(可重试)/ 分类不存在 三态,均不渲染面板本体 -->
+  <view v-if="loading" class="panel-state"><text>加载中...</text></view>
+  <view v-else-if="failed" class="panel-state" @click="retryLoad"><text>加载失败,点击重试</text></view>
+  <view v-else-if="!cat" class="panel-state"><text>该分类不存在或已下线</text></view>
   <view
-    v-if="cat"
+    v-else
     class="panel"
     :class="{
       'panel--children': theme === 'children',
@@ -189,6 +211,13 @@ function goCat() {
 <style scoped lang="scss">
 .panel {
   padding-bottom: 16rpx;
+}
+/* 面板加载/失败/空分类的占位态 */
+.panel-state {
+  padding: 120rpx 0;
+  text-align: center;
+  color: $text-sub;
+  font-size: 26rpx;
 }
 .cat-hero {
   display: flex;

@@ -33,6 +33,10 @@ const currentTab = ref('all');
 /** 推荐歌曲(按分类懒加载,首页只展示前几首) */
 const recommendSongs = ref<SongMeta[]>([]);
 const loadingRecommend = ref(false);
+/** 推荐加载失败标记(区分「暂无歌曲」与「加载失败」,后者可点击重试) */
+const recommendFailed = ref(false);
+/** 当前推荐位对应的分类 id(重试时用) */
+const recommendCatId = ref('');
 
 onMounted(async () => {
   // 只加载分类树,不加载全部歌曲;失败给提示(否则 tab 永远只有「全部」且无反馈)
@@ -56,7 +60,9 @@ const RECOMMEND_SIZE = 6;
 
 /** 懒加载推荐歌曲(服务端只取当前分类前 6 首) */
 async function loadRecommend(catId: string) {
+  recommendCatId.value = catId;
   loadingRecommend.value = true;
+  recommendFailed.value = false;
   try {
     const res = await repo.listPage(
       { category: catId },
@@ -64,10 +70,18 @@ async function loadRecommend(catId: string) {
     );
     recommendSongs.value = res.items;
   } catch (err) {
+    // 401 = 未登录/令牌失效,request 层已统一踢回登录页,此处按失败态展示
+    if (err instanceof RequestError && err.statusCode === 401) return;
     console.warn('加载推荐歌曲失败:', err);
+    recommendFailed.value = true;
   } finally {
     loadingRecommend.value = false;
   }
+}
+
+/** 推荐位失败重试(沿用上次的分类 id) */
+function retryRecommend() {
+  if (recommendCatId.value) void loadRecommend(recommendCatId.value);
 }
 
 /** 点击推荐歌曲:以推荐列表为队列播放 */
@@ -146,6 +160,12 @@ function goSearch() {
         </view>
         <view v-if="loadingRecommend" class="loading">
           <text>加载中...</text>
+        </view>
+        <view v-else-if="recommendFailed" class="loading" @click="retryRecommend">
+          <text>加载失败,点击重试</text>
+        </view>
+        <view v-else-if="!recommendSongs.length" class="loading">
+          <text>该分类暂无歌曲</text>
         </view>
         <view v-else class="song-list">
           <SongItem
