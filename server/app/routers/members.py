@@ -24,6 +24,7 @@ from sqlalchemy.orm import Session
 from ..deps import get_db, require_member
 from ..models import Favorite, Member, PlayHistory, Song
 from ..schemas import MemberOut, SongIdsIn
+from ..services.meta import avatar_out
 
 router = APIRouter(prefix="/api/members", tags=["成员"])
 
@@ -35,8 +36,9 @@ PASSWORD_MIN, PASSWORD_MAX = 4, 64
 
 
 def member_out(m: Member) -> MemberOut:
+    # avatar 经 avatar_out:上传文件路径转完整 URL,emoji 原样(登录/App/后台共用)
     return MemberOut(
-        id=m.id, name=m.name, username=m.username or "", avatar=m.avatar,
+        id=m.id, name=m.name, username=m.username or "", avatar=avatar_out(m.avatar),
         created_at=m.created_at,
     )
 

@@ -100,8 +100,9 @@ class Member(Base):
     username = Column(String(64), nullable=True, unique=True, index=True)
     # 格式:pbkdf2_sha256$<iterations>$<salt_hex>$<hash_hex>(见 app/security.py)
     password_hash = Column(String(256), nullable=True)
-    # 头像为 emoji 字符(展示用,避免引入图片文件与裁切链路)
-    avatar = Column(String(16), default="", nullable=False)
+    # 头像两种形态:预设 emoji 字符 / 上传文件相对路径(library/avatars/xxx.png,
+    # 由 POST /api/auth/avatar 落盘;SQLite 不强制列宽,老库 String(16) 无需迁移)
+    avatar = Column(String(255), default="", nullable=False)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
 
 

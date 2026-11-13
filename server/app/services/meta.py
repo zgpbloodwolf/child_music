@@ -26,6 +26,15 @@ def build_url(rel_path: str | None) -> str:
     return url
 
 
+def avatar_out(avatar: str) -> str:
+    """库内 avatar 值 → 下发值:上传文件路径(library/...)转完整公网 URL,emoji 原样。
+
+    头像两种存储形态(见 Member.avatar):预设 emoji 单字符 / 上传文件相对路径,
+    前者原样透传、后者与歌曲封面同口径走 build_url(含静态资源令牌)。
+    """
+    return build_url(avatar) if avatar.startswith("library/") else avatar
+
+
 def song_to_meta(s: Song) -> SongMetaOut:
     """ORM Song → SongMetaOut(列表用,不含 src/lyric)。"""
     return SongMetaOut(

@@ -7,7 +7,7 @@ Category/SubCategory);FastAPI 默认按 alias 输出 JSON。管理请求模型�
 from typing import Generic, TypeVar
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from pydantic.alias_generators import to_camel
 
 T = TypeVar("T")
@@ -216,13 +216,35 @@ class LoginOut(CamelModel):
 
 
 class ProfileUpdate(CamelModel):
-    """App 端自助修改资料(仅昵称与头像;登录账号不开放自改,仍由管理员管理)。
+    """App 端自助修改资料(昵称/头像按需传,至少一项;登录账号不开放自改)。
 
     App 请求体,故用 CamelModel 接受 camelCase(populate_by_name 同时兼容 snake_case)。
+    - name/avatar 均可选:仅传谁改谁 —— 头像即时生效、昵称走保存按钮两种交互共用
+      本接口;旧版 App 同时传双字段,行为不变,天然兼容;
+    - avatar 两种合法值:预设 emoji(≤16 字符)或上传文件的相对路径
+      (library/avatars/...,≤255,由 POST /api/auth/avatar 生成);其余拒绝入库。
     """
 
-    name: str
-    avatar: str = ""
+    name: str | None = None
+    avatar: str | None = None
+
+    @model_validator(mode="after")
+    def _at_least_one(self) -> "ProfileUpdate":
+        if not (self.name or "").strip() and not (self.avatar or "").strip():
+            raise ValueError("至少修改昵称或头像中的一项")
+        return self
+
+    @field_validator("avatar")
+    @classmethod
+    def _check_avatar(cls, v: str | None) -> str | None:
+        if v is None or not v.strip():
+            return None  # 空串视为「不改」
+        v = v.strip()
+        if len(v) <= 16:
+            return v  # 预设 emoji(短文本透传,入库无害,前端按文字渲染)
+        if v.startswith("library/avatars/") and len(v) <= 255:
+            return v
+        raise ValueError("头像不合法")
 
 
 class PasswordChange(CamelModel):

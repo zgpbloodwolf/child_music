@@ -29,6 +29,8 @@
     th { color: #888; font-weight: 600; background: #fafafa; }
     tbody tr:hover td { background: #fffaf5; }
     td.ava { font-size: 20px; text-align: center; }
+    /* 自定义头像(App 上传):圆形小图;预设 emoji 仍按文字渲染 */
+    td.ava img.ava-img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto; }
     .mono { font-family: Consolas, Menlo, monospace; }
     .muted { color: #999; font-size: 12px; }
     td.muted { font-size: 13px; }
@@ -170,6 +172,12 @@
     el.textContent = text;
     el.className = text ? "msg " + (ok ? "ok" : "err") : "msg";
   }
+  // 头像单元格:上传图(完整 URL)→ 圆形小图;预设 emoji / 空 → 文字(App 自定义头像功能上线后兼容两种形态)
+  function avaCell(a) {
+    if (!a) return "·";
+    if (/^https?:\/\//.test(a)) return `<img class="ava-img" src="${esc(a)}" alt="头像" loading="lazy" />`;
+    return esc(a);
+  }
 
   // ===== 账号列表(全量拉取,搜索为前端过滤,不发请求)=====
   let members = [];
@@ -186,7 +194,7 @@
     }
     tb.innerHTML = list.map(m => `
       <tr>
-        <td class="ava">${esc(m.avatar || "·")}</td>
+        <td class="ava">${avaCell(m.avatar)}</td>
         <td>${esc(m.name)}</td>
         <td class="mono">${esc(m.username || "-")}</td>
         <td class="muted">${fmtTime(m.createdAt)}</td>
