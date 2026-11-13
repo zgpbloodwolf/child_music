@@ -9,11 +9,13 @@ import { currentMember } from '@/store/memberPrefs';
 import SongItem from '@/components/SongItem/SongItem.vue';
 import MiniPlayer from '@/components/MiniPlayer/MiniPlayer.vue';
 import CoverImage from '@/components/CoverImage/CoverImage.vue';
+import MemberAvatar from '@/components/MemberAvatar/MemberAvatar.vue';
 import { checkAppUpdateManual } from '@/utils/appUpdate';
 import type { SongMeta } from '@/types/song';
 
 /**
  * 我的页:沉浸式渐变头部(custom 导航)+ 悬浮统计卡 + 最近播放 + 我喜欢的 + 设置组。
+ * 账号管理入口收敛到头部用户区(设置组不重复放置)。
  * 最近播放来自 history store(按账号隔离、云端同步),此前无页面完整展示。
  */
 const library = useLibraryStore();
@@ -112,7 +114,6 @@ interface SettingItem {
   run: () => void;
 }
 const settings: SettingItem[] = [
-  { icon: '👤', label: '账号管理', sub: '昵称 · 头像 · 密码', run: goAccount },
   { icon: '🔄', label: '检查更新', sub: '检测新版本', run: checkAppUpdateManual },
   { icon: 'ℹ️', label: '关于启蒙音频', sub: APP_VERSION ? `v${APP_VERSION}` : '开发版', run: showAbout },
 ];
@@ -125,13 +126,16 @@ const settings: SettingItem[] = [
       <text class="nav-title">我的</text>
       <view class="user-row" @click="goAccount">
         <view class="avatar-ring">
-          <text class="avatar">{{ member?.avatar || '⭐' }}</text>
+          <MemberAvatar :avatar="member?.avatar || ''" :size="100" />
         </view>
         <view class="user-info">
           <text class="name">{{ member?.name || '未登录' }}</text>
           <text class="account">{{ member?.username ? `账号 ${member.username}` : '未设置账号' }}</text>
         </view>
-        <view class="chevron chevron-light" />
+        <view class="account-pill">
+          <text class="account-pill-text">账号管理</text>
+          <view class="chevron chevron-light chevron-sm" />
+        </view>
       </view>
     </view>
 
@@ -207,20 +211,25 @@ const settings: SettingItem[] = [
       </view>
     </view>
 
-    <!-- 设置组 -->
-    <view class="settings">
-      <view
-        v-for="item in settings"
-        :key="item.label"
-        class="cell"
-        @click="item.run"
-      >
-        <view class="cell-icon">
-          <text class="cell-icon-text">{{ item.icon }}</text>
+    <!-- 设置组(账号管理入口已收敛到头部用户区) -->
+    <view class="section">
+      <view class="section-head">
+        <text class="section-title">设置</text>
+      </view>
+      <view class="settings">
+        <view
+          v-for="item in settings"
+          :key="item.label"
+          class="cell"
+          @click="item.run"
+        >
+          <view class="cell-icon">
+            <text class="cell-icon-text">{{ item.icon }}</text>
+          </view>
+          <text class="cell-label">{{ item.label }}</text>
+          <text v-if="item.sub" class="cell-sub">{{ item.sub }}</text>
+          <view class="chevron" />
         </view>
-        <text class="cell-label">{{ item.label }}</text>
-        <text v-if="item.sub" class="cell-sub">{{ item.sub }}</text>
-        <view class="chevron" />
       </view>
     </view>
 
@@ -237,19 +246,20 @@ const settings: SettingItem[] = [
 }
 .nav-title {
   display: block;
-  padding: 12rpx 32rpx 8rpx;
+  padding: 12rpx 24rpx 8rpx;
   font-size: 34rpx;
   font-weight: bold;
   color: #ffffff;
 }
 .user-row {
-  margin: 20rpx 32rpx 0;
+  margin: 20rpx 24rpx 0;
   display: flex;
   align-items: center;
 
   &:active .avatar-ring,
   &:active .name,
-  &:active .account {
+  &:active .account,
+  &:active .account-pill {
     opacity: 0.85;
   }
 }
@@ -257,20 +267,12 @@ const settings: SettingItem[] = [
   width: 116rpx;
   height: 116rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.10); /* 头像柔光,与渐变头部分层 */
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-.avatar {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
-  background: #ffffff;
-  font-size: 56rpx;
-  text-align: center;
-  line-height: 100rpx;
 }
 .user-info {
   flex: 1;
@@ -292,6 +294,20 @@ const settings: SettingItem[] = [
   font-size: 24rpx;
   color: rgba(255, 255, 255, 0.82);
 }
+/* 头像区右侧入口胶囊:账号管理唯一入口(替代设置组重复行) */
+.account-pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 10rpx 20rpx;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2rpx solid rgba(255, 255, 255, 0.35);
+  border-radius: 999rpx;
+}
+.account-pill-text {
+  font-size: 22rpx;
+  color: #ffffff;
+}
 /* ===== 悬浮统计卡 ===== */
 .stats-card {
   margin: -56rpx 24rpx 0;
@@ -311,7 +327,7 @@ const settings: SettingItem[] = [
 .stat-num {
   font-size: 44rpx;
   font-weight: bold;
-  color: $text-main;
+  color: $primary; /* 数字用主色强调(儿童向更活泼) */
   line-height: 1.1;
 }
 .stat-label {
@@ -324,14 +340,14 @@ const settings: SettingItem[] = [
   height: 56rpx;
   background: $divider;
 }
-/* ===== 内容区块通用 ===== */
+/* ===== 内容区块通用(水平边距统一 24rpx,与卡片左缘对齐) ===== */
 .section {
-  margin-top: 48rpx;
+  margin-top: 40rpx;
 }
 .section-head {
   display: flex;
   align-items: center;
-  padding: 0 32rpx 24rpx;
+  padding: 0 24rpx 24rpx;
 }
 .title-wrap {
   display: flex;
@@ -360,7 +376,7 @@ const settings: SettingItem[] = [
 /* ===== 最近播放横滑 ===== */
 .h-scroll {
   white-space: nowrap;
-  padding: 0 32rpx;
+  padding: 0 24rpx;
 }
 .recent-card {
   display: inline-block;
@@ -475,7 +491,7 @@ const settings: SettingItem[] = [
 }
 /* ===== 设置组 ===== */
 .settings {
-  margin: 48rpx 24rpx 0;
+  margin: 0 24rpx;
   background: $bg-card;
   border-radius: 28rpx;
   overflow: hidden;
@@ -528,6 +544,14 @@ const settings: SettingItem[] = [
 
   &.chevron-light {
     border-color: rgba(255, 255, 255, 0.85);
+  }
+  /* 胶囊内小箭头:尺寸随文字缩小 */
+  &.chevron-sm {
+    width: 12rpx;
+    height: 12rpx;
+    border-right-width: 2rpx;
+    border-bottom-width: 2rpx;
+    margin-left: 10rpx;
   }
 }
 .bottom-pad {

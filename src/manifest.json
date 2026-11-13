@@ -33,6 +33,10 @@
             /* ios打包配置 */
             "ios" : {
                 "UIBackgroundModes" : [ "audio" ],
+                /* 相册选图上传自定义头像(iOS 13- 系统选择器需要;14+ 的 PHPicker 免声明) */
+                "privacyDescriptions" : {
+                    "NSPhotoLibraryUsageDescription" : "选择照片用于设置账号头像"
+                },
                 "dSYMs" : false
             },
             /* SDK配置 */

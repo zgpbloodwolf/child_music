@@ -9,7 +9,7 @@
  * - 切换账号 = 退出登录 → 登录页用另一账号登录(不做免密切换)。
  */
 import { defineStore } from 'pinia';
-import { request } from '@/utils/request';
+import { request, uploadFile } from '@/utils/request';
 import { clearAuthToken, getAuthToken, setAuthToken } from '@/utils/authToken';
 import { useMemberStore } from '@/store/member';
 import { currentMember, MEMBER_STORAGE_KEY, type MemberInfo } from '@/store/memberPrefs';
@@ -51,15 +51,29 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
-   * 自助修改资料(昵称/头像):成功后用服务端返回的最新账号信息
-   * 更新共享 currentMember 与本地缓存(与 ensureValid 同口径),
-   * 「我的」页头部等引用处自动刷新。
+   * 自助修改资料(昵称/头像按需传,仅传谁改谁):头像即时生效、昵称走保存按钮
+   * 两种交互共用本接口。成功后用服务端返回的最新账号信息更新共享 currentMember
+   * 与本地缓存(与 ensureValid 同口径),「我的」页头部等引用处自动刷新。
    */
-  async function updateProfile(profile: { name: string; avatar: string }): Promise<void> {
+  async function updateProfile(profile: { name?: string; avatar?: string }): Promise<void> {
     const me = await request<MemberInfo>({
       url: '/api/auth/profile',
       method: 'PUT',
       data: profile,
+    });
+    currentMember.value = me;
+    uni.setStorageSync(MEMBER_STORAGE_KEY, me);
+  }
+
+  /**
+   * 上传自定义头像(jpg/png/webp,≤2MB):后端落盘并即时生效,返回最新账号信息
+   * (avatar 已是拼好的完整 URL)。失败(格式/超限/网络)抛 RequestError,由调用方 toast。
+   */
+  async function uploadAvatar(filePath: string): Promise<void> {
+    const me = await uploadFile<MemberInfo>({
+      url: '/api/auth/avatar',
+      filePath,
+      name: 'file',
     });
     currentMember.value = me;
     uni.setStorageSync(MEMBER_STORAGE_KEY, me);
@@ -85,5 +99,5 @@ export const useAuthStore = defineStore('auth', () => {
     });
   }
 
-  return { login, ensureValid, updateProfile, changePassword, logout };
+  return { login, ensureValid, updateProfile, uploadAvatar, changePassword, logout };
 });

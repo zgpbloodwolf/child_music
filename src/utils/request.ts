@@ -125,3 +125,66 @@ export function request<T = unknown>(opts: RequestOptions): Promise<T> {
     });
   });
 }
+
+/** 上传选项(uni.uploadFile,multipart 表单文件) */
+export interface UploadOptions {
+  /** 相对 API_BASE_URL 的路径(如 /api/auth/avatar),或完整 http(s) URL */
+  url: string;
+  /** 本地文件路径(uni.chooseImage 等返回的 tempFilePath) */
+  filePath: string;
+  /** 表单里的文件字段名(对应后端 UploadFile 参数名) */
+  name: string;
+  /** 随表单附带的其他字段(可选) */
+  formData?: Record<string, string>;
+  /** 超时(ms),默认 30000(上传走上行带宽,比普通请求宽) */
+  timeout?: number;
+}
+
+/**
+ * 文件上传:与 request 同一套令牌/错误处理,成功返回解析后的 JSON(泛型 T)。
+ * uni.uploadFile 的响应体是字符串,需手动 JSON.parse;非 JSON(如网关错误页)
+ * 保持原文交给 extractDetail/通用提示。
+ */
+export function uploadFile<T = unknown>(opts: UploadOptions): Promise<T> {
+  const url = /^https?:\/\//.test(opts.url) ? opts.url : `${API_BASE_URL}${opts.url}`;
+  const token = getAuthToken();
+  if (!token) {
+    handleUnauthorized();
+    return Promise.reject(new RequestError(401, '未登录'));
+  }
+  return new Promise<T>((resolve, reject) => {
+    uni.uploadFile({
+      url,
+      filePath: opts.filePath,
+      name: opts.name,
+      formData: opts.formData,
+      timeout: opts.timeout ?? 30000,
+      header: { 'X-Auth-Token': token },
+      success: (res) => {
+        const status = res.statusCode ?? 0;
+        let parsed: unknown = res.data;
+        try {
+          parsed = JSON.parse(res.data);
+        } catch { /* 非 JSON 保持原文 */ }
+        if (status >= 200 && status < 300) {
+          resolve(parsed as T);
+          return;
+        }
+        if (status === 401) {
+          console.warn(`[uploadFile] ${opts.url} 未授权,回登录页`);
+          handleUnauthorized();
+        }
+        console.error(`[uploadFile] ${opts.url} 失败:`, status, extractDetail(parsed));
+        const detail = extractDetail(parsed);
+        reject(new RequestError(
+          status,
+          typeof detail === 'string' && detail ? detail : `上传失败(${status})`,
+        ));
+      },
+      fail: (err) => {
+        console.error(`[uploadFile] ${opts.url} 网络错误:`, err);
+        reject(new RequestError(0, '上传失败,请检查网络或服务是否可用'));
+      },
+    });
+  });
+}
