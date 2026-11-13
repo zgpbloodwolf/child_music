@@ -1,52 +1,54 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useAuthStore } from '@/store/auth';
 import { currentMember } from '@/store/memberPrefs';
 import MemberAvatar from '@/components/MemberAvatar/MemberAvatar.vue';
 
 /**
- * 账号管理页(系统设置风格的分组列表):账号概览(昵称即时预览)
- * + 账号信息分组(头像弹窗选择/上传、昵称行内编辑、登录账号只读)
- * + 安全分组(修改密码入口 → 底部弹窗)+ 退出登录。
- * 头像(预设 emoji / 相册上传)选完即时生效;昵称走「保存昵称」按钮。
+ * 账号管理页(系统设置风格的分组列表):账号概览 + 账号信息分组(昵称/登录账号)
+ * + 安全分组(修改密码)+ 退出登录。
+ * 修改类操作统一「入口行 → 底部弹窗 → 确认」:头像(选 emoji/上传)、昵称、密码。
  * 登录账号(username)由管理员统一管理,不开放自改;切换账号 = 退出后重新登录。
  */
 const auth = useAuthStore();
 const current = currentMember;
 
-// ===== 昵称(表单编辑,保存按钮提交) =====
-const profileForm = ref({ name: current.value?.name ?? '' });
-/** 已保存基线:与表单比较得出「有无未保存改动」,无改动时禁用保存、不发无效请求 */
-const profileBaseline = ref(current.value?.name ?? '');
-const profileDirty = computed(() => profileForm.value.name.trim() !== profileBaseline.value);
-const profileSaving = ref(false);
+// ===== 修改昵称(弹窗确认,与修改密码同款交互) =====
+const showNameSheet = ref(false);
+/** 昵称表单:打开弹窗时取当前昵称为初值(取消则丢弃,不会误改) */
+const nameForm = ref('');
+const nameSaving = ref(false);
 
-/** 保存昵称:成功后 currentMember 由 store 更新,我的页头部与本页概览自动刷新 */
-async function saveProfile() {
-  const name = profileForm.value.name.trim();
+function openNameSheet() {
+  nameForm.value = current.value?.name ?? '';
+  showNameSheet.value = true;
+}
+
+/** 确认修改:空值提示;与当前相同不发请求;成功后关闭弹窗,概览卡与我的页自动刷新 */
+async function saveName() {
+  const name = nameForm.value.trim();
   if (!name) {
     uni.showToast({ title: '昵称不能为空', icon: 'none' });
     return;
   }
-  if (profileSaving.value || !profileDirty.value) return;
-  profileSaving.value = true;
+  if (nameSaving.value || name === current.value?.name) return;
+  nameSaving.value = true;
   try {
     await auth.updateProfile({ name });
-    profileForm.value.name = name; // 回写 trim 后的值,保证基线与输入框一致
-    profileBaseline.value = name;
+    showNameSheet.value = false;
     uni.showToast({ title: '已保存', icon: 'none' });
   } catch (err) {
     uni.showToast({ title: err instanceof Error ? err.message : '保存失败', icon: 'none' });
   } finally {
-    profileSaving.value = false;
+    nameSaving.value = false;
   }
 }
 
-// ===== 头像(选完即时生效,不随「保存昵称」) =====
+// ===== 头像(概览卡大头像为唯一入口,选完即时生效) =====
 /** 预设头像(emoji,与后端 avatar 字段约定一致:单个字符,展示用) */
 const AVATAR_CHOICES = ['⭐', '🐱', '🦊', '🐼', '🐰', '🐯', '🦁', '🦄', '🐳', '🚀', '🌈', '🌻', '🍀', '🎈', '🎸'];
 
-/** 头像选择弹窗(概览卡头像与「头像」行两个入口共用) */
+/** 头像选择弹窗 */
 const showAvatarSheet = ref(false);
 /** 头像提交中(emoji 直选与上传共用,防重复提交) */
 const avatarSaving = ref(false);
@@ -151,7 +153,7 @@ function logout() {
 
 <template>
   <view class="page">
-    <!-- 账号概览:大头像(带编辑角标)+ 昵称即时预览/账号 -->
+    <!-- 账号概览:大头像(带编辑角标,头像修改唯一入口)+ 昵称/账号 -->
     <view v-if="current" class="member-card">
       <view class="avatar-wrap" @click="showAvatarSheet = true">
         <view class="avatar-ring">
@@ -162,7 +164,7 @@ function logout() {
         </view>
       </view>
       <view class="member-info">
-        <text class="name">{{ profileForm.name.trim() || '未命名' }}</text>
+        <text class="name">{{ current.name || '未命名' }}</text>
         <text class="username">{{ current.username ? `账号 ${current.username}` : '未设置账号' }}</text>
       </view>
     </view>
@@ -170,33 +172,15 @@ function logout() {
     <!-- 账号信息:分组列表(label 左 / 值右,与系统设置页一致) -->
     <text class="group-title">账号信息</text>
     <view class="group">
-      <view class="cell" @click="showAvatarSheet = true">
-        <text class="cell-label">头像</text>
-        <MemberAvatar class="cell-avatar" :avatar="current?.avatar || ''" :size="64" />
-        <view class="chevron" />
-      </view>
-      <view class="cell">
+      <view class="cell" @click="openNameSheet">
         <text class="cell-label">昵称</text>
-        <input
-          v-model="profileForm.name"
-          class="cell-field"
-          type="text"
-          placeholder="请输入昵称"
-          placeholder-class="cell-placeholder"
-          :maxlength="64"
-        >
+        <text class="cell-value">{{ current?.name || '未设置' }}</text>
+        <view class="chevron" />
       </view>
       <view class="cell cell-static">
         <text class="cell-label">登录账号</text>
         <text class="cell-value">{{ current?.username || '未设置' }}</text>
       </view>
-    </view>
-    <view
-      class="btn"
-      :class="{ disabled: profileSaving || !profileDirty }"
-      @click="saveProfile"
-    >
-      <text class="btn-text">{{ profileSaving ? '保存中…' : '保存昵称' }}</text>
     </view>
 
     <!-- 安全 -->
@@ -214,6 +198,7 @@ function logout() {
     </view>
 
     <view class="foot-tip">
+      <text>昵称、头像与密码修改后立即生效</text>
       <text>收藏与播放记录按账号独立保存、多设备同步</text>
       <text>登录账号由管理员统一管理,如需更换请联系管理员</text>
     </view>
@@ -250,32 +235,56 @@ function logout() {
       </view>
     </view>
 
+    <!-- 修改昵称弹窗:与修改密码同款交互(入口行 → 弹窗 → 确认) -->
+    <view v-if="showNameSheet" class="sheet-mask" @click="showNameSheet = false">
+      <view class="sheet" @click.stop>
+        <view class="sheet-bar" />
+        <text class="sheet-title">修改昵称</text>
+        <view class="sheet-form">
+          <input
+            v-model="nameForm"
+            class="sheet-field"
+            type="text"
+            placeholder="请输入新昵称"
+            placeholder-class="sheet-placeholder"
+            :maxlength="64"
+            confirm-type="done"
+            @confirm="saveName()"
+          >
+        </view>
+        <view class="sheet-btn" :class="{ disabled: nameSaving }" @click="saveName">
+          <text class="sheet-btn-text">{{ nameSaving ? '保存中…' : '确认修改' }}</text>
+        </view>
+        <view class="sheet-safe" />
+      </view>
+    </view>
+
     <!-- 修改密码弹窗:校验沿用原逻辑,成功后自动关闭 -->
     <view v-if="showPwdSheet" class="sheet-mask" @click="showPwdSheet = false">
       <view class="sheet" @click.stop>
         <view class="sheet-bar" />
         <text class="sheet-title">修改密码</text>
-        <view class="pwd-form">
+        <view class="sheet-form">
           <input
             v-model="pwdForm.oldPassword"
-            class="pwd-field"
+            class="sheet-field"
             :password="true"
             placeholder="旧密码"
-            placeholder-class="pwd-placeholder"
+            placeholder-class="sheet-placeholder"
           >
           <input
             v-model="pwdForm.newPassword"
-            class="pwd-field"
+            class="sheet-field"
             :password="true"
             :placeholder="`新密码(${PASSWORD_MIN}-${PASSWORD_MAX} 位)`"
-            placeholder-class="pwd-placeholder"
+            placeholder-class="sheet-placeholder"
           >
           <input
             v-model="pwdForm.confirm"
-            class="pwd-field"
+            class="sheet-field"
             :password="true"
             placeholder="再次输入新密码"
-            placeholder-class="pwd-placeholder"
+            placeholder-class="sheet-placeholder"
             confirm-type="done"
             @confirm="savePassword"
           >
@@ -401,44 +410,6 @@ function logout() {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-/* 头像行右侧预览(尺寸/圆形由 MemberAvatar 组件负责,此处只管推到行尾) */
-.cell-avatar {
-  margin-left: auto;
-}
-.cell-field {
-  flex: 1;
-  margin-left: 32rpx;
-  text-align: right;
-  font-size: 28rpx;
-  color: $text-main;
-}
-.cell-placeholder {
-  color: $text-disable;
-}
-/* 保存按钮:有未保存改动才可用(dirty 检测见 script) */
-.btn {
-  margin-top: 24rpx;
-  height: 88rpx;
-  background: linear-gradient(135deg, $primary-light, $primary);
-  border-radius: 999rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8rpx 24rpx rgba(255, 140, 66, 0.32);
-
-  &:active {
-    opacity: 0.85;
-  }
-  &.disabled {
-    opacity: 0.5;
-    box-shadow: none;
-  }
-}
-.btn-text {
-  color: #ffffff;
-  font-size: 30rpx;
-  font-weight: bold;
 }
 /* ===== 退出登录 ===== */
 .logout-entry {
@@ -584,21 +555,21 @@ function logout() {
 .avatar-option-text {
   font-size: 48rpx;
 }
-/* 密码表单 */
-.pwd-form {
+/* 弹窗表单(昵称/密码弹窗共用) */
+.sheet-form {
   margin-top: 32rpx;
   display: flex;
   flex-direction: column;
   gap: 20rpx;
 }
-.pwd-field {
+.sheet-field {
   padding: 24rpx 28rpx;
   background: $bg-page;
   border-radius: 16rpx;
   font-size: 28rpx;
   color: $text-main;
 }
-.pwd-placeholder {
+.sheet-placeholder {
   color: $text-disable;
 }
 .sheet-btn {
